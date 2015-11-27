@@ -32,7 +32,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     @Inject
     @Named(AuthorizationFilterAddon.BIND_NAME_DEFAULT_REQUIRE_USERTOKEN)
-    Boolean RequireUserToken;
+    Boolean requireUserToken;
 
     @Override
     @SuppressWarnings("squid:S1166")
@@ -52,7 +52,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         }
 
 
-        if (RequireUserToken && Strings.isNullOrEmpty(usertokenId)) {
+        if (requireUserToken && Strings.isNullOrEmpty(usertokenId)) {
             throw new NotAuthorizedException("Usertoken required");
         }
 
@@ -63,11 +63,15 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             } catch (TokenServiceClientException e) {
                 throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid");
             }
-            UibBruker bruker = uibBrukerProvider.newUibBruker(userToken);
-            if (bruker == null) {
+            if (requireUserToken && userToken == null) {
                 throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
+            } else if (userToken != null) {
+                UibBruker bruker = uibBrukerProvider.newUibBruker(userToken);
+                if (bruker == null) {
+                    throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
+                }
+                requestContext.setSecurityContext(new AutentiseringsContext(bruker));
             }
-            requestContext.setSecurityContext(new AutentiseringsContext(bruker));
         }
     }
 
