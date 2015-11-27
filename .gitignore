@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+/.idea
+/servicebuilder-iam/target
+/servicebuilder-dbcp/target
+/servicebuilder-core/target
+/servicebuilder-core/servicebuilder-core.iml
+/servicebuilder-iam/servicebuilder-iam.iml
+/servicebuilder-dbcp/servicebuilder-dbcp.iml
+/servicebuilder.iml
