@@ -39,7 +39,7 @@ public class BasicUibBruker implements UibBruker {
             for (UserRole role : userToken.getRoles()) {
                 boolean match = mapper.tilgangForUibRolle(role);
                 if (match) {
-                    allowedRolesBuilder.add(mapper.getJavaxRoleName());
+                    allowedRolesBuilder.add(mapper.getJavaxRoleName().toUpperCase());
                 }
             }
         }
@@ -54,6 +54,7 @@ public class BasicUibBruker implements UibBruker {
         return (Strings.nullToEmpty(fornavn) + " " + Strings.nullToEmpty(etternavn)).trim();
     }
 
+
     public static UibBrukerProvider provider(Iterable<UibToJavaxRole> tilgangMappers) {
         return new UibBrukerProvider() {
             final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
@@ -65,7 +66,7 @@ public class BasicUibBruker implements UibBruker {
         };
     }
 
-    public static UibBrukerProvider provider(UibToJavaxRole[] tilgangMappers) {
+    public static UibBrukerProvider provider(UibToJavaxRole ... tilgangMappers) {
         return new UibBrukerProvider() {
             final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
 
