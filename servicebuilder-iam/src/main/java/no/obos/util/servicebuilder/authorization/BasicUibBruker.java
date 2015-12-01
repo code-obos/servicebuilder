@@ -20,7 +20,7 @@ public class BasicUibBruker implements UibBruker {
     public final String adBrukernavn;
     public final ImmutableSet<String> tilganger;
 
-    public BasicUibBruker(UserToken userToken, ImmutableList<Tilgangsregel> tilganger) {
+    public BasicUibBruker(UserToken userToken, ImmutableList<UibToJavaxRole> tilganger) {
         this.personid = userToken.getPersonid();
         this.fornavn = userToken.getFornavn();
         this.etternavn = userToken.getEtternavn();
@@ -35,11 +35,11 @@ public class BasicUibBruker implements UibBruker {
         }
 
         ImmutableSet.Builder<String> allowedRolesBuilder = ImmutableSet.<String>builder();
-        for (Tilgangsregel mapper : tilganger) {
+        for (UibToJavaxRole mapper : tilganger) {
             for (UserRole role : userToken.getRoles()) {
-                String allowedRole = mapper.tilgangForUibRolle(role);
-                if (allowedRole != null) {
-                    allowedRolesBuilder.add(allowedRole.toUpperCase());
+                boolean match = mapper.tilgangForUibRolle(role);
+                if (match) {
+                    allowedRolesBuilder.add(mapper.getJavaxRoleName());
                 }
             }
         }
@@ -54,9 +54,9 @@ public class BasicUibBruker implements UibBruker {
         return (Strings.nullToEmpty(fornavn) + " " + Strings.nullToEmpty(etternavn)).trim();
     }
 
-    public static UibBrukerProvider provider(Iterable<Tilgangsregel> tilgangMappers) {
+    public static UibBrukerProvider provider(Iterable<UibToJavaxRole> tilgangMappers) {
         return new UibBrukerProvider() {
-            final ImmutableList<Tilgangsregel> tilganger = ImmutableList.copyOf(tilgangMappers);
+            final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
 
             @Override public UibBruker newUibBruker(UserToken userToken) {
                 return new BasicUibBruker(userToken, tilganger);
@@ -65,9 +65,9 @@ public class BasicUibBruker implements UibBruker {
         };
     }
 
-    public static UibBrukerProvider provider(Tilgangsregel[] tilgangMappers) {
+    public static UibBrukerProvider provider(UibToJavaxRole[] tilgangMappers) {
         return new UibBrukerProvider() {
-            final ImmutableList<Tilgangsregel> tilganger = ImmutableList.copyOf(tilgangMappers);
+            final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
 
             @Override public UibBruker newUibBruker(UserToken userToken) {
                 return new BasicUibBruker(userToken, tilganger);
