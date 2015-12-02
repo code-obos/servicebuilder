@@ -13,24 +13,24 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
     public static final String CONFIG_KEY_TOKENSERVICE_URL = "tokenservice.url";
     public static final String CONFIG_KEY_APP_ID = "app.id";
     public static final String CONFIG_KEY_APP_SECRET = "app.secret";
-    public final Config config;
+    public final Configuration configuration;
     public final TokenServiceClient tokenServiceClient;
 
 
-    public TokenServiceAddon(Config config) {
-        this.config = config;
-        tokenServiceClient = new TokenServiceHttpClient(new WebClientImpl(config.url), config.appId, config.appSecret);
+    public TokenServiceAddon(Configuration configuration) {
+        this.configuration = configuration;
+        tokenServiceClient = new TokenServiceHttpClient(new WebClientImpl(configuration.url), configuration.appId, configuration.appSecret);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Config.ConfigBuilder configBuilder) {
+    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
         configBuilder
                 .url(appConfig.get(CONFIG_KEY_TOKENSERVICE_URL))
                 .appId(appConfig.get(CONFIG_KEY_APP_ID))
                 .appSecret(appConfig.get(CONFIG_KEY_APP_SECRET));
     }
 
-    public static Config.ConfigBuilder defaultConfig() {
-        return Config.builder();
+    public static Configuration.ConfigurationBuilder defaultConfiguration() {
+        return Configuration.builder();
     }
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
@@ -38,13 +38,13 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
     }
 
     @Override public void addToJettyServer(JettyServer jettyServer) {
-        ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + config.url, config.url);
+        ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + configuration.url, configuration.url);
     }
 
 
     @Builder
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         public final String url;
         public final String appId;
         public final String appSecret;
@@ -55,7 +55,7 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
     @AllArgsConstructor
     public static class AddonBuilder implements ServiceAddonConfig<TokenServiceAddon> {
         Configurator options;
-        Config.ConfigBuilder configBuilder;
+        Configuration.ConfigurationBuilder configBuilder;
 
         @Override
         public void addAppConfig(AppConfig appConfig) {
@@ -74,15 +74,15 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
-    public static AddonBuilder config(Configurator options) {
-        return new AddonBuilder(options, defaultConfig());
+    public static AddonBuilder configure(Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration());
     }
 
     public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfig());
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
     }
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder configBuilder);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

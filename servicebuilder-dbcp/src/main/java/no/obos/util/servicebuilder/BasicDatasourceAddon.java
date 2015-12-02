@@ -21,22 +21,22 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     public static final boolean DEFAULT_MONITOR_INTEGRATION = true;
     public static final boolean DEFAULT_BIND_QUERYRUNNER = true;
 
-    public final Config config;
+    public final Configuration configuration;
     public final BasicDataSource dataSource;
 
-    public BasicDatasourceAddon(Config config) {
+    public BasicDatasourceAddon(Configuration configuration) {
         dataSource = new BasicDataSource();
-        dataSource.setUrl(config.url);
-        dataSource.setDriverClassName(config.driverClassName);
-        dataSource.setUsername(config.username);
-        dataSource.setPassword(config.password);
+        dataSource.setUrl(configuration.url);
+        dataSource.setDriverClassName(configuration.driverClassName);
+        dataSource.setUsername(configuration.username);
+        dataSource.setPassword(configuration.password);
 
-        this.config = config;
+        this.configuration = configuration;
     }
 
     @Builder
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         public final String url;
         public final String driverClassName;
         public final String username;
@@ -46,13 +46,13 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         public final boolean bindQueryRunner;
     }
 
-    public static Config.ConfigBuilder defaultConfig() {
-        return Config.builder()
+    public static Configuration.ConfigurationBuilder defaultConfiguration() {
+        return Configuration.builder()
                 .monitorIntegration(DEFAULT_MONITOR_INTEGRATION)
                 .bindQueryRunner(DEFAULT_BIND_QUERYRUNNER);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Config.ConfigBuilder configBuilder) {
+    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
         appConfig.failIfNotPresent(CONFIG_KEY_DB_URL, CONFIG_KEY_DB_USERNAME, CONFIG_KEY_DB_PASSWORD, CONFIG_KEY_DB_DRIVER_CLASS_NAME, CONFIG_KEY_DB_VALIDATION_QUERY);
         configBuilder
                 .url(appConfig.get(CONFIG_KEY_DB_URL))
@@ -68,7 +68,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     binder.bind(dataSource).to(DataSource.class);
-                    if (config.bindQueryRunner) {
+                    if (configuration.bindQueryRunner) {
                         QueryRunner queryRunner = new QueryRunner(dataSource);
                         binder.bind(queryRunner).to(QueryRunner.class);
                     }
@@ -77,8 +77,8 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     }
 
     @Override public void addToJettyServer(JettyServer jettyServer) {
-        if (config.monitorIntegration) {
-            ObosHealthCheckRegistry.registerDataSourceCheck("Database: " + config.url, dataSource, config.validationQuery);
+        if (configuration.monitorIntegration) {
+            ObosHealthCheckRegistry.registerDataSourceCheck("Database: " + configuration.url, dataSource, configuration.validationQuery);
         }
     }
 
@@ -88,7 +88,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     @AllArgsConstructor
     public static class AddonBuilder implements ServiceAddonConfig<BasicDatasourceAddon> {
         Configurator options;
-        Config.ConfigBuilder configBuilder;
+        Configuration.ConfigurationBuilder configBuilder;
 
         @Override
         public void addAppConfig(AppConfig appConfig) {
@@ -107,15 +107,15 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
-    public static AddonBuilder config(Configurator options) {
-        return new AddonBuilder(options, defaultConfig());
+    public static AddonBuilder configure(Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration());
     }
 
     public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfig());
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
     }
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder configBuilder);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

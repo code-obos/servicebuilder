@@ -20,22 +20,22 @@ public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
     public static final ImmutableList<String> DEFAULT_WHITELIST = ImmutableList.of("/swagger.json");
     public static final boolean DEFAULT_REQUIRE_USERTOKEN = true;
 
-    public final Config config;
+    public final Configuration configuration;
 
-    public static Config.ConfigBuilder defaultConfig(UibBrukerProvider uibBrukerProvider) {
-        return Config.builder()
+    public static Configuration.ConfigurationBuilder defaultConfiguration(UibBrukerProvider uibBrukerProvider) {
+        return Configuration.builder()
                 .whitelist(DEFAULT_WHITELIST)
                 .requireUserToken(DEFAULT_REQUIRE_USERTOKEN)
                 .uibBrukerProvider(uibBrukerProvider);
     }
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        String[] whitelistArray = config.whitelist.toArray(new String[] {});
+        String[] whitelistArray = configuration.whitelist.toArray(new String[] {});
 
         jerseyConfig.addBinder(binder -> {
                     binder.bind(whitelistArray).to(String[].class).named(BIND_NAME_WHITELIST);
-                    binder.bind(config.requireUserToken).to(Boolean.class).named(BIND_NAME_DEFAULT_REQUIRE_USERTOKEN);
-                    binder.bind(config.uibBrukerProvider).to(UibBrukerProvider.class);
+                    binder.bind(configuration.requireUserToken).to(Boolean.class).named(BIND_NAME_DEFAULT_REQUIRE_USERTOKEN);
+                    binder.bind(configuration.uibBrukerProvider).to(UibBrukerProvider.class);
                 }
         );
         jerseyConfig.addRegistations(registrator -> registrator
@@ -47,7 +47,7 @@ public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
 
     @Builder
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         @Singular("whitelisted")
         public final ImmutableList<String> whitelist;
         public final boolean requireUserToken;
@@ -60,7 +60,7 @@ public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
     @AllArgsConstructor
     public static class AddonBuilder implements ServiceAddonConfig<AuthorizationFilterAddon> {
         Configurator options;
-        Config.ConfigBuilder configBuilder;
+        Configuration.ConfigurationBuilder configBuilder;
 
         @Override
         public void addAppConfig(AppConfig appConfig) {
@@ -79,15 +79,15 @@ public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
-    public static AddonBuilder config(UibBrukerProvider uibBrukerProvider, Configurator options) {
-        return new AddonBuilder(options, defaultConfig(uibBrukerProvider));
+    public static AddonBuilder configure(UibBrukerProvider uibBrukerProvider, Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration(uibBrukerProvider));
     }
 
     public static AddonBuilder defaults(UibBrukerProvider uibBrukerProvider) {
-        return new AddonBuilder(cfg -> cfg, defaultConfig(uibBrukerProvider));
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration(uibBrukerProvider));
     }
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder configBuilder);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

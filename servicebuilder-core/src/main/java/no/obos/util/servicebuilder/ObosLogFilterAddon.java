@@ -16,29 +16,29 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
     public static final ImmutableList<String> DEFAULT_BLACKLIST = ImmutableList.of("/swagger.json");
     public static final ImmutableList<DispatcherType> DEFAULT_DISPATCHES = ImmutableList.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
 
-    public final Config config;
+    public final Configuration configuration;
 
     @Override public void addToJettyServer(JettyServer jettyServer) {
         ObosLogFilter logFilter = new ObosLogFilter(path -> {
-            for (String blocked : config.blacklist) {
+            for (String blocked : configuration.blacklist) {
                 if (blocked.equalsIgnoreCase(path)) {
                     return false;
                 }
             }
             return true;
         });
-        String pathSpeckToUse = config.pathSpec;
-        if (config.pathSpec == null) {
-            pathSpeckToUse = jettyServer.config.apiPathSpec;
+        String pathSpeckToUse = configuration.pathSpec;
+        if (configuration.pathSpec == null) {
+            pathSpeckToUse = jettyServer.configuration.apiPathSpec;
         }
         FilterHolder logFilterHolder = new FilterHolder(logFilter);
         jettyServer.getServletContext()
-                .addFilter(logFilterHolder, pathSpeckToUse, EnumSet.copyOf(config.dispatches));
+                .addFilter(logFilterHolder, pathSpeckToUse, EnumSet.copyOf(configuration.dispatches));
     }
 
     @Builder
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         @Singular("dispatch")
         public final ImmutableList<DispatcherType> dispatches;
         String pathSpec = null;
@@ -47,8 +47,8 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
 
     }
 
-    public static Config.ConfigBuilder defaultConfig() {
-        return Config.builder()
+    public static Configuration.ConfigurationBuilder defaultConfiguration() {
+        return Configuration.builder()
                 .blacklist(DEFAULT_BLACKLIST)
                 .dispatches(DEFAULT_DISPATCHES);
     }
@@ -57,7 +57,7 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
     @AllArgsConstructor
     public static class AddonBuilder implements ServiceAddonConfig<ObosLogFilterAddon> {
         Configurator options;
-        Config.ConfigBuilder configBuilder;
+        Configuration.ConfigurationBuilder configBuilder;
 
         @Override
         public void addAppConfig(AppConfig appConfig) {
@@ -76,15 +76,15 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
-    public static AddonBuilder config(Configurator options) {
-        return new AddonBuilder(options, defaultConfig());
+    public static AddonBuilder configure(Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration());
     }
 
     public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfig());
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
     }
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder configBuilder);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

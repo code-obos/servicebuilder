@@ -29,30 +29,30 @@ public class ServiceBuilder {
     JerseyConfig jerseyConfig;
 
     @Getter
-    public final Config config;
+    public final Configuration configuration;
 
-    ServiceBuilder(AppConfig appConfig, Config config) {
+    ServiceBuilder(AppConfig appConfig, Configuration configuration) {
         this.appConfig = appConfig;
-        this.config = config;
+        this.configuration = configuration;
     }
 
-    public static ServiceBuilder config(Configurator customConfiguration) {
-        Config.ConfigBuilder builder = Config.defaultBuilder();
-        Config config = customConfiguration.apply(builder).build();
+    public static ServiceBuilder configure(Configurator customConfiguration) {
+        Configuration.ConfigurationBuilder builder = Configuration.defaultBuilder();
+        Configuration configuration = customConfiguration.apply(builder).build();
         AppConfig appConfig = null;
-        if (config.appConfigFromJvmArg) {
+        if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
         }
-        return new ServiceBuilder(appConfig, config);
+        return new ServiceBuilder(appConfig, configuration);
     }
 
     public static ServiceBuilder defaults() {
-        Config config = Config.defaultBuilder().build();
+        Configuration configuration = Configuration.defaultBuilder().build();
         AppConfig appConfig = null;
-        if (config.appConfigFromJvmArg) {
+        if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
         }
-        return new ServiceBuilder(appConfig, config);
+        return new ServiceBuilder(appConfig, configuration);
     }
 
     public ServiceBuilder configJersey(JerseyConfig.Configurator configurator) {
@@ -66,13 +66,13 @@ public class ServiceBuilder {
 
     public ServiceBuilder configJettyServer(JettyServer.Configurator configurator) {
         Preconditions.checkNotNull(jerseyConfig);
-        JettyServer.Config jettyConfig;
+        JettyServer.Configuration jettyConfiguration;
         if (appConfig != null) {
-            jettyConfig = configurator.apply(JettyServer.Config.fromAppConfig(appConfig)).build();
+            jettyConfiguration = configurator.apply(JettyServer.Configuration.fromAppConfig(appConfig)).build();
         } else {
-            jettyConfig = configurator.apply(JettyServer.Config.defaultBuilder()).build();
+            jettyConfiguration = configurator.apply(JettyServer.Configuration.defaultBuilder()).build();
         }
-        this.jettyServer = new JettyServer(jettyConfig, jerseyConfig);
+        this.jettyServer = new JettyServer(jettyConfiguration, jerseyConfig);
         return this;
     }
 
@@ -143,13 +143,13 @@ public class ServiceBuilder {
 
     @Builder
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         final boolean julLoggingIntegration;
         final boolean readProxyFromConfig;
         final boolean appConfigFromJvmArg;
 
-        public static ConfigBuilder defaultBuilder() {
-            return Config.builder()
+        public static ConfigurationBuilder defaultBuilder() {
+            return Configuration.builder()
                     .julLoggingIntegration(DEFAULT_MONITOR_INTEGRATION)
                     .readProxyFromConfig(DEFAULT_READ_PROXY_FROM_CONFIG)
                     .appConfigFromJvmArg(DEFAULT_APPCONFIG_FROM_JVM_ARG);
@@ -158,7 +158,7 @@ public class ServiceBuilder {
 
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder cfg);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);
     }
 
 }

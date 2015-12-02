@@ -27,7 +27,7 @@ public class ServiceBuilderDocumentationTest {
     public void customization_is_done_through_interfaces_and_uses_chaining_pattern() {
         class ServiceBuilderConfigurator implements ServiceBuilder.Configurator {
 
-            @Override public ServiceBuilder.Config.ConfigBuilder apply(ServiceBuilder.Config.ConfigBuilder cfg) {
+            @Override public ServiceBuilder.Configuration.ConfigurationBuilder apply(ServiceBuilder.Configuration.ConfigurationBuilder cfg) {
                 cfg.appConfigFromJvmArg(false);
                 cfg.julLoggingIntegration(true);
 
@@ -41,7 +41,7 @@ public class ServiceBuilderDocumentationTest {
             }
         }
         ServiceBuilder
-                .config(new ServiceBuilderConfigurator());
+                .configure(new ServiceBuilderConfigurator());
     }
 
     @Test

@@ -132,11 +132,11 @@ public class JerseyConfigDocumentationTest {
 
     @Test
     public void addons_can_be_added_to_jerseyconfig_without_servicebuilder_for_testing_purposes() {
-        SwaggerAddon.Config.ConfigBuilder addonConfigBuilder = SwaggerAddon.defaultConfig();
-        SwaggerAddon.Config config = addonConfigBuilder
+        SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
+        SwaggerAddon.Configuration configuration = addonConfigurationBuilder
                 .apiVersion("quite some version")
                 .build();
-        SwaggerAddon addon = new SwaggerAddon(config);
+        SwaggerAddon addon = new SwaggerAddon(configuration);
         serviceBuilderWithDefaults.configJersey(JerseyConfig.defaults());
         serviceBuilderWithDefaults.getJerseyConfig().with(addon);
 

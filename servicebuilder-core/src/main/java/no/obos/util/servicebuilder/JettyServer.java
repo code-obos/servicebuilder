@@ -25,18 +25,18 @@ public final class JettyServer {
     @Getter
     final JerseyConfig resourceConfig;
     @Getter
-    final Config config;
+    final Configuration configuration;
 
-    JettyServer(Config config, JerseyConfig resourceConfig) {
+    JettyServer(Configuration configuration, JerseyConfig resourceConfig) {
         this.resourceConfig = resourceConfig;
-        this.config = config;
-        server = new Server(InetSocketAddress.createUnresolved(config.bindAddress, config.bindPort));
-        servletContext = new ServletContextHandler(server, config.contextPath);
+        this.configuration = configuration;
+        server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
+        servletContext = new ServletContextHandler(server, configuration.contextPath);
     }
 
     public JettyServer start() throws Exception {
         ServletHolder servletHolder = new ServletHolder(new ServletContainer(resourceConfig.getResourceConfig()));
-        servletContext.addServlet(servletHolder, config.apiPathSpec);
+        servletContext.addServlet(servletHolder, configuration.apiPathSpec);
         server.start();
         return this;
     }
@@ -62,19 +62,19 @@ public final class JettyServer {
     @Builder
     @Getter
     @AllArgsConstructor
-    public static class Config {
+    public static class Configuration {
         final String apiPathSpec;
         final String bindAddress;
         final String contextPath;
         final int bindPort;
 
-        public static ConfigBuilder defaultBuilder() {
-            return Config.builder()
+        public static ConfigurationBuilder defaultBuilder() {
+            return Configuration.builder()
                     .apiPathSpec(DEFAULT_API_PATH_SPEC)
                     .bindAddress(DEFAULT_BIND_ADDRESS);
         }
 
-        public static ConfigBuilder fromAppConfig(AppConfig appConfig) {
+        public static ConfigurationBuilder fromAppConfig(AppConfig appConfig) {
             appConfig.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
             return defaultBuilder()
                     .contextPath(appConfig.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
@@ -83,6 +83,6 @@ public final class JettyServer {
     }
 
     public interface Configurator {
-        Config.ConfigBuilder apply(Config.ConfigBuilder cfg);
+        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);
     }
 }

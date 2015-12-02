@@ -32,14 +32,14 @@ public class AddonDocumentationTest {
     @Test
     public void standard_way_of_adding_addon_with_configuration() {
         SwaggerAddon basicDatasourceAddon = serviceBuilderWithDefaults
-                .newAddon(SwaggerAddon.config(cfg -> cfg
+                .newAddon(SwaggerAddon.configure(cfg -> cfg
                         .apiBasePath("quite some basepath")
                         .apiVersion("quite some version")
                 ));
         serviceBuilderWithDefaults.with(basicDatasourceAddon);
         //or
         serviceBuilderWithDefaults
-                .with(SwaggerAddon.config(cfg -> cfg
+                .with(SwaggerAddon.configure(cfg -> cfg
                         .apiBasePath("quite some basepath")
                         .apiVersion("quite some version")
                 ));
@@ -51,29 +51,29 @@ public class AddonDocumentationTest {
         String parameterFromConfig = serviceBuilderWithDefaults.getAppConfig().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
         SwaggerAddon basicDatasourceAddon = serviceBuilderWithDefaults
                 .newAddon(SwaggerAddon.defaults());
-        assertEquals(parameterFromConfig, basicDatasourceAddon.config.apiBasePath);
+        assertEquals(parameterFromConfig, basicDatasourceAddon.configuration.apiBasePath);
     }
 
     @Test
     public void addons_should_expose_default_configuration_options() {
-        SwaggerAddon.Config config = SwaggerAddon.defaultConfig().build();
-        assertEquals(SwaggerAddon.DEFAULT_API_VERSION, config.apiVersion);
-        assertEquals(SwaggerAddon.DEFAULT_PATH_SPEC, config.pathSpec);
+        SwaggerAddon.Configuration configuration = SwaggerAddon.defaultConfiguration().build();
+        assertEquals(SwaggerAddon.DEFAULT_API_VERSION, configuration.apiVersion);
+        assertEquals(SwaggerAddon.DEFAULT_PATH_SPEC, configuration.pathSpec);
     }
 
 
     @Test
     public void addons_may_retreive_config_from_properties() {
-        SwaggerAddon.Config.ConfigBuilder addonConfigBuilder = SwaggerAddon.defaultConfig();
+        SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
 
-        SwaggerAddon.configFromAppConfig(serviceBuilderWithDefaults.getAppConfig(), addonConfigBuilder);
+        SwaggerAddon.configFromAppConfig(serviceBuilderWithDefaults.getAppConfig(), addonConfigurationBuilder);
     }
 
     @Test
     public void addons_may_retreive_config_environment_for_example_server_ports() {
-        SwaggerAddon.Config.ConfigBuilder addonConfigBuilder = SwaggerAddon.defaultConfig();
+        SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
 
-        SwaggerAddon.configFromContext(serviceBuilderWithDefaults, addonConfigBuilder);
+        SwaggerAddon.configFromContext(serviceBuilderWithDefaults, addonConfigurationBuilder);
     }
 
     @Test
@@ -81,21 +81,21 @@ public class AddonDocumentationTest {
         String parameterFromUser = "quite some basepath";
         String parameterFromConfig = serviceBuilderWithDefaults.getAppConfig().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
         SwaggerAddon basicDatasourceAddon = serviceBuilderWithDefaults
-                .newAddon(SwaggerAddon.config(cfg -> cfg
+                .newAddon(SwaggerAddon.configure(cfg -> cfg
                         .apiBasePath(parameterFromUser)
                 ));
 
-        assertEquals(parameterFromUser, basicDatasourceAddon.config.apiBasePath);
+        assertEquals(parameterFromUser, basicDatasourceAddon.configuration.apiBasePath);
     }
 
 
     @Test
     public void addons_may_be_manually_configured_but_should_only_be_for_test_use() {
-        SwaggerAddon.Config.ConfigBuilder addonConfigBuilder = SwaggerAddon.defaultConfig();
-        SwaggerAddon.Config config = addonConfigBuilder
+        SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
+        SwaggerAddon.Configuration configuration = addonConfigurationBuilder
                 .apiVersion("quite some version")
                 .build();
-        SwaggerAddon addon = new SwaggerAddon(config);
+        SwaggerAddon addon = new SwaggerAddon(configuration);
         serviceBuilderWithDefaults.with(addon);
     }
 
