@@ -37,6 +37,7 @@ public class ServiceBuilderDocumentationTest {
                         .appConfigFromJvmArg(false)
                         .julLoggingIntegration(true);
 
+
                 return cfg;
             }
         }
