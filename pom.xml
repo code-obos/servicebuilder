@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>1.0</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <prerequisites>
@@ -21,7 +21,7 @@
 
     <properties>
 
-        <servicebuilder.version>1.0</servicebuilder.version>
+        <servicebuilder.version>1.0.0</servicebuilder.version>
 
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
