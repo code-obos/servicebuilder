@@ -4,7 +4,7 @@
     <parent>
         <groupId>no.obos.util</groupId>
         <artifactId>servicebuilder</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
     </parent>
 
     <dependencies>
@@ -54,7 +54,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

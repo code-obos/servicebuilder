@@ -3,8 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <packaging>pom</packaging>
+
+    <parent>
+        <groupId>no.obos.common</groupId>
+        <artifactId>obos-common-pom</artifactId>
+        <version>2.0.2</version>
+    </parent>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -17,135 +23,4 @@
         <module>servicebuilder-iam</module>
         <module>servicebuilder-dbcp</module>
     </modules>
-
-
-    <properties>
-
-        <servicebuilder.version>1.0.0</servicebuilder.version>
-
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-        <jersey.version>2.22.1</jersey.version>
-        <jetty.version>9.3.5.v20151012</jetty.version>
-        <slf4j.version>1.7.12</slf4j.version>
-        <swagger.version>1.5.4</swagger.version>
-
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-
-            <dependency>
-                <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-core</artifactId>
-                <version>${servicebuilder.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-iam</artifactId>
-                <version>${servicebuilder.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-dbcp</artifactId>
-                <version>${servicebuilder.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.obos.util</groupId>
-                <artifactId>utilWebService</artifactId>
-                <version>1.8.2</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>1.16.6</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jul-to-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-servlet</artifactId>
-                <version>${jetty.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-client</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.containers</groupId>
-                <artifactId>jersey-container-servlet-core</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.obos.metrics</groupId>
-                <artifactId>obos-metrics-servlet</artifactId>
-                <version>2.7.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-jersey2-jaxrs</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-dbcp2</artifactId>
-                <version>2.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>commons-dbutils</groupId>
-                <artifactId>commons-dbutils</artifactId>
-                <version>1.6</version>
-            </dependency>
-
-            <dependency>
-                <groupId>no.obos.iam</groupId>
-                <artifactId>obos-iam-client-core</artifactId>
-                <version>2.4.2</version>
-            </dependency>
-            <dependency>
-                <groupId>no.obos.iam</groupId>
-                <artifactId>obos-iam-client-jersey2</artifactId>
-                <version>2.4.2</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
