@@ -77,8 +77,8 @@ public final class JettyServer {
         public static ConfigurationBuilder fromAppConfig(AppConfig appConfig) {
             appConfig.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
             return defaultBuilder()
-                    .contextPath(appConfig.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
-                    .bindPort(Integer.parseInt(appConfig.get(CONFIG_KEY_SERVER_PORT)));
+                    .contextPath(appConfig.getWithExpandedProperties(CONFIG_KEY_SERVER_CONTEXT_PATH))
+                    .bindPort(Integer.parseInt(appConfig.getWithExpandedProperties(CONFIG_KEY_SERVER_PORT)));
         }
     }
 

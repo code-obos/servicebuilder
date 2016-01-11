@@ -12,20 +12,20 @@ import org.eclipse.jetty.servlet.ServletHolder;
 public class SwaggerAddon extends ServiceAddonEmptyDefaults {
 
     public static final String DEFAULT_PATH_SPEC = "/swagger";
-    public static final String DEFAULT_API_VERSION = "1.0";
     public static final String CONFIG_KEY_API_BASEURL = "api.baseurl";
+    public static final String CONFIG_KEY_API_VERSION = "api.version";
 
     public final Configuration configuration;
 
     public static Configuration.ConfigurationBuilder defaultConfiguration() {
         return Configuration.builder()
-                .pathSpec(DEFAULT_PATH_SPEC)
-                .apiVersion(DEFAULT_API_VERSION);
+                .pathSpec(DEFAULT_PATH_SPEC);
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL);
-        configBuilder.apiBasePath(appConfig.get(CONFIG_KEY_API_BASEURL));
+        appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL, CONFIG_KEY_API_VERSION);
+        configBuilder.apiBasePath(appConfig.getWithExpandedProperties(CONFIG_KEY_API_BASEURL));
+        configBuilder.apiVersion(appConfig.getWithExpandedProperties(CONFIG_KEY_API_VERSION));
     }
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
