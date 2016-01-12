@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder.exception;
 import no.obos.util.model.ProblemResponse;
 
 import javax.ws.rs.core.Response;
+import java.util.Map;
 import java.util.UUID;
 
 final public class ExceptionUtil {
@@ -27,5 +28,16 @@ final public class ExceptionUtil {
     public static Response buildProblemResponse(int status, String msg, String feilreferanse, String errorTitle) {
         ProblemResponse problemResponse = new ProblemResponse(errorTitle, msg, status, feilreferanse);
         return Response.status(status).type(ExceptionUtil.APPLICATION_PROBLEM_JSON).entity(problemResponse).build();
+    }
+
+    public static boolean shouldPrintStacktrace(Throwable throwable, Map<Class<?>, Boolean> config) {
+        Class<?> clazz = throwable.getClass();
+        while (clazz.getSuperclass() != null && ! Throwable.class.equals(clazz.getSuperclass())) {
+            if (config.containsKey(clazz)) {
+                return config.get(clazz) == Boolean.TRUE;
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return true;
     }
 }

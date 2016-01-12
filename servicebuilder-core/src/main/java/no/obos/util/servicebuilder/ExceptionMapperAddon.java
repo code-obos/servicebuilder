@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.config.AppConfig;
@@ -9,14 +10,20 @@ import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
 import no.obos.util.servicebuilder.exception.ValidationExceptionMapper;
 import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
 
+import javax.ws.rs.NotFoundException;
+
 @AllArgsConstructor
 public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
 
-    private static final boolean DEFAULT_MAP_FIELD_LEVEL_VALIDATION = true;
-    private static final boolean DEFAULT_MAP_JSON_PROCESSING = true;
-    private static final boolean DEFAULT_MAP_RUNTIME = true;
-    private static final boolean DEFAULT_MAP_VALIDATION = true;
-    private static final boolean DEFAULT_MAP_WEB_APPLICATION = true;
+    public static final boolean DEFAULT_MAP_FIELD_LEVEL_VALIDATION = true;
+    public static final boolean DEFAULT_MAP_JSON_PROCESSING = true;
+    public static final boolean DEFAULT_MAP_RUNTIME = true;
+    public static final boolean DEFAULT_MAP_VALIDATION = true;
+    public static final boolean DEFAULT_MAP_WEB_APPLICATION = true;
+    public static final ImmutableMap<Class<?>, Boolean> DEFAULT_STACKTRACE_CONFIG = ImmutableMap.<Class<?>, Boolean>builder()
+            .put(Throwable.class, true)
+            .put(NotFoundException.class, false)
+            .build();
 
     public final Configuration configuration;
 
@@ -26,7 +33,9 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
                 .mapJsonProcessing(DEFAULT_MAP_JSON_PROCESSING)
                 .mapRuntime(DEFAULT_MAP_RUNTIME)
                 .mapValidation(DEFAULT_MAP_VALIDATION)
-                .mapWebApplication(DEFAULT_MAP_WEB_APPLICATION);
+                .mapWebApplication(DEFAULT_MAP_WEB_APPLICATION)
+                .stacktraceConfig(DEFAULT_STACKTRACE_CONFIG)
+                ;
 
     }
 
@@ -35,19 +44,19 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         jerseyConfig.addRegistations(registrator -> {
 
             if (configuration.mapFieldLevelValidation) {
-                registrator.register(FieldLevelExceptionMapper.class);
+                registrator.register(new FieldLevelExceptionMapper(configuration.stacktraceConfig));
             }
             if (configuration.mapJsonProcessing) {
-                registrator.register(JsonProcessingExceptionMapper.class);
+                registrator.register(new JsonProcessingExceptionMapper(configuration.stacktraceConfig));
             }
             if (configuration.mapRuntime) {
-                registrator.register(RuntimeExceptionMapper.class);
+                registrator.register(new RuntimeExceptionMapper(configuration.stacktraceConfig));
             }
             if (configuration.mapValidation) {
-                registrator.register(ValidationExceptionMapper.class);
+                registrator.register(new ValidationExceptionMapper(configuration.stacktraceConfig));
             }
             if (configuration.mapWebApplication) {
-                registrator.register(WebApplicationExceptionMapper.class);
+                registrator.register(new WebApplicationExceptionMapper(configuration.stacktraceConfig));
             }
         });
     }
@@ -60,6 +69,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         private final boolean mapRuntime;
         private final boolean mapValidation;
         private final boolean mapWebApplication;
+        private final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
     }
 
 
