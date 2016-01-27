@@ -1,12 +1,17 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import no.obos.util.config.AppConfig;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import java.net.InetSocketAddress;
@@ -23,6 +28,9 @@ public final class JettyServer {
     @Getter
     final ServletContextHandler servletContext;
     @Getter
+    @Setter
+    WebAppContext webAppContext = null;
+    @Getter
     final JerseyConfig resourceConfig;
     @Getter
     final Configuration configuration;
@@ -37,6 +45,12 @@ public final class JettyServer {
     public JettyServer start() throws Exception {
         ServletHolder servletHolder = new ServletHolder(new ServletContainer(resourceConfig.getResourceConfig()));
         servletContext.addServlet(servletHolder, configuration.apiPathSpec);
+        ContextHandlerCollection contexts = new ContextHandlerCollection();
+        Handler[] handlers = Lists.newArrayList(servletContext, webAppContext)
+                .stream().filter(it -> it != null).toArray(Handler[]::new);
+        contexts.setHandlers(handlers);
+
+        server.setHandler(contexts);
         server.start();
         return this;
     }
@@ -59,6 +73,10 @@ public final class JettyServer {
         return cfg -> cfg;
     }
 
+    public void addAppContext(WebAppContext webAppContext) {
+        this.webAppContext = webAppContext;
+    }
+
     @Builder
     @Getter
     @AllArgsConstructor
@@ -77,10 +95,11 @@ public final class JettyServer {
         public static ConfigurationBuilder fromAppConfig(AppConfig appConfig) {
             appConfig.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
             return defaultBuilder()
-                    .contextPath(appConfig.getWithExpandedProperties(CONFIG_KEY_SERVER_CONTEXT_PATH))
-                    .bindPort(Integer.parseInt(appConfig.getWithExpandedProperties(CONFIG_KEY_SERVER_PORT)));
+                    .contextPath(appConfig.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
+                    .bindPort(Integer.parseInt(appConfig.get(CONFIG_KEY_SERVER_PORT)));
         }
     }
+
 
     public interface Configurator {
         Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);

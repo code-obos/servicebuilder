@@ -108,7 +108,7 @@ public class ServiceBuilder {
 
         if (readProxyFromConfig) {
             appConfig.failIfNotPresent(CONFIG_KEY_PROXY);
-            if ("true".equals(appConfig.getWithExpandedProperties("proxy"))) {
+            if ("true".equals(appConfig.get("proxy"))) {
                 System.getProperties().put("https.proxyHost", "obosproxy.obos.no");
                 System.getProperties().put("https.proxyPort", "8080");
                 System.getProperties().put("https.proxyUser", "utvadm");

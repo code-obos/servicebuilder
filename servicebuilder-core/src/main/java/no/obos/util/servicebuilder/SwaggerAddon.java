@@ -24,8 +24,8 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
         appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL, CONFIG_KEY_API_VERSION);
-        configBuilder.apiBasePath(appConfig.getWithExpandedProperties(CONFIG_KEY_API_BASEURL));
-        configBuilder.apiVersion(appConfig.getWithExpandedProperties(CONFIG_KEY_API_VERSION));
+        configBuilder.apiBasePath(appConfig.get(CONFIG_KEY_API_BASEURL));
+        configBuilder.apiVersion(appConfig.get(CONFIG_KEY_API_VERSION));
     }
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {

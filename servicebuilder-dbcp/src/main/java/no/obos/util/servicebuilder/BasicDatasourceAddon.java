@@ -55,11 +55,11 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
         appConfig.failIfNotPresent(CONFIG_KEY_DB_URL, CONFIG_KEY_DB_USERNAME, CONFIG_KEY_DB_PASSWORD, CONFIG_KEY_DB_DRIVER_CLASS_NAME, CONFIG_KEY_DB_VALIDATION_QUERY);
         configBuilder
-                .url(appConfig.getWithExpandedProperties(CONFIG_KEY_DB_URL))
-                .username(appConfig.getWithExpandedProperties(CONFIG_KEY_DB_USERNAME))
-                .password(appConfig.getWithExpandedProperties(CONFIG_KEY_DB_PASSWORD))
-                .driverClassName(appConfig.getWithExpandedProperties(CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .validationQuery(appConfig.getWithExpandedProperties(CONFIG_KEY_DB_VALIDATION_QUERY));
+                .url(appConfig.get(CONFIG_KEY_DB_URL))
+                .username(appConfig.get(CONFIG_KEY_DB_USERNAME))
+                .password(appConfig.get(CONFIG_KEY_DB_PASSWORD))
+                .driverClassName(appConfig.get(CONFIG_KEY_DB_DRIVER_CLASS_NAME))
+                .validationQuery(appConfig.get(CONFIG_KEY_DB_VALIDATION_QUERY));
 
     }
 
