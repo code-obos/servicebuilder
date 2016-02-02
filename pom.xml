@@ -9,11 +9,11 @@
     <parent>
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>2.0.6</version>
+        <version>2.0.7</version>
     </parent>
 
     <properties>
-    <servicebuilder.version.internal>1.0.7-SNAPSHOT</servicebuilder.version.internal>
+    <servicebuilder.version.internal>1.0.7</servicebuilder.version.internal>
     </properties>
 
     <prerequisites>
