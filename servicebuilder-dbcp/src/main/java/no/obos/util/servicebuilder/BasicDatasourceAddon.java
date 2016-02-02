@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.metrics.ObosHealthCheckRegistry;
@@ -37,6 +38,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     @Builder
     @AllArgsConstructor
     public static class Configuration {
+        public final String name;
         public final String url;
         public final String driverClassName;
         public final String username;
@@ -53,13 +55,15 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_DB_URL, CONFIG_KEY_DB_USERNAME, CONFIG_KEY_DB_PASSWORD, CONFIG_KEY_DB_DRIVER_CLASS_NAME, CONFIG_KEY_DB_VALIDATION_QUERY);
+        String name = configBuilder.build().name;
+        String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
+        appConfig.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         configBuilder
-                .url(appConfig.get(CONFIG_KEY_DB_URL))
-                .username(appConfig.get(CONFIG_KEY_DB_USERNAME))
-                .password(appConfig.get(CONFIG_KEY_DB_PASSWORD))
-                .driverClassName(appConfig.get(CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .validationQuery(appConfig.get(CONFIG_KEY_DB_VALIDATION_QUERY));
+                .url(appConfig.get(prefix + CONFIG_KEY_DB_URL))
+                .username(appConfig.get(prefix + CONFIG_KEY_DB_USERNAME))
+                .password(appConfig.get(prefix + CONFIG_KEY_DB_PASSWORD))
+                .driverClassName(appConfig.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
+                .validationQuery(appConfig.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
 
     }
 
@@ -70,7 +74,11 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
                     binder.bind(dataSource).to(DataSource.class);
                     if (configuration.bindQueryRunner) {
                         QueryRunner queryRunner = new QueryRunner(dataSource);
-                        binder.bind(queryRunner).to(QueryRunner.class);
+                        if (Strings.isNullOrEmpty(configuration.name)) {
+                            binder.bind(queryRunner).to(QueryRunner.class);
+                        } else {
+                            binder.bind(queryRunner).named(configuration.name).to(QueryRunner.class);
+                        }
                     }
                 }
         );
@@ -78,11 +86,18 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     @Override public void addToJettyServer(JettyServer jettyServer) {
         if (configuration.monitorIntegration) {
-            ObosHealthCheckRegistry.registerDataSourceCheck("Database: " + configuration.url, dataSource, configuration.validationQuery);
+            String dataSourceName = Strings.isNullOrEmpty(configuration.name) ? "" : " (" + configuration.name + ")";
+            ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + configuration.url, dataSource, configuration.validationQuery);
         }
     }
 
+    public static AddonBuilder configure(String name, Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration().name(name));
+    }
 
+    public static AddonBuilder defaults(String name) {
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration().name(name));
+    }
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
     @AllArgsConstructor
