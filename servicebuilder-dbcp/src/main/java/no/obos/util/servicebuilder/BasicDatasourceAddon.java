@@ -9,6 +9,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 
 
 public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
@@ -24,6 +25,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     public final Configuration configuration;
     public final BasicDataSource dataSource;
+    public final Optional<QueryRunner> queryRunner;
 
     public BasicDatasourceAddon(Configuration configuration) {
         dataSource = new BasicDataSource();
@@ -32,13 +34,20 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         dataSource.setUsername(configuration.username);
         dataSource.setPassword(configuration.password);
 
+
+        if (configuration.bindQueryRunner) {
+            queryRunner = Optional.of(new QueryRunner(dataSource));
+        } else {
+            queryRunner = Optional.empty();
+        }
+
         this.configuration = configuration;
     }
 
     @Builder
     @AllArgsConstructor
     public static class Configuration {
-        public final String name;
+        public final Optional<String> name;
         public final String url;
         public final String driverClassName;
         public final String username;
@@ -55,7 +64,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        String name = configBuilder.build().name;
+        String name = configBuilder.build().name.orElse(null);
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
         appConfig.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         configBuilder
@@ -71,13 +80,17 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
-                    binder.bind(dataSource).to(DataSource.class);
+                    if (! configuration.name.isPresent()) {
+                        binder.bind(dataSource).named(configuration.name.get()).to(DataSource.class);
+                    } else {
+                        binder.bind(dataSource).to(DataSource.class);
+                    }
                     if (configuration.bindQueryRunner) {
                         QueryRunner queryRunner = new QueryRunner(dataSource);
-                        if (Strings.isNullOrEmpty(configuration.name)) {
+                        if (! configuration.name.isPresent()) {
                             binder.bind(queryRunner).to(QueryRunner.class);
                         } else {
-                            binder.bind(queryRunner).named(configuration.name).to(QueryRunner.class);
+                            binder.bind(queryRunner).named(configuration.name.get()).to(QueryRunner.class);
                         }
                     }
                 }
@@ -86,17 +99,17 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     @Override public void addToJettyServer(JettyServer jettyServer) {
         if (configuration.monitorIntegration) {
-            String dataSourceName = Strings.isNullOrEmpty(configuration.name) ? "" : " (" + configuration.name + ")";
+            String dataSourceName = configuration.name.map(str -> " (" + str + ")").orElse("");
             ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + configuration.url, dataSource, configuration.validationQuery);
         }
     }
 
     public static AddonBuilder configure(String name, Configurator options) {
-        return new AddonBuilder(options, defaultConfiguration().name(name));
+        return new AddonBuilder(options, defaultConfiguration().name(Optional.of(name)));
     }
 
     public static AddonBuilder defaults(String name) {
-        return new AddonBuilder(cfg -> cfg, defaultConfiguration().name(name));
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration().name(Optional.of(name)));
     }
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
