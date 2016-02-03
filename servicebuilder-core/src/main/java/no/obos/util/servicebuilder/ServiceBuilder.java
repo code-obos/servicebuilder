@@ -87,6 +87,17 @@ public class ServiceBuilder {
         return this;
     }
 
+    public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
+        addonConfig.addAppConfig(appConfig);
+        addonConfig.addContext(this);
+        T addon = addonConfig.init();
+
+        addon.addToJerseyConfig(jerseyConfig);
+        addon.addToJettyServer(jettyServer);
+        return addon;
+    }
+
+
     public ServiceBuilder with(ServiceAddon addon) {
         addon.addToJerseyConfig(jerseyConfig);
         addon.addToJettyServer(jettyServer);
