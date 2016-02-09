@@ -9,6 +9,10 @@ import no.obos.util.servicebuilder.authorization.AuthorizationFilter;
 import no.obos.util.servicebuilder.authorization.UibBrukerProvider;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
+/*
+    Referanseimplementasjon: Aarsregnskapsplanlegging
+ */
+
 @AllArgsConstructor
 public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
 
@@ -22,6 +26,11 @@ public class AuthorizationFilterAddon extends ServiceAddonEmptyDefaults {
 
     public final Configuration configuration;
 
+    /**
+     * Benytter interfacet UibBruker som tester om bruker kan bruke mellom rolle-annotasjoner (@RolesAllowed).
+     * Standardimplementasjonen er BasicUibBruker, som tar en liste med rolleannotasjoner og regler for hvilke
+     * uib-roller som oppfyller dissed. Sjekk implementasjon i Aarsregnskapsplanlegging.
+     */
     public static Configuration.ConfigurationBuilder defaultConfiguration(UibBrukerProvider uibBrukerProvider) {
         return Configuration.builder()
                 .whitelist(DEFAULT_WHITELIST)

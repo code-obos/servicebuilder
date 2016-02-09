@@ -30,6 +30,8 @@ public class CorsFilterAddon extends ServiceAddonEmptyDefaults {
             .add("X-Codingpedia")
             .add("X-OBOS-USERTOKENID")
             .add("X-OBOS-APPTOKENID")
+            .add("api_key")
+            .add("Authorization")
             .build();
 
     public final Configuration configuration;
@@ -43,19 +45,16 @@ public class CorsFilterAddon extends ServiceAddonEmptyDefaults {
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        ResponseCorsFilter responseCorsFilter = new ResponseCorsFilter(
-                configuration.allowOrigin,
-                configuration.allowMethods,
-                configuration.allowHeaders);
-        jerseyConfig.addBinder(binder -> binder.bind(responseCorsFilter).to(ResponseCorsFilter.class));
+        jerseyConfig.addBinder(binder -> binder.bind(configuration).to(Configuration.class));
+        jerseyConfig.addRegistations(registrator -> registrator.register(ResponseCorsFilter.class));
     }
 
     @Builder
     @AllArgsConstructor
     public static class Configuration {
-        ImmutableList<String> allowOrigin;
-        ImmutableList<String> allowMethods;
-        ImmutableList<String> allowHeaders;
+        public final ImmutableList<String> allowOrigin;
+        public final ImmutableList<String> allowMethods;
+        public final ImmutableList<String> allowHeaders;
     }
 
 

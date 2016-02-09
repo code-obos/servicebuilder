@@ -11,8 +11,8 @@ import no.obos.util.config.AppConfig;
 public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
 
     public static final String CONFIG_KEY_TOKENSERVICE_URL = "tokenservice.url";
-    public static final String CONFIG_KEY_APP_ID = "app.id";
-    public static final String CONFIG_KEY_APP_SECRET = "app.secret";
+    public static final String CONFIG_KEY_APP_ID = "tokenservice.app.id";
+    public static final String CONFIG_KEY_APP_SECRET = "tokenservice.app.secret";
     public final Configuration configuration;
     public final TokenServiceClient tokenServiceClient;
 

@@ -16,7 +16,15 @@ public class JerseyConfig {
 
     final InjectionBinder injectionBinder = new InjectionBinder();
 
+    final ServiceBuilder serviceBuilder;
+
+    public JerseyConfig(ServiceBuilder serviceBuilder) {
+        this.serviceBuilder = serviceBuilder;
+        resourceConfig.register(injectionBinder);
+    }
+
     public JerseyConfig() {
+        this.serviceBuilder = null;
         resourceConfig.register(injectionBinder);
     }
 
@@ -42,10 +50,28 @@ public class JerseyConfig {
     }
 
     public JerseyConfig with(ServiceAddonConfig<?> addonConfig) {
+        if(serviceBuilder != null) {
+            if(serviceBuilder.appConfig != null) {
+                addonConfig.addAppConfig(serviceBuilder.appConfig);
+            }
+            addonConfig.addContext(serviceBuilder);
+        }
         ServiceAddon addon = addonConfig.init();
-
         addon.addToJerseyConfig(this);
         return this;
+    }
+
+    public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
+        if(serviceBuilder != null) {
+            if(serviceBuilder.appConfig != null) {
+                addonConfig.addAppConfig(serviceBuilder.appConfig);
+            }
+            addonConfig.addContext(serviceBuilder);
+        }
+        T addon = addonConfig.init();
+
+        addon.addToJerseyConfig(this);
+        return addon;
     }
 
     public interface Binder {

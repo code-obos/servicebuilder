@@ -56,7 +56,7 @@ public class ServiceBuilder {
     }
 
     public ServiceBuilder configJersey(JerseyConfig.Configurator configurator) {
-        jerseyConfig = configurator.apply(new JerseyConfig());
+        jerseyConfig = configurator.apply(new JerseyConfig(this));
         if (appConfig != null) {
             jerseyConfig.addBinder(binder -> binder.bind(appConfig).to(AppConfig.class));
         }
@@ -78,7 +78,9 @@ public class ServiceBuilder {
 
 
     public ServiceBuilder with(ServiceAddonConfig<?> addonConfig) {
-        addonConfig.addAppConfig(appConfig);
+        if(appConfig != null) {
+            addonConfig.addAppConfig(appConfig);
+        }
         addonConfig.addContext(this);
         ServiceAddon addon = addonConfig.init();
 
@@ -88,7 +90,9 @@ public class ServiceBuilder {
     }
 
     public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
-        addonConfig.addAppConfig(appConfig);
+        if(appConfig != null) {
+            addonConfig.addAppConfig(appConfig);
+        }
         addonConfig.addContext(this);
         T addon = addonConfig.init();
 
@@ -105,7 +109,9 @@ public class ServiceBuilder {
     }
 
     public <Addon extends ServiceAddon> Addon newAddon(ServiceAddonConfig<Addon> addonConfig) {
-        addonConfig.addAppConfig(appConfig);
+        if(appConfig != null) {
+            addonConfig.addAppConfig(appConfig);
+        }
         addonConfig.addContext(this);
         return addonConfig.init();
     }
