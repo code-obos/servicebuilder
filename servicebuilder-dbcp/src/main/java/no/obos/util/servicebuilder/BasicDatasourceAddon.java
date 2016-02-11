@@ -59,6 +59,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     public static Configuration.ConfigurationBuilder defaultConfiguration() {
         return Configuration.builder()
+                .name(Optional.empty())
                 .monitorIntegration(DEFAULT_MONITOR_INTEGRATION)
                 .bindQueryRunner(DEFAULT_BIND_QUERYRUNNER);
     }
@@ -80,7 +81,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
-                    if (! configuration.name.isPresent()) {
+                    if (configuration.name.isPresent()) {
                         binder.bind(dataSource).named(configuration.name.get()).to(DataSource.class);
                     } else {
                         binder.bind(dataSource).to(DataSource.class);
