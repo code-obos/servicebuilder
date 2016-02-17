@@ -11,13 +11,9 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 public class ServiceBuilder {
     public static final String APPCONFIG_KEY = "SERVICE_CONFIG";
     public static final String CONFIG_KEY_PROXY = "proxy";
-    public static final boolean DEFAULT_MONITOR_INTEGRATION = true;
+    public static final boolean DEFAULT_JUL_LOGGING_INTEGRATION = true;
     public static final boolean DEFAULT_READ_PROXY_FROM_CONFIG = false;
     public static final boolean DEFAULT_APPCONFIG_FROM_JVM_ARG = true;
-
-    boolean julLoggingIntegration = DEFAULT_MONITOR_INTEGRATION;
-    boolean readProxyFromConfig = DEFAULT_READ_PROXY_FROM_CONFIG;
-
 
     @Getter
     final AppConfig appConfig;
@@ -117,15 +113,19 @@ public class ServiceBuilder {
     }
 
     public ServiceBuilder start() {
-        if (julLoggingIntegration) {
+        if (configuration.julLoggingIntegration) {
             SLF4JBridgeHandler.removeHandlersForRootLogger();
             SLF4JBridgeHandler.install();
         }
 
 
-        if (readProxyFromConfig) {
+        if (configuration.readProxyFromConfig) {
             appConfig.failIfNotPresent(CONFIG_KEY_PROXY);
             if ("true".equals(appConfig.get("proxy"))) {
+                System.getProperties().put("http.proxyHost", "obosproxy.obos.no");
+                System.getProperties().put("http.proxyPort", "8080");
+                System.getProperties().put("http.proxyUser", "utvadm");
+                System.getProperties().put("http.proxyPassword", "UtvAdm123");
                 System.getProperties().put("https.proxyHost", "obosproxy.obos.no");
                 System.getProperties().put("https.proxyPort", "8080");
                 System.getProperties().put("https.proxyUser", "utvadm");
@@ -167,7 +167,7 @@ public class ServiceBuilder {
 
         public static ConfigurationBuilder defaultBuilder() {
             return Configuration.builder()
-                    .julLoggingIntegration(DEFAULT_MONITOR_INTEGRATION)
+                    .julLoggingIntegration(DEFAULT_JUL_LOGGING_INTEGRATION)
                     .readProxyFromConfig(DEFAULT_READ_PROXY_FROM_CONFIG)
                     .appConfigFromJvmArg(DEFAULT_APPCONFIG_FROM_JVM_ARG);
         }

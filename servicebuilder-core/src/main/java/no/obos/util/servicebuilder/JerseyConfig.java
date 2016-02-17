@@ -2,10 +2,12 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
+import no.obos.util.config.AppConfig;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.List;
+import java.util.function.Function;
 
 public class JerseyConfig {
 
@@ -41,6 +43,13 @@ public class JerseyConfig {
     public JerseyConfig addHk2ConfigModule(Hk2ConfigModule hk2ConfigModule) {
         addRegistations(hk2ConfigModule);
         addBinder(hk2ConfigModule);
+        return this;
+    }
+
+    public JerseyConfig addHk2ConfigModuleWithProps(Function<AppConfig, Hk2ConfigModule> confFromProps) {
+        Hk2ConfigModule conf = confFromProps.apply(serviceBuilder.appConfig);
+        addRegistations(conf);
+        addBinder(conf);
         return this;
     }
 

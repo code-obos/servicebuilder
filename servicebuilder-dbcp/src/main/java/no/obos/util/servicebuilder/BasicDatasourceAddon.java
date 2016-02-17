@@ -33,6 +33,7 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         dataSource.setDriverClassName(configuration.driverClassName);
         dataSource.setUsername(configuration.username);
         dataSource.setPassword(configuration.password);
+        dataSource.setValidationQuery(configuration.validationQuery);
 
 
         if (configuration.bindQueryRunner) {
