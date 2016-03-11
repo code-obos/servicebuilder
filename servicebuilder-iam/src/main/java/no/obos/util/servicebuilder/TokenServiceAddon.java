@@ -23,6 +23,7 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
+        appConfig.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
         configBuilder
                 .url(appConfig.get(CONFIG_KEY_TOKENSERVICE_URL))
                 .appId(appConfig.get(CONFIG_KEY_APP_ID))
