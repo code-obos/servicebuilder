@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.security.Principal;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
