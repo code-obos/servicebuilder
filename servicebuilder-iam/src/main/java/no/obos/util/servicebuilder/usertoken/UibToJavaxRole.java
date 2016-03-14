@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.authorization;
+package no.obos.util.servicebuilder.usertoken;
 
 import no.obos.iam.tokenservice.UserRole;
 

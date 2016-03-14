@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.authorization;
+package no.obos.util.servicebuilder.usertoken;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;

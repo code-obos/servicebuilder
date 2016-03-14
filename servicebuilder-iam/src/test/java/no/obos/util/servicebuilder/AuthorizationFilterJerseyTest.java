@@ -3,8 +3,9 @@ package no.obos.util.servicebuilder;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
-import no.obos.util.servicebuilder.authorization.BasicUibBruker;
-import no.obos.util.servicebuilder.authorization.UibToJavaxRole;
+import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
+import no.obos.util.servicebuilder.usertoken.UibToJavaxRole;
+
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
                 ).addBinder(binder -> {
                     binder.bind(tokenServiceClient).to(TokenServiceClient.class);
                 })
-                .with(AuthorizationFilterAddon.defaults(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)))
+                .with(UserTokenFilterAddon.defaults(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)))
                 .getResourceConfig();
     }
 
@@ -56,7 +57,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameValid));
 
         Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(AuthorizationFilterAddon.USERTOKENID_HEADER, usertoken)
+                .header(UserTokenFilterAddon.USERTOKENID_HEADER, usertoken)
                 .get();
         assertEquals(200, response.getStatus());
     }
@@ -68,7 +69,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameInvalid));
 
         Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(AuthorizationFilterAddon.USERTOKENID_HEADER, usertoken)
+                .header(UserTokenFilterAddon.USERTOKENID_HEADER, usertoken)
                 .get();
         assertEquals(403, response.getStatus());
     }

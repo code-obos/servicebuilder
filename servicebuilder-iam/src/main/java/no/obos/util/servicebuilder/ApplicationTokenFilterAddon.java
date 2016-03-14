@@ -7,7 +7,8 @@ import lombok.Builder;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.config.AppConfig;
-import no.obos.util.servicebuilder.authentication.ApplicationTokenFilter;
+import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
+
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;

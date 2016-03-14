@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.authorization;
+package no.obos.util.servicebuilder.usertoken;
 
 import javax.security.auth.Subject;
 import java.security.Principal;

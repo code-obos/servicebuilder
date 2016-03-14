@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.authentication;
+package no.obos.util.servicebuilder.applicationtoken;
 
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
