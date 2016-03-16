@@ -1,34 +1,36 @@
 package no.obos.util.servicebuilder.exception;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
+import no.obos.util.servicebuilder.exception.domain.ProblemInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.ValidationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 
-public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
+public class ValidationExceptionMapper extends AbstractExceptionMapper<ValidationException> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidationExceptionMapper.class);
-    private final ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig;
 
     public ValidationExceptionMapper(ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig) {
-        this.shouldLogStacktraceConfig = shouldLogStacktraceConfig;
+        super(shouldLogStacktraceConfig);
     }
 
-    @Override public Response toResponse(ValidationException exception) {
-        String feilreferanse = ExceptionUtil.lagFeilreferanse();
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
+
+    @Override
+    protected Level getLevel() {
+        return Level.ERROR;
+    }
+
+    @Override
+    protected ProblemInformation getProblemInformation(ValidationException exception) {
         String msg = "Valideringfeil: " + exception.getMessage();
-
-        String loggMelding = ExceptionUtil.lagLoggMelding(msg, feilreferanse);
-        if (ExceptionUtil.shouldPrintStacktrace(exception, shouldLogStacktraceConfig)) {
-            LOG.error(loggMelding, exception);
-        } else {
-            LOG.error(loggMelding);
-        }
-        Response.Status status = Response.Status.BAD_REQUEST;
-
-        return ExceptionUtil.buildDefaultProblemResponse(status.getStatusCode(), msg, feilreferanse);
+        return new ProblemInformation(BAD_REQUEST.getStatusCode(), msg);
     }
 }

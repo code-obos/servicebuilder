@@ -1,34 +1,32 @@
 package no.obos.util.servicebuilder.exception;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
+import no.obos.util.servicebuilder.exception.domain.ProblemInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
-public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
-
+public class RuntimeExceptionMapper extends AbstractExceptionMapper<RuntimeException> {
     private static final Logger LOG = LoggerFactory.getLogger(RuntimeExceptionMapper.class);
-    private final ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig;
 
     public RuntimeExceptionMapper(ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig) {
-        this.shouldLogStacktraceConfig = shouldLogStacktraceConfig;
+        super(shouldLogStacktraceConfig);
     }
 
     @Override
-    public Response toResponse(RuntimeException exception) {
-        String feilreferanse = ExceptionUtil.lagFeilreferanse();
-        String msg = "Det har oppstått en intern feil";
+    protected Logger getLogger() {
+        return LOG;
+    }
 
-        String loggMelding = ExceptionUtil.lagLoggMelding(msg, feilreferanse);
-        if (ExceptionUtil.shouldPrintStacktrace(exception, shouldLogStacktraceConfig)) {
-            LOG.error(loggMelding, exception);
-        } else {
-            LOG.error(loggMelding);
-        }
-        Response.Status status = Response.Status.INTERNAL_SERVER_ERROR;
+    @Override
+    protected Level getLevel() {
+        return Level.ERROR;
+    }
 
-        return ExceptionUtil.buildDefaultProblemResponse(status.getStatusCode(), msg, feilreferanse);
+    @Override
+    protected ProblemInformation getProblemInformation(RuntimeException exception) {
+        return new ProblemInformation(INTERNAL_SERVER_ERROR.getStatusCode(), "Det har oppstått en intern feil");
     }
 }

@@ -1,42 +1,44 @@
 package no.obos.util.servicebuilder.exception;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import no.obos.util.exception.FieldLevelValidationException;
+import no.obos.util.servicebuilder.exception.domain.ProblemInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class FieldLevelExceptionMapper implements ExceptionMapper<FieldLevelValidationException> {
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+
+public class FieldLevelExceptionMapper extends AbstractExceptionMapper<FieldLevelValidationException> {
 
     private static final Logger LOG = LoggerFactory.getLogger(FieldLevelExceptionMapper.class);
-    private final ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig;
 
     public FieldLevelExceptionMapper(ImmutableMap<Class<?>, Boolean> shouldLogStacktraceConfig) {
-        this.shouldLogStacktraceConfig = shouldLogStacktraceConfig;
+        super(shouldLogStacktraceConfig);
     }
 
-    @Override public Response toResponse(FieldLevelValidationException exception) {
-        String feilreferanse = ExceptionUtil.lagFeilreferanse();
+    @Override
+    protected Logger getLogger() {
+        return LOG;
+    }
+
+    @Override
+    protected Level getLevel() {
+        return Level.WARN;
+    }
+
+    @Override
+    protected ProblemInformation getProblemInformation(FieldLevelValidationException exception) {
         Multimap<String, String> errorMap = exception.getErrorFields();
         List<String> errors = errorMap.keySet().stream()
                 .map(error -> error + ", " + errorMap.get(error))
                 .collect(Collectors.toList());
-        String msg = errors.toString();
+        String msg = String.format("Validering av objekt feilet med: %s", errors.toString());
 
-        String loggMelding = ExceptionUtil.lagLoggMelding("Validering av objekt feilet med: " + msg, feilreferanse);
-        if (ExceptionUtil.shouldPrintStacktrace(exception, shouldLogStacktraceConfig)) {
-            LOG.warn(loggMelding, exception);
-        } else {
-            LOG.warn(loggMelding);
-        }
-
-        Response.Status status = Response.Status.BAD_REQUEST;
-
-        return ExceptionUtil.buildDefaultProblemResponse(status.getStatusCode(), msg, feilreferanse);
+        return new ProblemInformation(BAD_REQUEST.getStatusCode(), msg);
     }
 }
