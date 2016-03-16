@@ -17,7 +17,7 @@ public class ServiceBuilderDocumentationTest {
     public void service_builder_starts_a_jetty_server_with_jersey() {
         System.setProperty(ServiceBuilder.APPCONFIG_KEY, "src/test/resources/service-junit.properties");
         ServiceBuilder serviceBuilder = ServiceBuilder
-                .defaults()
+                .defaults(ServiceBuilderDocumentationTest.class)
                 .configJersey(JerseyConfig.defaults())
                 .configJettyServer(JettyServer.defaults());
 
@@ -44,7 +44,7 @@ public class ServiceBuilderDocumentationTest {
             }
         }
         ServiceBuilder
-                .configure(new ServiceBuilderConfigurator());
+                .configure(ServiceBuilderDocumentationTest.class, new ServiceBuilderConfigurator());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ServiceBuilderDocumentationTest {
     @Before
     public void init() {
         serviceBuilderWithDefaults = ServiceBuilder
-                .defaults()
+                .defaults(ServiceBuilderDocumentationTest.class)
                 .configJersey(JerseyConfig.defaults())
                 .configJettyServer(JettyServer.defaults());
     }

@@ -13,7 +13,6 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
 
     public static final String DEFAULT_PATH_SPEC = "/swagger";
     public static final String CONFIG_KEY_API_BASEURL = "api.baseurl";
-    public static final String CONFIG_KEY_API_VERSION = "api.version";
 
     public final Configuration configuration;
 
@@ -23,9 +22,8 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL, CONFIG_KEY_API_VERSION);
+        appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL);
         configBuilder.apiBasePath(appConfig.get(CONFIG_KEY_API_BASEURL));
-        configBuilder.apiVersion(appConfig.get(CONFIG_KEY_API_VERSION));
     }
 
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {

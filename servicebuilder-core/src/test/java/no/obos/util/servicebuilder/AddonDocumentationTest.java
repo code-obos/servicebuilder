@@ -103,7 +103,7 @@ public class AddonDocumentationTest {
     @Before
     public void init() {
         serviceBuilderWithDefaults = ServiceBuilder
-                .defaults()
+                .defaults(AddonDocumentationTest.class)
                 .configJersey(JerseyConfig.defaults())
                 .configJettyServer(JettyServer.defaults());
     }
