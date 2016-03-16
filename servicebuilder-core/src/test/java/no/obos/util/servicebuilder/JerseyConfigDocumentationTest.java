@@ -152,6 +152,6 @@ public class JerseyConfigDocumentationTest {
     @Before
     public void init() {
         serviceBuilderWithDefaults = ServiceBuilder
-                .defaults();
+                .defaults(JerseyConfigDocumentationTest.class);
     }
 }

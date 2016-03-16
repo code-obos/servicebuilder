@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import no.obos.util.config.AppConfig;
 import no.obos.util.config.AppConfigLoader;
+import no.obos.util.version.Version;
+import no.obos.util.version.VersionUtil;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 public class ServiceBuilder {
@@ -32,21 +34,23 @@ public class ServiceBuilder {
         this.configuration = configuration;
     }
 
-    public static ServiceBuilder configure(Configurator customConfiguration) {
+    public static ServiceBuilder configure(Class classOnLocalClassPath, Configurator customConfiguration) {
         Configuration.ConfigurationBuilder builder = Configuration.defaultBuilder();
         Configuration configuration = customConfiguration.apply(builder).build();
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
+            setServiceVersion(classOnLocalClassPath, appConfig);
         }
         return new ServiceBuilder(appConfig, configuration);
     }
 
-    public static ServiceBuilder defaults() {
+    public static ServiceBuilder defaults(Class classOnLocalClassPath) {
         Configuration configuration = Configuration.defaultBuilder().build();
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
+            setServiceVersion(classOnLocalClassPath, appConfig);
         }
         return new ServiceBuilder(appConfig, configuration);
     }
@@ -178,4 +182,8 @@ public class ServiceBuilder {
         Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);
     }
 
+    private static void setServiceVersion(Class classOnLocalClassPath, AppConfig appConfig) {
+        final Version version = new VersionUtil(classOnLocalClassPath).getVersion();
+        appConfig.put("service.version", version == null ? "" : version.getMajor() + "." + version.getMinor());
+    }
 }
