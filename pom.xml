@@ -3,17 +3,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>1.0.18-SNAPSHOT</version>
+    <version>1.0.18</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>2.0.20</version>
+        <version>2.0.21</version>
     </parent>
 
     <properties>
-    	<servicebuilder.version.internal>1.0.18-SNAPSHOT</servicebuilder.version.internal>
+    	<servicebuilder.version.internal>1.0.18</servicebuilder.version.internal>
     </properties>
 
     <prerequisites>
