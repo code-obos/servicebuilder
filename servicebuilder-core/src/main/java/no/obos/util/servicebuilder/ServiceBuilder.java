@@ -16,6 +16,7 @@ public class ServiceBuilder {
     public static final boolean DEFAULT_JUL_LOGGING_INTEGRATION = true;
     public static final boolean DEFAULT_READ_PROXY_FROM_CONFIG = false;
     public static final boolean DEFAULT_APPCONFIG_FROM_JVM_ARG = true;
+    public static final String CONFIG_KEY_SERVICE_VERSION = "service.version";
 
     @Getter
     final AppConfig appConfig;
@@ -184,6 +185,6 @@ public class ServiceBuilder {
 
     private static void setServiceVersion(Class classOnLocalClassPath, AppConfig appConfig) {
         final Version version = new VersionUtil(classOnLocalClassPath).getVersion();
-        appConfig.put("service.version", version == null ? "" : version.getMajor() + "." + version.getMinor());
+        appConfig.put(CONFIG_KEY_SERVICE_VERSION, version == null ? "" : version.getMajor() + "." + version.getMinor());
     }
 }
