@@ -13,7 +13,7 @@
     </parent>
 
     <properties>
-    	<servicebuilder.version.internal>1.0.19-SNAPSHOT</servicebuilder.version.internal>
+        <servicebuilder.version.internal>1.0.19-SNAPSHOT</servicebuilder.version.internal>
     </properties>
 
     <prerequisites>
@@ -44,6 +44,6 @@
                 <artifactId>servicebuilder-iam</artifactId>
                 <version>${servicebuilder.version.internal}</version>
             </dependency>
-            </dependencies>
+        </dependencies>
     </dependencyManagement>
 </project>
