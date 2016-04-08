@@ -53,7 +53,7 @@ public class WebAppAddon extends ServiceAddonEmptyDefaults {
         path = (path.startsWith("//")) ? path.substring(2) : path;
         switch (scheme) {
             case "file":
-                webAppContext.setInitParameter("useFileMappedBuffer", "false");
+                webAppContext.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");
                 LOGGER.warn("*** Kjører i DEV-modus, leser webfiler rett fra utviklingskataloger. ***");
                 warUrlString = path;
                 File f = new File(warUrlString);
