@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>1.0.19</version>
+    <version>1.0.20-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -11,10 +11,6 @@
         <artifactId>obos-common-pom</artifactId>
         <version>2.0.23</version>
     </parent>
-
-    <properties>
-        <servicebuilder.version.internal>1.0.19</servicebuilder.version.internal>
-    </properties>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -32,17 +28,17 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-core</artifactId>
-                <version>${servicebuilder.version.internal}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-dbcp</artifactId>
-                <version>${servicebuilder.version.internal}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-iam</artifactId>
-                <version>${servicebuilder.version.internal}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
