@@ -13,7 +13,12 @@ import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor
 public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
@@ -28,7 +33,11 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
 
     public static void configFromAppConfig(AppConfig appConfig, ApplicationTokenFilterAddon.Configuration.ConfigurationBuilder configBuilder) {
         appConfig.failIfNotPresent(ACCEPTED_APP_IDS);
-        configBuilder.acceptedAppIds(ImmutableList.copyOf(Lists.newArrayList(appConfig.get(ACCEPTED_APP_IDS).split(","))));
+        ArrayList<String> acceptedIdStrings = Lists.newArrayList(appConfig.get(ACCEPTED_APP_IDS).split(","));
+        List<Integer> acceptedIds = acceptedIdStrings.stream()
+                .map(Integer::valueOf)
+                .collect(toList());
+        configBuilder.acceptedAppIds(ImmutableList.copyOf(acceptedIds));
     }
 
     @Override
@@ -52,7 +61,7 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         public ApplicationTokenAccessValidator provide() {
             ApplicationTokenAccessValidator applicationTokenAccessValidator = new ApplicationTokenAccessValidator();
             applicationTokenAccessValidator.setTokenServiceClient(tokenServiceClient);
-            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds);
+            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds.stream().map(Object::toString).collect(Collectors.toList()));
             return applicationTokenAccessValidator;
         }
 
@@ -65,7 +74,7 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
     @Builder
     @AllArgsConstructor
     public static class Configuration {
-        public final ImmutableList<String> acceptedAppIds;
+        public final ImmutableList<Integer> acceptedAppIds;
         public final Predicate<ContainerRequestContext> fasttrackFilter;
     }
 

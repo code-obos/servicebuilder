@@ -27,7 +27,7 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
         appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL);
         configBuilder.apiBasePath(appConfig.get(CONFIG_KEY_API_BASEURL));
         String serviceVersion = appConfig.get(ServiceBuilder.CONFIG_KEY_SERVICE_VERSION);
-        if(serviceVersion != null) {
+        if (serviceVersion != null) {
             configBuilder.apiVersion(serviceVersion);
         }
     }
@@ -42,7 +42,12 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
     @Override public void addToJettyServer(JettyServer jettyServer) {
         ServletHolder apiDocServletHolder = new ServletHolder(new JerseyJaxrsConfig());
         apiDocServletHolder.setInitParameter("api.version", configuration.apiVersion);
-        apiDocServletHolder.setInitParameter("swagger.api.basepath", configuration.apiBasePath);
+        //Remove leading / as swagger adds its own
+        String apiBasePath =
+                configuration.apiBasePath.charAt(0) == '/'
+                        ? configuration.apiBasePath.substring(1)
+                        : configuration.apiBasePath;
+        apiDocServletHolder.setInitParameter("swagger.api.basepath", apiBasePath);
         apiDocServletHolder.setInitOrder(2); //NOSONAR
         jettyServer.getServletContext().addServlet(apiDocServletHolder, configuration.pathSpec);
     }

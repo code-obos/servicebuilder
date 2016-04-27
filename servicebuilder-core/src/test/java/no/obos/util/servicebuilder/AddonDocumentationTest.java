@@ -93,6 +93,7 @@ public class AddonDocumentationTest {
         SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
         SwaggerAddon.Configuration configuration = addonConfigurationBuilder
                 .apiVersion("quite some version")
+                .apiBasePath("/very/path")
                 .build();
         SwaggerAddon addon = new SwaggerAddon(configuration);
         serviceBuilderWithDefaults.with(addon);

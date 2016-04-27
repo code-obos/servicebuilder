@@ -18,12 +18,14 @@ public class BasicUibBruker implements UibBruker {
     public final String fornavn;
     public final String etternavn;
     public final String adBrukernavn;
+    public final String userTokenId;
     public final ImmutableSet<String> tilganger;
 
     public BasicUibBruker(UserToken userToken, ImmutableList<UibToJavaxRole> tilganger) {
         this.personid = userToken.getPersonid();
         this.fornavn = userToken.getFornavn();
         this.etternavn = userToken.getEtternavn();
+        this.userTokenId = userToken.getTokenId();
 
         Optional<UserRole> userRole = userToken.getRoles().stream()
                 .filter(ur -> "active_directory_user_id".equals(ur.getIdentity().getName())).findFirst();
