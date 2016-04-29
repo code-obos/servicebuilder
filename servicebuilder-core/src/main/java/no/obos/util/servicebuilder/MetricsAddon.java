@@ -6,6 +6,11 @@ import no.obos.metrics.ObosMetricsServlet;
 import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+/**
+ * Legger til servlet for metrics. Metrics-sjekker for forskjellig funksjonalitet (database, eksterne tjenester osv)
+ * registreres i deres respektive addons.
+ * Standard path er tjeneste/versjon/metrics/
+ */
 @AllArgsConstructor
 public class MetricsAddon extends ServiceAddonEmptyDefaults {
 

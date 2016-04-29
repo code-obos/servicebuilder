@@ -12,6 +12,11 @@ import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
 
 import javax.ws.rs.NotFoundException;
 
+/**
+ * Legger til et sett med standard exceptionmappere for Jersey som mapper til problem response.
+ * Logger stacktrace for de fleste exceptions, med unntak av exceptions og underexceptions satt til false i config.stacktraceConfig.
+ * Config.logAllStackTraces er ment for debug-bruk.
+ */
 @AllArgsConstructor
 public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
 
@@ -20,6 +25,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
     public static final boolean DEFAULT_MAP_RUNTIME = true;
     public static final boolean DEFAULT_MAP_VALIDATION = true;
     public static final boolean DEFAULT_MAP_WEB_APPLICATION = true;
+    public static final boolean DEFAULT_LOG_ALL_STACK_TRACES = false;
     public static final ImmutableMap<Class<?>, Boolean> DEFAULT_STACKTRACE_CONFIG = ImmutableMap.<Class<?>, Boolean>builder()
             .put(Throwable.class, true)
             .put(NotFoundException.class, false)
@@ -35,6 +41,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
                 .mapValidation(DEFAULT_MAP_VALIDATION)
                 .mapWebApplication(DEFAULT_MAP_WEB_APPLICATION)
                 .stacktraceConfig(DEFAULT_STACKTRACE_CONFIG)
+                .logAllStacktraces(DEFAULT_LOG_ALL_STACK_TRACES)
                 ;
 
     }
@@ -69,6 +76,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         private final boolean mapRuntime;
         private final boolean mapValidation;
         private final boolean mapWebApplication;
+        private final boolean logAllStacktraces;
         private final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
     }
 
@@ -92,6 +100,11 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         @Override
         public ExceptionMapperAddon init() {
             configBuilder = options.apply(configBuilder);
+            if(configBuilder.build().logAllStacktraces) {
+                configBuilder = configBuilder.stacktraceConfig(ImmutableMap.<Class<?>, Boolean>builder()
+                        .put(Throwable.class, true)
+                        .build());
+            }
             return new ExceptionMapperAddon(configBuilder.build());
         }
     }

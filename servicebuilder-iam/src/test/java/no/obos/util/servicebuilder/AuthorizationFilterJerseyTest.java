@@ -46,7 +46,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
                 ).addBinder(binder -> {
                     binder.bind(tokenServiceClient).to(TokenServiceClient.class);
                 })
-                .with(UserTokenFilterAddon.defaults(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)))
+                .with(UserTokenFilterAddon.configure(cfg -> cfg.uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))))
                 .getResourceConfig();
     }
 

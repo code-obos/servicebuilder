@@ -8,6 +8,9 @@ import no.obos.iam.tokenservice.TokenServiceHttpClient;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.config.AppConfig;
 
+/**
+ * Konfigurerer klient til TokenService.
+ */
 public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
 
     public static final String CONFIG_KEY_TOKENSERVICE_URL = "tokenservice.url";

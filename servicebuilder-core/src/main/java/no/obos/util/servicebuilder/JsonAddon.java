@@ -11,6 +11,9 @@ import org.glassfish.jersey.jackson.JacksonFeature;
 
 import java.util.function.Supplier;
 
+/**
+ * Registrerer json serialisering/deserialisering i jersery-config
+ */
 @AllArgsConstructor
 public class JsonAddon extends ServiceAddonEmptyDefaults {
 

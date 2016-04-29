@@ -12,6 +12,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+/**
+ * Legger serving av statiske filer. Standard path er tjeneste/versjon/webapp/ .
+ * Lokasjon av statiske filer kan spesifiseres med file:// (relativ path på filsystemet) eller classpath:// .
+ */
 @AllArgsConstructor
 public class WebAppAddon extends ServiceAddonEmptyDefaults {
 

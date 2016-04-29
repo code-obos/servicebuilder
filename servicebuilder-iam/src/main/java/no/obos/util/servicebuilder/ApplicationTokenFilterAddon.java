@@ -20,6 +20,9 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Legger inn applikasjonsfilter. Avhenger av at TokenServiceAddon er lagt til.
+ */
 @AllArgsConstructor
 public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
     public static final String ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";

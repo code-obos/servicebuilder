@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import javax.ws.rs.container.ContainerRequestContext;
 
+import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import lombok.AllArgsConstructor;
@@ -12,17 +13,26 @@ import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.usertoken.UibBrukerProvider;
 import no.obos.util.servicebuilder.usertoken.UserTokenFilter;
 
-/*
-    Referanseimplementasjon: Aarsregnskapsplanlegging
+/**
+ * Konfigurerer UserTokenFilter.
+ * Leser UserToken og knytter opp UibBruker med brukerinformasjon.
+ * Denne kan hentes ut med
+ *
+ * @Context SecurityContext context
+ * BasicUibBruker userPrincipal = (BasicUibBruker) context.getUserPrincipal();
+ *
+ * Kan også sette opp filtrering på javax-roller.
+ * Sjekk implementasjon av dette i aarsregnskapsplanlegging
  */
-
 @AllArgsConstructor
 public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
 
     public static final String USERTOKENID_HEADER = "X-OBOS-USERTOKENID";
 
     public static final boolean DEFAULT_REQUIRE_USERTOKEN = true;
-    
+
+    public static final UibBrukerProvider DEFAULT_UIB_BRUKER_PROVIDER = BasicUibBruker.provider();
+
     public static final Predicate<ContainerRequestContext> DEFAULT_FASTTRACK_FILTER = it -> false;
 
     public final Configuration configuration;
@@ -32,10 +42,10 @@ public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
      * Standardimplementasjonen er BasicUibBruker, som tar en liste med rolleannotasjoner og regler for hvilke
      * uib-roller som oppfyller dissed. Sjekk implementasjon i Aarsregnskapsplanlegging.
      */
-    public static Configuration.ConfigurationBuilder defaultConfiguration(UibBrukerProvider uibBrukerProvider) {
+    public static Configuration.ConfigurationBuilder defaultConfiguration() {
         return Configuration.builder()
                 .requireUserToken(DEFAULT_REQUIRE_USERTOKEN)
-                .uibBrukerProvider(uibBrukerProvider)
+                .uibBrukerProvider(DEFAULT_UIB_BRUKER_PROVIDER)
                 .fasttrackFilter(DEFAULT_FASTTRACK_FILTER);
     }
 
@@ -84,12 +94,26 @@ public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
+    @Deprecated //Default uib bruker without roles
     public static AddonBuilder configure(UibBrukerProvider uibBrukerProvider, Configurator options) {
-        return new AddonBuilder(options, defaultConfiguration(uibBrukerProvider));
+        Configuration.ConfigurationBuilder configurationBuilder = defaultConfiguration();
+        configurationBuilder.uibBrukerProvider(uibBrukerProvider);
+        return new AddonBuilder(options, configurationBuilder);
     }
 
+    @Deprecated //Default uib bruker without roles
     public static AddonBuilder defaults(UibBrukerProvider uibBrukerProvider) {
-        return new AddonBuilder(cfg -> cfg, defaultConfiguration(uibBrukerProvider));
+        Configuration.ConfigurationBuilder configurationBuilder = defaultConfiguration();
+        configurationBuilder.uibBrukerProvider(uibBrukerProvider);
+        return new AddonBuilder(cfg -> cfg, configurationBuilder);
+    }
+
+    public static AddonBuilder configure(Configurator options) {
+        return new AddonBuilder(options, defaultConfiguration());
+    }
+
+    public static AddonBuilder defaults() {
+        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
     }
 
     public interface Configurator {

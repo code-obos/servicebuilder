@@ -8,6 +8,9 @@ import lombok.Builder;
 import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.servlet.ServletHolder;
 
+/**
+ * Legger til swagger-servlet. Standard path er tjeneste/versjon/api/swagger.json
+ */
 @AllArgsConstructor
 public class SwaggerAddon extends ServiceAddonEmptyDefaults {
 

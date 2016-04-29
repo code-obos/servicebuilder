@@ -11,7 +11,12 @@ import org.apache.commons.dbutils.QueryRunner;
 import javax.sql.DataSource;
 import java.util.Optional;
 
-
+/**
+ * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
+ * Ved initialisering (defaults og config) kan det legges til et navn til datakilden
+ * for å støtte flere datakilder. Parametre fre properties vil da leses fra
+ * navnet (databasenavn).db.url osv.
+ */
 public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
 
     public static final String CONFIG_KEY_DB_URL = "db.url";

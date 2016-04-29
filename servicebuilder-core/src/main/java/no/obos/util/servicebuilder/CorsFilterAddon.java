@@ -6,6 +6,10 @@ import lombok.Builder;
 import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.cors.ResponseCorsFilter;
 
+/**
+ * Implementerer en mest mulig liberal CORS-protokoll basert på https://mortoray.com/2014/04/09/allowing-unlimited-access-with-cors/ .
+ * Verdier gitt i konfiurasjon (origin, methods, headers) er fallbackverdier.
+ */
 @AllArgsConstructor
 public class CorsFilterAddon extends ServiceAddonEmptyDefaults {
 

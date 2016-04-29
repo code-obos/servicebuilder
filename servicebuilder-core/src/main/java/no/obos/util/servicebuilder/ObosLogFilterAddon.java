@@ -11,6 +11,9 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
 
+/**
+ * Legger til filtre for ObosLogFilter
+ */
 @AllArgsConstructor
 public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
     public static final ImmutableList<String> DEFAULT_BLACKLIST = ImmutableList.of("/swagger.json");
