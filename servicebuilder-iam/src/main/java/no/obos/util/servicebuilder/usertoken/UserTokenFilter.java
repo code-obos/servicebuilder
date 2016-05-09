@@ -1,7 +1,10 @@
 package no.obos.util.servicebuilder.usertoken;
 
-import java.io.IOException;
-import java.security.Principal;
+import com.google.common.base.Strings;
+import no.obos.iam.tokenservice.TokenServiceClient;
+import no.obos.iam.tokenservice.TokenServiceClientException;
+import no.obos.iam.tokenservice.UserToken;
+import no.obos.util.servicebuilder.UserTokenFilterAddon;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;
@@ -9,13 +12,8 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.SecurityContext;
-
-import com.google.common.base.Strings;
-
-import no.obos.iam.tokenservice.TokenServiceClient;
-import no.obos.iam.tokenservice.TokenServiceClientException;
-import no.obos.iam.tokenservice.UserToken;
-import no.obos.util.servicebuilder.UserTokenFilterAddon;
+import java.io.IOException;
+import java.security.Principal;
 
 @PreMatching
 public class UserTokenFilter implements ContainerRequestFilter {
@@ -36,7 +34,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
         if (allwaysAccept(requestContext)) {
             return;
         }
-        
+
         if (configuration.requireUserToken && Strings.isNullOrEmpty(usertokenId)) {
             throw new NotAuthorizedException("Usertoken required");
         }
@@ -89,7 +87,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
         }
 
     }
-    
+
     public boolean allwaysAccept(ContainerRequestContext requestContext) {
         String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
         String requestMethod = requestContext.getMethod();

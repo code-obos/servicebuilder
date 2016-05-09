@@ -1,26 +1,25 @@
 package no.obos.util.servicebuilder;
 
-import java.util.function.Predicate;
-
-import javax.ws.rs.container.ContainerRequestContext;
-
-import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.config.AppConfig;
+import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
+import no.obos.util.servicebuilder.usertoken.BasicUibBrukerInjectionFactory;
 import no.obos.util.servicebuilder.usertoken.UibBrukerProvider;
 import no.obos.util.servicebuilder.usertoken.UserTokenFilter;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import java.util.function.Predicate;
 
 /**
  * Konfigurerer UserTokenFilter.
  * Leser UserToken og knytter opp UibBruker med brukerinformasjon.
- * Denne kan hentes ut med
+ * <p>
+ * Med default settings kan innlogget bruker hentes med:
  *
- * @Context SecurityContext context
- * BasicUibBruker userPrincipal = (BasicUibBruker) context.getUserPrincipal();
- *
+ * @Context BasicUibBruker innloggetBruker
+ * <p>
  * Kan også sette opp filtrering på javax-roller.
  * Sjekk implementasjon av dette i aarsregnskapsplanlegging
  */
@@ -52,6 +51,9 @@ public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
     @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     binder.bind(configuration).to(Configuration.class);
+                    if (configuration.uibBrukerProvider instanceof BasicUibBruker.BasicUibBrukerProvider) {
+                        binder.bindFactory(BasicUibBrukerInjectionFactory.class).to(BasicUibBruker.class);
+                    }
                 }
         );
         jerseyConfig.addRegistations(registrator -> registrator

@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder.usertoken;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import lombok.AllArgsConstructor;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 
@@ -58,24 +59,20 @@ public class BasicUibBruker implements UibBruker {
 
 
     public static UibBrukerProvider provider(Iterable<UibToJavaxRole> tilgangMappers) {
-        return new UibBrukerProvider() {
-            final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
-
-            @Override public UibBruker newUibBruker(UserToken userToken) {
-                return new BasicUibBruker(userToken, tilganger);
-            }
-
-        };
+        return new BasicUibBrukerProvider(ImmutableList.copyOf(tilgangMappers));
     }
 
-    public static UibBrukerProvider provider(UibToJavaxRole ... tilgangMappers) {
-        return new UibBrukerProvider() {
-            final ImmutableList<UibToJavaxRole> tilganger = ImmutableList.copyOf(tilgangMappers);
+    public static UibBrukerProvider provider(UibToJavaxRole... tilgangMappers) {
+        return new BasicUibBrukerProvider(ImmutableList.copyOf(tilgangMappers));
+    }
 
-            @Override public UibBruker newUibBruker(UserToken userToken) {
-                return new BasicUibBruker(userToken, tilganger);
-            }
 
-        };
+    @AllArgsConstructor
+    public static class BasicUibBrukerProvider implements UibBrukerProvider {
+        final ImmutableList<UibToJavaxRole> tilganger;
+
+        @Override public UibBruker newUibBruker(UserToken userToken) {
+            return new BasicUibBruker(userToken, tilganger);
+        }
     }
 }
