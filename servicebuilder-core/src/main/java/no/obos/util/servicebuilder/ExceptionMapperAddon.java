@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.config.AppConfig;
+import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
 import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
@@ -49,35 +50,38 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> {
-
             if (configuration.mapFieldLevelValidation) {
-                registrator.register(new FieldLevelExceptionMapper(configuration.stacktraceConfig));
+                registrator.register(FieldLevelExceptionMapper.class);
             }
             if (configuration.mapJsonProcessing) {
-                registrator.register(new JsonProcessingExceptionMapper(configuration.stacktraceConfig));
+                registrator.register(JsonProcessingExceptionMapper.class);
             }
             if (configuration.mapRuntime) {
-                registrator.register(new RuntimeExceptionMapper(configuration.stacktraceConfig));
+                registrator.register(RuntimeExceptionMapper.class);
             }
             if (configuration.mapValidation) {
-                registrator.register(new ValidationExceptionMapper(configuration.stacktraceConfig));
+                registrator.register(ValidationExceptionMapper.class);
             }
             if (configuration.mapWebApplication) {
-                registrator.register(new WebApplicationExceptionMapper(configuration.stacktraceConfig));
+                registrator.register(WebApplicationExceptionMapper.class);
             }
+        });
+        jerseyConfig.addBinder(binder -> {
+            binder.bind(configuration).to(Configuration.class);
+            binder.bind(ExceptionUtil.class).to(ExceptionUtil.class);
         });
     }
 
     @Builder
     @AllArgsConstructor
     public static class Configuration {
-        private final boolean mapFieldLevelValidation;
-        private final boolean mapJsonProcessing;
-        private final boolean mapRuntime;
-        private final boolean mapValidation;
-        private final boolean mapWebApplication;
-        private final boolean logAllStacktraces;
-        private final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
+        public final boolean mapFieldLevelValidation;
+        public final boolean mapJsonProcessing;
+        public final boolean mapRuntime;
+        public final boolean mapValidation;
+        public final boolean mapWebApplication;
+        public final boolean logAllStacktraces;
+        public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
     }
 
 
@@ -100,7 +104,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         @Override
         public ExceptionMapperAddon init() {
             configBuilder = options.apply(configBuilder);
-            if(configBuilder.build().logAllStacktraces) {
+            if (configBuilder.build().logAllStacktraces) {
                 configBuilder = configBuilder.stacktraceConfig(ImmutableMap.<Class<?>, Boolean>builder()
                         .put(Throwable.class, true)
                         .build());
