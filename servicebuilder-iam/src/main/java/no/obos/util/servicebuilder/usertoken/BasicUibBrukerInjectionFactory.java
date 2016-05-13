@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.usertoken;
 
+import no.obos.util.servicebuilder.UserTokenFilterAddon;
 import org.glassfish.hk2.api.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +16,12 @@ public class BasicUibBrukerInjectionFactory implements Factory<BasicUibBruker> {
 
     final SecurityContext context;
 
+    final UserTokenFilterAddon.Configuration config;
+
     @Inject
-    public BasicUibBrukerInjectionFactory(SecurityContext context) {
+    public BasicUibBrukerInjectionFactory(SecurityContext context, UserTokenFilterAddon.Configuration config) {
         this.context = context;
+        this.config = config;
     }
 
 
@@ -25,10 +29,10 @@ public class BasicUibBrukerInjectionFactory implements Factory<BasicUibBruker> {
     public BasicUibBruker provide() {
         Principal userPrincipal = context.getUserPrincipal();
 
-        if(userPrincipal == null) {
-            log.warn("Tried to get userprincipal when user not logged in");
+        if (userPrincipal == null && config.requireUserToken) {
+            throw new IllegalArgumentException("Userprincipal not set, user token required.");
         }
-        if (! (userPrincipal instanceof BasicUibBruker)) {
+        if (userPrincipal != null && ! (userPrincipal instanceof BasicUibBruker)) {
             throw new IllegalArgumentException("Userprincipal not of type BasicUibBruker, was of type ");
         }
 
