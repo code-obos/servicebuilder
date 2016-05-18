@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableSet.builder;
@@ -23,8 +24,8 @@ public class BasicUibBruker implements UibBruker {
     public final String etternavn;
     public final String adBrukernavn;
     public final String userTokenId;
-    public final ImmutableSet<UibRolle> uibRoller;
 
+    private final Tilgangssjekker tilgangssjekker;
     private final ImmutableSet<String> tilganger;
 
     public BasicUibBruker(UserToken userToken, ImmutableList<UibToJavaxRole> tilganger) {
@@ -42,12 +43,7 @@ public class BasicUibBruker implements UibBruker {
             this.adBrukernavn = null;
         }
 
-        ImmutableSet.Builder<UibRolle> uibRollerBuilder = ImmutableSet.<UibRolle>builder();
-        for (UserRole tmpRole : userToken.getRoles()) {
-            UibRolle uibRolle = new UibRolle(tmpRole.getIdentity().getOrgId(), tmpRole.getIdentity().getAppId(), tmpRole.getIdentity().getName(), tmpRole.getValue());
-            uibRollerBuilder.add(uibRolle);
-        }
-        this.uibRoller = uibRollerBuilder.build();
+        tilgangssjekker = new Tilgangssjekker(userToken);
 
         ImmutableSet.Builder<String> allowedRolesBuilder = ImmutableSet.<String>builder();
         for (UibToJavaxRole mapper : tilganger) {
@@ -70,17 +66,12 @@ public class BasicUibBruker implements UibBruker {
         return (Strings.nullToEmpty(fornavn) + " " + Strings.nullToEmpty(etternavn)).trim();
     }
 
-    public boolean harTilgang(String appId, String orgId, String rollenavn) {
-        for (UibRolle rolle : uibRoller) {
-            if (rolle.getAppId() == null || rolle.getOrgId() == null || rolle.getNavn() == null) {
-                continue;
-            }
-            if (rolle.getAppId().equalsIgnoreCase(appId) && rolle.getOrgId().equalsIgnoreCase(orgId) && rolle.getNavn().equalsIgnoreCase(rollenavn)) {
-                return true;
-            }
-        }
+    public ImmutableSet<UibRolle> getUibRoller() {
+        return tilgangssjekker.getUibRoller();
+    }
 
-        return false;
+    public boolean harTilgang(String appId, String orgId, String rollenavn) {
+        return tilgangssjekker.harTilgang(appId, orgId, rollenavn);
     }
 
     public static UibBrukerProvider provider(Iterable<UibToJavaxRole> tilgangMappers) {

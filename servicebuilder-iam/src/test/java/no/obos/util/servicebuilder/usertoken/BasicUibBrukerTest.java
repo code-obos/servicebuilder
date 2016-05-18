@@ -11,52 +11,29 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.APP_ID_STYREROMMET;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.ORGID_DEFAULT;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.ORGID_SELSKAP;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.ROLLENAVN_FK;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.ROLLENAVN_REGNSKAP;
+import static no.obos.util.servicebuilder.usertoken.UserTokenMockFactory.ROLLENAVN_RK;
 
 public class BasicUibBrukerTest {
-    private static final String APP_ID_STYREROMMET = "201";
-    private static final String ORGID_DEFAULT = "999";
-    private static final String ORGID_SELSKAP = "001";
-    private static final String ROLLENAVN_REGNSKAP = "REGNSKAP";
-    private static final String ROLLENAVN_FK = "FK";
-    private static final String ROLLENAVN_RK = "RK";
 
-    @Test
-    public void testHarTilgang() {
-        UserToken userToken = userTokenWithMockRoles(ROLLENAVN_REGNSKAP, ROLLENAVN_FK);
-        ImmutableList.Builder<UibToJavaxRole> rolleBuilder = ImmutableList.builder();
-        rolleBuilder.add(new UibToJavaxRoleMockImpl(ROLLENAVN_FK));
-
-        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, rolleBuilder.build());
-        assertTrue(basicUibBruker.harTilgang(APP_ID_STYREROMMET, ORGID_SELSKAP, ROLLENAVN_REGNSKAP));
-    }
-
-    @Test
-    public void testHarTilgangSkalReturnereFalseHvisIkkeTilgang() {
-        UserToken userToken = userTokenWithMockRoles(ROLLENAVN_FK);
-        ImmutableList.Builder<UibToJavaxRole> rolleBuilder = ImmutableList.builder();
-        rolleBuilder.add(new UibToJavaxRoleMockImpl(ROLLENAVN_FK));
-
-        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, rolleBuilder.build());
-        assertFalse(basicUibBruker.harTilgang(APP_ID_STYREROMMET, ORGID_SELSKAP, ROLLENAVN_REGNSKAP));
-    }
 
     @Test
     public void testIsUserInRole() {
         UserToken userToken = userTokenWithMockRoles(ROLLENAVN_REGNSKAP, ROLLENAVN_FK);
-        ImmutableList.Builder<UibToJavaxRole> rolleBuilder = ImmutableList.builder();
-        rolleBuilder.add(new UibToJavaxRoleMockImpl(ROLLENAVN_FK));
 
-        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, rolleBuilder.build());
+        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, ImmutableList.of(new UibToJavaxRoleMockImpl(ROLLENAVN_FK)));
         assertTrue(basicUibBruker.isUserInRole(ROLLENAVN_FK));
     }
 
     @Test
     public void testIsUserInRoleSkalReturnereFalseHvisBrukerIkkeHarRollen() {
         UserToken userToken = userTokenWithMockRoles(ROLLENAVN_RK);
-        ImmutableList.Builder<UibToJavaxRole> rolleBuilder = ImmutableList.builder();
-        rolleBuilder.add(new UibToJavaxRoleMockImpl(ROLLENAVN_RK));
 
-        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, rolleBuilder.build());
+        BasicUibBruker basicUibBruker = new BasicUibBruker(userToken, ImmutableList.of(new UibToJavaxRoleMockImpl(ROLLENAVN_RK)));
         assertFalse(basicUibBruker.isUserInRole(ROLLENAVN_FK));
     }
 
