@@ -68,7 +68,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         });
         jerseyConfig.addBinder(binder -> {
             binder.bind(configuration).to(Configuration.class);
-            binder.bind(ExceptionUtil.class).to(ExceptionUtil.class);
+            binder.bindAsContract(ExceptionUtil.class);
         });
     }
 

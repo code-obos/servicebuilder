@@ -12,7 +12,8 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Slf4j
 public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProcessingException> {
-    @Inject ExceptionUtil exceptionUtil;
+    @Inject
+    private ExceptionUtil exceptionUtil;
 
     @Override
     public Response toResponse(JsonProcessingException exception) {

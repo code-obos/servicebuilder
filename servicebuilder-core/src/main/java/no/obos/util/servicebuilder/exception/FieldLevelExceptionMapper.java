@@ -15,7 +15,8 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Slf4j
 public class FieldLevelExceptionMapper implements ExceptionMapper<FieldLevelValidationException> {
-    @Inject ExceptionUtil exceptionUtil;
+    @Inject
+    private ExceptionUtil exceptionUtil;
 
     @Override
     public Response toResponse(FieldLevelValidationException exception) {

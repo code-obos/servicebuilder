@@ -11,7 +11,8 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
-    @Inject ExceptionUtil exceptionUtil;
+    @Inject
+    private ExceptionUtil exceptionUtil;
 
     @Override
     public Response toResponse(RuntimeException exception) {

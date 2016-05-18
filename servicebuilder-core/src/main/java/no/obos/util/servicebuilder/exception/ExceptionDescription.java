@@ -20,7 +20,7 @@ public class ExceptionDescription {
     public final Integer status;
 
     /**
-     * a brief title for the error condition. Should be the same for every problem of the same type.
+     * A brief title for the error condition. Should be the same for every problem of the same type.
      * Defaults to the text description of the HTTP status code or "Unclassified error" for codes without standard description
      */
     public final String title;

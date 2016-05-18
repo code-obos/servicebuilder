@@ -13,7 +13,8 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 @Slf4j
 public class ValidationExceptionMapper implements ExceptionMapper<ValidationException> {
 
-    @Inject ExceptionUtil exceptionUtil;
+    @Inject
+    private ExceptionUtil exceptionUtil;
 
     @Override
     public Response toResponse(ValidationException exception) {

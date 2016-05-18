@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.ExceptionMapperAddon;
 import no.obos.util.servicebuilder.exception.domain.LogLevel;
@@ -21,20 +22,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
-final public class ExceptionUtil {
+public final class ExceptionUtil {
 
     public static final String APPLICATION_PROBLEM_JSON = "application/problem+json";
     public static final String APPLICATION_PROBLEM_XML = MediaType.APPLICATION_XML;
 
 
     @Context
-    protected HttpHeaders headers;
+    private HttpHeaders headers;
 
     @Inject
-    ExceptionMapperAddon.Configuration config;
+    private ExceptionMapperAddon.Configuration config;
 
     @Context
-    HttpServletRequest request;
+    private HttpServletRequest request;
 
     private final static ImmutableMap<MediaType, String> mediaTypeMap = ImmutableMap.<MediaType, String>builder()
             .put(MediaType.APPLICATION_JSON_TYPE, ExceptionUtil.APPLICATION_PROBLEM_JSON)
@@ -91,7 +92,7 @@ final public class ExceptionUtil {
     }
 
     public Response problemDescriptionToReponse(ExceptionDescription problem) {
-        ProblemResponse problemResponse = new ProblemResponse(problem.title, problem.detail, problem.status, problem.reference);
+        val problemResponse = new ProblemResponse(problem.title, problem.detail, problem.status, problem.reference);
         String mediaType = getMediaType();
         return Response.status(problem.status).type(mediaType).entity(problemResponse).build();
     }
@@ -139,9 +140,6 @@ final public class ExceptionUtil {
         }
 
         if (headers != null) {
-            for (Map.Entry<String, List<String>> i : headers.getRequestHeaders().entrySet()) {
-
-            }
             Joiner joiner = Joiner.on(", ").skipNulls();
             headers.getRequestHeaders().entrySet().forEach(entry -> {
                 String headerName = entry.getKey();
@@ -233,7 +231,7 @@ final public class ExceptionUtil {
             return APPLICATION_PROBLEM_JSON;
         }
         List<MediaType> acceptableMediaTypes = headers.getAcceptableMediaTypes();
-        Optional<String> firstAcceptableMediaType = acceptableMediaTypes.stream().map(mt -> mediaTypeMap.get(mt)).filter(mt -> mt != null).findFirst();
+        Optional<String> firstAcceptableMediaType = acceptableMediaTypes.stream().map(mediaTypeMap::get).filter(mt -> mt != null).findFirst();
         return firstAcceptableMediaType.orElse(APPLICATION_PROBLEM_JSON);
     }
 
