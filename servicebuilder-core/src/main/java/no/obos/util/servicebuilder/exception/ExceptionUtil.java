@@ -29,13 +29,14 @@ public final class ExceptionUtil {
 
 
     @Context
-    private HttpHeaders headers;
+    HttpHeaders headers;
 
     @Inject
-    private ExceptionMapperAddon.Configuration config;
+    ExceptionMapperAddon.Configuration config;
 
     @Context
-    private HttpServletRequest request;
+    HttpServletRequest request;
+
 
     private final static ImmutableMap<MediaType, String> mediaTypeMap = ImmutableMap.<MediaType, String>builder()
             .put(MediaType.APPLICATION_JSON_TYPE, ExceptionUtil.APPLICATION_PROBLEM_JSON)
@@ -66,8 +67,15 @@ public final class ExceptionUtil {
             withDefaults = withDefaults.logLevel(LogLevel.ERROR);
         }
 
-        if (problem.logStackTrace == null) {
-            withDefaults = withDefaults.logStackTrace(shouldPrintStacktrace(problem.exception, config.stacktraceConfig));
+        if (config != null) {
+            if (problem.logStackTrace == null) {
+                withDefaults = withDefaults.logStackTrace(shouldPrintStacktrace(problem.exception, config.stacktraceConfig));
+            }
+        } else {
+            if (problem.logStackTrace == null) {
+                log.warn("Config not set in ExceptionUtil");
+                withDefaults = withDefaults.logStackTrace(true);
+            }
         }
 
         if (problem.logger == null) {
@@ -100,17 +108,17 @@ public final class ExceptionUtil {
     public void logProblem(ExceptionDescription problem) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Caught exception of type: %s\n", problem.exception.getClass().getName()));
-        if(problem.status != null && ! Strings.isNullOrEmpty(problem.title)){
-            sb.append(String.format("Problem type: %d - %s\n",  problem.status, problem.title));
+        if (problem.status != null && ! Strings.isNullOrEmpty(problem.title)) {
+            sb.append(String.format("Problem type: %d - %s\n", problem.status, problem.title));
         }
-        if(! Strings.isNullOrEmpty(problem.detail)){
-            sb.append(String.format("Detail message: %s\n",  problem.detail));
+        if (! Strings.isNullOrEmpty(problem.detail)) {
+            sb.append(String.format("Detail message: %s\n", problem.detail));
         }
-        if(! Strings.isNullOrEmpty(problem.reference)){
-            sb.append(String.format("Feilreferanse: %s\n",  problem.reference));
+        if (! Strings.isNullOrEmpty(problem.reference)) {
+            sb.append(String.format("Feilreferanse: %s\n", problem.reference));
         }
         if (! Strings.isNullOrEmpty(problem.internalMessage)) {
-            sb.append(String.format("Additional info: %s\n",  problem.internalMessage));
+            sb.append(String.format("Additional info: %s\n", problem.internalMessage));
         }
         sb.append("Context:\n");
         sb.append(getContextDescription());
@@ -126,14 +134,14 @@ public final class ExceptionUtil {
         if (request != null) {
             if (! Strings.isNullOrEmpty(request.getRequestURI())) {
                 String method = Strings.nullToEmpty(request.getMethod());
-                String query = (Strings.isNullOrEmpty(request.getQueryString())) ? "" : "?"+request.getQueryString();
+                String query = (Strings.isNullOrEmpty(request.getQueryString())) ? "" : "?" + request.getQueryString();
                 sb.append(String.format("  uri: %s %s%s\n", method, request.getRequestURI(), query));
             }
             if (request.getUserPrincipal() != null) {
-                sb.append(String.format("  userPrincipal: %s\n",  request.getUserPrincipal().toString()));
+                sb.append(String.format("  userPrincipal: %s\n", request.getUserPrincipal().toString()));
             }
-            if(request.getRemoteAddr() != null) {
-                sb.append(String.format("  remoteAddr: %s\n",  request.getRemoteAddr()));
+            if (request.getRemoteAddr() != null) {
+                sb.append(String.format("  remoteAddr: %s\n", request.getRemoteAddr()));
             }
         } else {
             log.warn("Request context null in exceptionUtil");

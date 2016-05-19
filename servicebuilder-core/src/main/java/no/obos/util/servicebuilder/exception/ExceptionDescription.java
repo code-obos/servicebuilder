@@ -2,11 +2,15 @@ package no.obos.util.servicebuilder.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import no.obos.util.servicebuilder.exception.domain.LogLevel;
 import org.slf4j.Logger;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class ExceptionDescription {
 
     /**
