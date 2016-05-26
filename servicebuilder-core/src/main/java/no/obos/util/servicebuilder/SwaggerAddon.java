@@ -47,7 +47,7 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
         apiDocServletHolder.setInitParameter("api.version", configuration.apiVersion);
         //Remove leading / as swagger adds its own
         String apiBasePath =
-                configuration.apiBasePath.charAt(0) == '/'
+                "//".equals(configuration.apiBasePath.substring(0, 1))
                         ? configuration.apiBasePath.substring(1)
                         : configuration.apiBasePath;
         apiDocServletHolder.setInitParameter("swagger.api.basepath", apiBasePath);
