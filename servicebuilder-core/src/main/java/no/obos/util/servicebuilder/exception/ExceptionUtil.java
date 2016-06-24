@@ -108,6 +108,7 @@ public final class ExceptionUtil {
     public void logProblem(ExceptionDescription problem) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Caught exception of type: %s\n", problem.exception.getClass().getName()));
+        sb.append(String.format("Exception message: %s\n", problem.exception.getLocalizedMessage()));
         if (problem.status != null && ! Strings.isNullOrEmpty(problem.title)) {
             sb.append(String.format("Problem type: %d - %s\n", problem.status, problem.title));
         }
