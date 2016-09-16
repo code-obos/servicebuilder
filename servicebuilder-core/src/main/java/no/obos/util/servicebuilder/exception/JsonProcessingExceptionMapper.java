@@ -2,7 +2,7 @@ package no.obos.util.servicebuilder.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.exception.domain.LogLevel;
+import no.obos.util.servicebuilder.LogLevel;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;

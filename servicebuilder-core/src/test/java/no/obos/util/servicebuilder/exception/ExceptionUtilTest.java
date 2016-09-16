@@ -2,8 +2,9 @@ package no.obos.util.servicebuilder.exception;
 
 import com.google.common.collect.ImmutableMap;
 import no.obos.util.model.ProblemResponse;
+import no.obos.util.servicebuilder.ExceptionDescription;
 import no.obos.util.servicebuilder.ExceptionMapperAddon;
-import no.obos.util.servicebuilder.exception.domain.LogLevel;
+import no.obos.util.servicebuilder.LogLevel;
 import org.junit.Test;
 import org.slf4j.Logger;
 

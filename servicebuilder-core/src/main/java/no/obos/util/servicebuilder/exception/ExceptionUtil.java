@@ -6,8 +6,9 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import no.obos.util.model.ProblemResponse;
+import no.obos.util.servicebuilder.ExceptionDescription;
 import no.obos.util.servicebuilder.ExceptionMapperAddon;
-import no.obos.util.servicebuilder.exception.domain.LogLevel;
+import no.obos.util.servicebuilder.LogLevel;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
