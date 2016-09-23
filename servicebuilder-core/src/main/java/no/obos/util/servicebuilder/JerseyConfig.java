@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import no.obos.util.config.AppConfig;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -58,8 +57,8 @@ public class JerseyConfig {
         return this;
     }
 
-    public JerseyConfig addHk2ConfigModuleWithProps(Function<AppConfig, Hk2ConfigModule> confFromProps) {
-        Hk2ConfigModule conf = confFromProps.apply(serviceBuilder.appConfig);
+    public JerseyConfig addHk2ConfigModuleWithProps(Function<PropertyProvider, Hk2ConfigModule> confFromProps) {
+        Hk2ConfigModule conf = confFromProps.apply(serviceBuilder.properties);
         addRegistations(conf);
         addBinder(conf);
         return this;
@@ -71,9 +70,9 @@ public class JerseyConfig {
     }
 
     public JerseyConfig with(ServiceAddonConfig<?> addonConfig) {
-        if(serviceBuilder != null) {
-            if(serviceBuilder.appConfig != null) {
-                addonConfig.addAppConfig(serviceBuilder.appConfig);
+        if (serviceBuilder != null) {
+            if (serviceBuilder.properties != null) {
+                addonConfig.addProperties(serviceBuilder.properties);
             }
             addonConfig.addContext(serviceBuilder);
         }
@@ -83,9 +82,9 @@ public class JerseyConfig {
     }
 
     public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
-        if(serviceBuilder != null) {
-            if(serviceBuilder.appConfig != null) {
-                addonConfig.addAppConfig(serviceBuilder.appConfig);
+        if (serviceBuilder != null) {
+            if (serviceBuilder.properties != null) {
+                addonConfig.addProperties(serviceBuilder.properties);
             }
             addonConfig.addContext(serviceBuilder);
         }
@@ -104,11 +103,13 @@ public class JerseyConfig {
         void applyRegistations(ResourceConfig resourceConfig);
     }
 
-    public interface Hk2ConfigModule extends Binder, Registrator{ }
+
+    public interface Hk2ConfigModule extends Binder, Registrator {}
 
 
     final class InjectionBinder extends AbstractBinder {
-        @Override protected void configure() {
+        @Override
+        protected void configure() {
             for (Binder binder : binders) {
                 binder.addBindings(this);
             }

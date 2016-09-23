@@ -3,7 +3,6 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
@@ -92,8 +91,8 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
-
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
@@ -34,9 +32,9 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
                 .fasttrackFilter(DEFAULT_FASTTRACK_FILTER);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, ApplicationTokenFilterAddon.Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(ACCEPTED_APP_IDS);
-        ArrayList<String> acceptedIdStrings = Lists.newArrayList(appConfig.get(ACCEPTED_APP_IDS).split(","));
+    public static void configFromProperties(PropertyProvider properties, ApplicationTokenFilterAddon.Configuration.ConfigurationBuilder configBuilder) {
+        properties.failIfNotPresent(ACCEPTED_APP_IDS);
+        ArrayList<String> acceptedIdStrings = Lists.newArrayList(properties.get(ACCEPTED_APP_IDS).split(","));
         List<Integer> acceptedIds = acceptedIdStrings.stream()
                 .map(Integer::valueOf)
                 .collect(toList());
@@ -74,12 +72,14 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
+
     @Builder
     @AllArgsConstructor
     public static class Configuration {
         public final ImmutableList<Integer> acceptedAppIds;
         public final Predicate<ContainerRequestContext> fasttrackFilter;
     }
+
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
     @AllArgsConstructor
@@ -88,8 +88,8 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

@@ -8,10 +8,7 @@ import lombok.EqualsAndHashCode;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 
-import java.util.List;
 import java.util.Optional;
-
-import static com.google.common.collect.ImmutableSet.builder;
 
 
 /**
@@ -62,7 +59,8 @@ public class BasicUibBruker implements UibBruker {
         return tilganger.contains(Strings.nullToEmpty(tilgang).toUpperCase());
     }
 
-    @Override public String getName() {
+    @Override
+    public String getName() {
         return (Strings.nullToEmpty(fornavn) + " " + Strings.nullToEmpty(etternavn)).trim();
     }
 
@@ -86,7 +84,8 @@ public class BasicUibBruker implements UibBruker {
     public static class BasicUibBrukerProvider implements UibBrukerProvider {
         final ImmutableList<UibToJavaxRole> tilganger;
 
-        @Override public UibBruker newUibBruker(UserToken userToken) {
+        @Override
+        public UibBruker newUibBruker(UserToken userToken) {
             return new BasicUibBruker(userToken, tilganger);
         }
     }

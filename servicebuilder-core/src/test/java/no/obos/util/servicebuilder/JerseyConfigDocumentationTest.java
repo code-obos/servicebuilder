@@ -27,14 +27,16 @@ public class JerseyConfigDocumentationTest {
     @Test
     public void bindings_and_registrations_are_standard_hk2_in_interfaces() {
         JerseyConfig.Binder binder = new JerseyConfig.Binder() {
-            @Override public void addBindings(AbstractBinder binder) {
+            @Override
+            public void addBindings(AbstractBinder binder) {
                 binder.bind("tekst").to(String.class).named("prosa");
                 binder.bind(Integer.class).to(Integer.class).in(Singleton.class);
             }
         };
 
         JerseyConfig.Registrator registrator = new JerseyConfig.Registrator() {
-            @Override public void applyRegistations(ResourceConfig resourceConfig) {
+            @Override
+            public void applyRegistations(ResourceConfig resourceConfig) {
                 resourceConfig
                         .register(Boolean.class)
                         .register(Double.class);
@@ -56,12 +58,14 @@ public class JerseyConfigDocumentationTest {
     @Test
     public void bindings_and_registrations_may_be_combined_into_hk2Addin() {
         JerseyConfig.Hk2ConfigModule hk2ConfigModule = new JerseyConfig.Hk2ConfigModule() {
-            @Override public void addBindings(AbstractBinder binder) {
+            @Override
+            public void addBindings(AbstractBinder binder) {
                 binder.bind("tekst").to(String.class);
                 binder.bind(Integer.class).to(Integer.class);
             }
 
-            @Override public void applyRegistations(ResourceConfig resourceConfig) {
+            @Override
+            public void applyRegistations(ResourceConfig resourceConfig) {
                 resourceConfig
                         .register(Boolean.class)
                         .register(Double.class);
@@ -152,6 +156,6 @@ public class JerseyConfigDocumentationTest {
     @Before
     public void init() {
         serviceBuilderWithDefaults = ServiceBuilder
-                .defaults(JerseyConfigDocumentationTest.class);
+                .defaults(new TestService());
     }
 }

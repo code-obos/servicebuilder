@@ -5,7 +5,6 @@ import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import no.obos.util.servicebuilder.usertoken.UibToJavaxRole;
-
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
@@ -76,11 +75,13 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
 
     public static final UibToJavaxRole UIB_TO_JAVAX_ROLE = new UibToJavaxRole() {
 
-        @Override public String getJavaxRoleName() {
+        @Override
+        public String getJavaxRoleName() {
             return javaxRole;
         }
 
-        @Override public boolean tilgangForUibRolle(UserRole role) {
+        @Override
+        public boolean tilgangForUibRolle(UserRole role) {
             return uibRoleNameValid.equals(role.getIdentity().getName());
         }
     };

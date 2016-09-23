@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Singular;
-import no.obos.util.config.AppConfig;
 import no.obos.util.log.ObosLogFilter;
 import org.eclipse.jetty.servlet.FilterHolder;
 
@@ -21,7 +20,8 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
 
     public final Configuration configuration;
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
         ObosLogFilter logFilter = new ObosLogFilter(path -> {
             for (String blocked : configuration.blacklist) {
                 if (blocked.equalsIgnoreCase(path)) {
@@ -63,8 +63,8 @@ public class ObosLogFilterAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

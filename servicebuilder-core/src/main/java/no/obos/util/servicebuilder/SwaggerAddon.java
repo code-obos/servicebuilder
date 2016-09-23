@@ -5,7 +5,6 @@ import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.jersey.config.JerseyJaxrsConfig;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
@@ -26,23 +25,25 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
                 .apiVersion(DEFAULT_API_VERSION);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_API_BASEURL);
-        configBuilder.apiBasePath(appConfig.get(CONFIG_KEY_API_BASEURL));
-        String serviceVersion = appConfig.get(ServiceBuilder.CONFIG_KEY_SERVICE_VERSION);
+    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
+        properties.failIfNotPresent(CONFIG_KEY_API_BASEURL);
+        configBuilder.apiBasePath(properties.get(CONFIG_KEY_API_BASEURL));
+        String serviceVersion = properties.get(ServiceBuilder.CONFIG_KEY_SERVICE_VERSION);
         if (serviceVersion != null) {
             configBuilder.apiVersion(serviceVersion);
         }
     }
 
-    @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
+    @Override
+    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> registrator
                 .register(ApiListingResource.class)
                 .register(SwaggerSerializers.class)
         );
     }
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
         ServletHolder apiDocServletHolder = new ServletHolder(new JerseyJaxrsConfig());
         apiDocServletHolder.setInitParameter("api.version", configuration.apiVersion);
         //Remove leading / as swagger adds its own
@@ -72,8 +73,8 @@ public class SwaggerAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

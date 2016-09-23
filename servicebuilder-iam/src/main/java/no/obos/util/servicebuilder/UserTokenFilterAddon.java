@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import no.obos.util.servicebuilder.usertoken.BasicUibBrukerInjectionFactory;
 import no.obos.util.servicebuilder.usertoken.UibBrukerProvider;
@@ -48,7 +47,8 @@ public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
                 .fasttrackFilter(DEFAULT_FASTTRACK_FILTER);
     }
 
-    @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
+    @Override
+    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     binder.bind(configuration).to(Configuration.class);
                     if (configuration.uibBrukerProvider instanceof BasicUibBruker.BasicUibBrukerProvider) {
@@ -80,8 +80,8 @@ public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

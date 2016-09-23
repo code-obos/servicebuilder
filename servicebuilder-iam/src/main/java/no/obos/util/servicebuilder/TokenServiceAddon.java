@@ -6,7 +6,6 @@ import no.obos.iam.jersey.client.WebClientImpl;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceHttpClient;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.config.AppConfig;
 
 /**
  * Konfigurerer klient til TokenService.
@@ -25,23 +24,25 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
         tokenServiceClient = new TokenServiceHttpClient(new WebClientImpl(configuration.url), configuration.appId, configuration.appSecret);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
+    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
+        properties.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
         configBuilder
-                .url(appConfig.get(CONFIG_KEY_TOKENSERVICE_URL))
-                .appId(appConfig.get(CONFIG_KEY_APP_ID))
-                .appSecret(appConfig.get(CONFIG_KEY_APP_SECRET));
+                .url(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
+                .appId(properties.get(CONFIG_KEY_APP_ID))
+                .appSecret(properties.get(CONFIG_KEY_APP_SECRET));
     }
 
     public static Configuration.ConfigurationBuilder defaultConfiguration() {
         return Configuration.builder();
     }
 
-    @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
+    @Override
+    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> binder.bind(tokenServiceClient).to(TokenServiceClient.class));
     }
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
         ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + configuration.url, configuration.url);
     }
 
@@ -62,8 +63,8 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

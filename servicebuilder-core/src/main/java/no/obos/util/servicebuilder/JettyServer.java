@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionManager;
@@ -43,18 +42,18 @@ public final class JettyServer {
         this.resourceConfig = resourceConfig;
         this.configuration = configuration;
         server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
-//        if(resourceConfig.stateful) {
-//            WebAppContext webAppContext = new WebAppContext();
-//
-//            webAppContext.setContextPath(configuration.contextPath);
-//            webAppContext.setParentLoaderPriority(true);
-//            webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(WebAppAddon.DEFAULT_SESSION_TIMEOUT_SECONDS);
-//            servletContext = webAppContext;
-//
-//        } else {
-            servletContext = new ServletContextHandler(server, configuration.contextPath);
+        //        if(resourceConfig.stateful) {
+        //            WebAppContext webAppContext = new WebAppContext();
+        //
+        //            webAppContext.setContextPath(configuration.contextPath);
+        //            webAppContext.setParentLoaderPriority(true);
+        //            webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(WebAppAddon.DEFAULT_SESSION_TIMEOUT_SECONDS);
+        //            servletContext = webAppContext;
+        //
+        //        } else {
+        servletContext = new ServletContextHandler(server, configuration.contextPath);
 
-        if(resourceConfig.stateful) {
+        if (resourceConfig.stateful) {
             HashSessionIdManager hashSessionIdManager = new HashSessionIdManager();
             SessionHandler sessionHandler = new SessionHandler();
             SessionManager sessionManager = new HashSessionManager();
@@ -114,11 +113,11 @@ public final class JettyServer {
                     .bindAddress(DEFAULT_BIND_ADDRESS);
         }
 
-        public static ConfigurationBuilder fromAppConfig(AppConfig appConfig) {
-            appConfig.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
+        public static ConfigurationBuilder fromProperties(PropertyProvider properties) {
+            properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
             return defaultBuilder()
-                    .contextPath(appConfig.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
-                    .bindPort(Integer.parseInt(appConfig.get(CONFIG_KEY_SERVER_PORT)));
+                    .contextPath(properties.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
+                    .bindPort(Integer.parseInt(properties.get(CONFIG_KEY_SERVER_PORT)));
         }
     }
 

@@ -3,7 +3,6 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.cors.ResponseCorsFilter;
 
 /**
@@ -69,8 +68,8 @@ public class CorsFilterAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

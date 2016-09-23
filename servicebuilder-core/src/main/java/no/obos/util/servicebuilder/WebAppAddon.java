@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,24 +32,25 @@ public class WebAppAddon extends ServiceAddonEmptyDefaults {
                 .sessionTimeoutSeconds(DEFAULT_SESSION_TIMEOUT_SECONDS);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
-        appConfig.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
+    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
+        properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            configBuilder.resourceUri(new URI(appConfig.get(CONFIG_KEY_RESOURCE_URL)));
+            configBuilder.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
 
 
         WebAppContext webAppContext;
         webAppContext = new WebAppContext();
         String warUrlString;
         String scheme = configuration.resourceUri.getScheme();
-        if(scheme == null) {
+        if (scheme == null) {
             throw new IllegalStateException("URI did not contain scheme: " + configuration.resourceUri.toString());
         }
         String path = configuration.resourceUri.getSchemeSpecificPart();
@@ -96,8 +96,8 @@ public class WebAppAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

@@ -3,7 +3,6 @@ package no.obos.util.servicebuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.metrics.ObosMetricsServlet;
-import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
@@ -23,7 +22,8 @@ public class MetricsAddon extends ServiceAddonEmptyDefaults {
                 .pathSpec(DEFAULT_PATH_SPEC);
     }
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
         ServletHolder metricsServletHolder = new ServletHolder(new ObosMetricsServlet(jettyServer.getClass()));
         jettyServer.getServletContext().addServlet(metricsServletHolder, configuration.pathSpec);
     }
@@ -42,8 +42,8 @@ public class MetricsAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

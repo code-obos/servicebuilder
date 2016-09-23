@@ -48,7 +48,7 @@ public class AddonDocumentationTest {
 
     @Test
     public void addons_expose_config() {
-        String parameterFromConfig = serviceBuilderWithDefaults.getAppConfig().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
+        String parameterFromConfig = serviceBuilderWithDefaults.getProperties().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
         SwaggerAddon basicDatasourceAddon = serviceBuilderWithDefaults
                 .newAddon(SwaggerAddon.defaults());
         assertEquals(parameterFromConfig, basicDatasourceAddon.configuration.apiBasePath);
@@ -65,7 +65,7 @@ public class AddonDocumentationTest {
     public void addons_may_retreive_config_from_properties() {
         SwaggerAddon.Configuration.ConfigurationBuilder addonConfigurationBuilder = SwaggerAddon.defaultConfiguration();
 
-        SwaggerAddon.configFromAppConfig(serviceBuilderWithDefaults.getAppConfig(), addonConfigurationBuilder);
+        SwaggerAddon.configFromProperties(serviceBuilderWithDefaults.getProperties(), addonConfigurationBuilder);
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AddonDocumentationTest {
     @Test
     public void standard_configuration_of_addon_uses_defaults_then_appconfig_and_environment_then_applies_user_options() {
         String parameterFromUser = "quite some basepath";
-        String parameterFromConfig = serviceBuilderWithDefaults.getAppConfig().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
+        String parameterFromConfig = serviceBuilderWithDefaults.getProperties().get(SwaggerAddon.CONFIG_KEY_API_BASEURL);
         SwaggerAddon basicDatasourceAddon = serviceBuilderWithDefaults
                 .newAddon(SwaggerAddon.configure(cfg -> cfg
                         .apiBasePath(parameterFromUser)
@@ -104,7 +104,7 @@ public class AddonDocumentationTest {
     @Before
     public void init() {
         serviceBuilderWithDefaults = ServiceBuilder
-                .defaults(AddonDocumentationTest.class)
+                .defaults(new TestService())
                 .configJersey(JerseyConfig.defaults())
                 .configJettyServer(JettyServer.defaults());
     }

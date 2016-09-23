@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 
-import java.util.List;
-
 /**
  * Klasse som implementerer vanlige tilgangssjekker på UserToken
  */
@@ -15,7 +13,7 @@ public class Tilgangssjekker {
 
     public Tilgangssjekker(UserToken userToken) {
         this.userToken = userToken;
-        ImmutableSet.Builder<UibRolle> uibRollerBuilder = ImmutableSet.<UibRolle>builder();
+        ImmutableSet.Builder<UibRolle> uibRollerBuilder = ImmutableSet.builder();
         for (UserRole tmpRole : userToken.getRoles()) {
             UibRolle uibRolle = new UibRolle(tmpRole.getIdentity().getOrgId(), tmpRole.getIdentity().getAppId(), tmpRole.getIdentity().getName(), tmpRole.getValue());
             uibRollerBuilder.add(uibRolle);
@@ -28,7 +26,7 @@ public class Tilgangssjekker {
     }
 
     public boolean harTilgang(String appId, String orgId, String rollenavn) {
-        for (UibRolle rolle :  uibRoller) {
+        for (UibRolle rolle : uibRoller) {
             if (appId.equalsIgnoreCase(rolle.getAppId()) && orgId.equalsIgnoreCase(rolle.getOrgId()) && rollenavn.equalsIgnoreCase(rolle.getNavn())) {
                 return true;
             }

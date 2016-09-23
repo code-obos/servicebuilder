@@ -19,7 +19,7 @@ public class ServiceBuilder {
     public static final String CONFIG_KEY_SERVICE_VERSION = "service.version";
 
     @Getter
-    final AppConfig appConfig;
+    final PropertyProvider properties;
 
     @Getter
     JettyServer jettyServer;
@@ -30,38 +30,41 @@ public class ServiceBuilder {
     @Getter
     public final Configuration configuration;
 
-    ServiceBuilder(AppConfig appConfig, Configuration configuration) {
-        this.appConfig = appConfig;
+    public final ServiceDefinition serviceDefinition;
+
+    ServiceBuilder(ServiceDefinition serviceDefinition, PropertyProvider properties, Configuration configuration) {
+        this.serviceDefinition = serviceDefinition;
+        this.properties = properties;
         this.configuration = configuration;
     }
 
-    public static ServiceBuilder configure(Class classOnLocalClassPath, Configurator customConfiguration) {
+    public static ServiceBuilder configure(ServiceDefinition serviceDefinition, Configurator customConfiguration) {
         Configuration.ConfigurationBuilder builder = Configuration.defaultBuilder();
         Configuration configuration = customConfiguration.apply(builder).build();
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
             if (! appConfig.present(CONFIG_KEY_SERVICE_VERSION)) {
-                setServiceVersionProgrammatically(classOnLocalClassPath, appConfig);
+                setServiceVersionProgrammatically(serviceDefinition.getClass(), appConfig);
             }
         }
-        return new ServiceBuilder(appConfig, configuration);
+        return new ServiceBuilder(serviceDefinition, new AppConfigBackedPropertyProvider(appConfig), configuration);
     }
 
-    public static ServiceBuilder defaults(Class classOnLocalClassPath) {
+    public static ServiceBuilder defaults(ServiceDefinition serviceDefinition) {
         Configuration configuration = Configuration.defaultBuilder().build();
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
-            setServiceVersionProgrammatically(classOnLocalClassPath, appConfig);
+            setServiceVersionProgrammatically(serviceDefinition.getClass(), appConfig);
         }
-        return new ServiceBuilder(appConfig, configuration);
+        return new ServiceBuilder(serviceDefinition, new AppConfigBackedPropertyProvider(appConfig), configuration);
     }
 
     public ServiceBuilder configJersey(JerseyConfig.Configurator configurator) {
         jerseyConfig = configurator.apply(new JerseyConfig(this));
-        if (appConfig != null) {
-            jerseyConfig.addBinder(binder -> binder.bind(appConfig).to(AppConfig.class));
+        if (properties != null) {
+            jerseyConfig.addBinder(binder -> binder.bind(properties).to(PropertyProvider.class));
         }
         return this;
     }
@@ -70,8 +73,8 @@ public class ServiceBuilder {
     public ServiceBuilder configJettyServer(JettyServer.Configurator configurator) {
         Preconditions.checkNotNull(jerseyConfig);
         JettyServer.Configuration jettyConfiguration;
-        if (appConfig != null) {
-            jettyConfiguration = configurator.apply(JettyServer.Configuration.fromAppConfig(appConfig)).build();
+        if (properties != null) {
+            jettyConfiguration = configurator.apply(JettyServer.Configuration.fromProperties(properties)).build();
         } else {
             jettyConfiguration = configurator.apply(JettyServer.Configuration.defaultBuilder()).build();
         }
@@ -81,8 +84,8 @@ public class ServiceBuilder {
 
 
     public ServiceBuilder with(ServiceAddonConfig<?> addonConfig) {
-        if (appConfig != null) {
-            addonConfig.addAppConfig(appConfig);
+        if (properties != null) {
+            addonConfig.addProperties(properties);
         }
         addonConfig.addContext(this);
         ServiceAddon addon = addonConfig.init();
@@ -93,8 +96,8 @@ public class ServiceBuilder {
     }
 
     public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
-        if (appConfig != null) {
-            addonConfig.addAppConfig(appConfig);
+        if (properties != null) {
+            addonConfig.addProperties(properties);
         }
         addonConfig.addContext(this);
         T addon = addonConfig.init();
@@ -112,8 +115,8 @@ public class ServiceBuilder {
     }
 
     public <Addon extends ServiceAddon> Addon newAddon(ServiceAddonConfig<Addon> addonConfig) {
-        if (appConfig != null) {
-            addonConfig.addAppConfig(appConfig);
+        if (properties != null) {
+            addonConfig.addProperties(properties);
         }
         addonConfig.addContext(this);
         return addonConfig.init();
@@ -127,8 +130,8 @@ public class ServiceBuilder {
 
 
         if (configuration.readProxyFromConfig) {
-            appConfig.failIfNotPresent(CONFIG_KEY_PROXY);
-            if ("true".equals(appConfig.get("proxy"))) {
+            properties.failIfNotPresent(CONFIG_KEY_PROXY);
+            if ("true".equals(properties.get("proxy"))) {
                 System.getProperties().put("http.proxyHost", "obosproxy.obos.no");
                 System.getProperties().put("http.proxyPort", "8080");
                 System.getProperties().put("http.proxyUser", "utvadm");

@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.config.AppConfig;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
 
@@ -70,22 +69,23 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
                 .bindQueryRunner(DEFAULT_BIND_QUERYRUNNER);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
+    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
         String name = configBuilder.build().name.orElse(null);
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
-        appConfig.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
+        properties.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         configBuilder
-                .url(appConfig.get(prefix + CONFIG_KEY_DB_URL))
-                .username(appConfig.get(prefix + CONFIG_KEY_DB_USERNAME))
-                .password(appConfig.get(prefix + CONFIG_KEY_DB_PASSWORD))
-                .driverClassName(appConfig.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .validationQuery(appConfig.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
+                .url(properties.get(prefix + CONFIG_KEY_DB_URL))
+                .username(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
+                .password(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
+                .driverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
+                .validationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
 
     }
 
 
 
-    @Override public void addToJerseyConfig(JerseyConfig jerseyConfig) {
+    @Override
+    public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     if (configuration.name.isPresent()) {
                         binder.bind(dataSource).named(configuration.name.get()).to(DataSource.class);
@@ -104,7 +104,8 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         );
     }
 
-    @Override public void addToJettyServer(JettyServer jettyServer) {
+    @Override
+    public void addToJettyServer(JettyServer jettyServer) {
         if (configuration.monitorIntegration) {
             String dataSourceName = configuration.name.map(str -> " (" + str + ")").orElse("");
             ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + configuration.url, dataSource, configuration.validationQuery);
@@ -126,8 +127,8 @@ public class BasicDatasourceAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override

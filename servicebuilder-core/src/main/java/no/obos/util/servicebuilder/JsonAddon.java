@@ -2,11 +2,8 @@ package no.obos.util.servicebuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import no.obos.util.config.AppConfig;
-import no.obos.util.servicebuilder.cors.ResponseCorsFilter;
 import org.glassfish.jersey.jackson.JacksonFeature;
 
 import java.util.function.Supplier;
@@ -49,8 +46,8 @@ public class JsonAddon extends ServiceAddonEmptyDefaults {
         Configuration.ConfigurationBuilder configBuilder;
 
         @Override
-        public void addAppConfig(AppConfig appConfig) {
-            configFromAppConfig(appConfig, configBuilder);
+        public void addProperties(PropertyProvider properties) {
+            configFromProperties(properties, configBuilder);
         }
 
         @Override
