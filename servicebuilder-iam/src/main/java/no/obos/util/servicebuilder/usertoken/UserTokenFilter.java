@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.iam.tokenservice.UserToken;
+import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.UserTokenFilterAddon;
 
 import javax.inject.Inject;
@@ -28,7 +29,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
     @SuppressWarnings("squid:S1166")
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        String usertokenId = requestContext.getHeaderString(UserTokenFilterAddon.USERTOKENID_HEADER);
+        String usertokenId = requestContext.getHeaderString(Constants.USERTOKENID_HEADER);
 
         // Vi slipper gjennom CORS OPTIONS, etc...
         if (allwaysAccept(requestContext)) {

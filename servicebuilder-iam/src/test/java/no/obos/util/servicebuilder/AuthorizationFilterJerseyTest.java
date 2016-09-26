@@ -37,7 +37,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
 
     @Override
     protected Application configure() {
-        return new JerseyConfig()
+        return new JerseyConfig(new TestService())
                 .addRegistations(context -> context
                         .register(Resource.class)
                         .register(JacksonFeature.class)
@@ -56,7 +56,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameValid));
 
         Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(UserTokenFilterAddon.USERTOKENID_HEADER, usertoken)
+                .header(Constants.USERTOKENID_HEADER, usertoken)
                 .get();
         assertEquals(200, response.getStatus());
     }
@@ -68,7 +68,7 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameInvalid));
 
         Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(UserTokenFilterAddon.USERTOKENID_HEADER, usertoken)
+                .header(Constants.USERTOKENID_HEADER, usertoken)
                 .get();
         assertEquals(403, response.getStatus());
     }

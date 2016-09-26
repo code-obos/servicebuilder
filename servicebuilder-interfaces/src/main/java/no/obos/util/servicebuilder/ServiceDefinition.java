@@ -5,8 +5,6 @@ import java.util.List;
 public interface ServiceDefinition {
     String getName();
 
-    String getDescription();
-
     List<Class> getResources();
 
     default JsonConfig getJsonConfig() {

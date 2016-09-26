@@ -1,8 +1,11 @@
 package no.obos.util.servicebuilder;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.List;
@@ -29,10 +32,23 @@ public class JerseyConfig {
     public JerseyConfig(ServiceBuilder serviceBuilder) {
         this.serviceBuilder = serviceBuilder;
         resourceConfig.register(injectionBinder);
+        ServiceDefinition serviceDefinition = serviceBuilder.serviceDefinition;
+        registerServiceDefintion(serviceDefinition);
     }
 
-    public JerseyConfig() {
+    private void registerServiceDefintion(ServiceDefinition serviceDefinition) {
+        serviceDefinition.getResources().forEach(resourceConfig::register);
+
+        ObjectMapper mapper = serviceDefinition.getJsonConfig().get();
+        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+        provider.setMapper(mapper);
+        resourceConfig.register(JacksonFeature.class);
+        resourceConfig.register(provider);
+    }
+
+    public JerseyConfig(ServiceDefinition serviceDefinition) {
         this.serviceBuilder = null;
+        registerServiceDefintion(serviceDefinition);
         resourceConfig.register(injectionBinder);
     }
 

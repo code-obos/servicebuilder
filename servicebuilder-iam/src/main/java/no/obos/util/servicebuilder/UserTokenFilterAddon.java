@@ -25,8 +25,6 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class UserTokenFilterAddon extends ServiceAddonEmptyDefaults {
 
-    public static final String USERTOKENID_HEADER = "X-OBOS-USERTOKENID";
-
     public static final boolean DEFAULT_REQUIRE_USERTOKEN = true;
 
     public static final UibBrukerProvider DEFAULT_UIB_BRUKER_PROVIDER = BasicUibBruker.provider();
