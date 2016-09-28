@@ -11,6 +11,11 @@ import java.util.function.Function;
 
 public class JerseyConfig {
 
+    /**
+     * Is this is stateful service (with session manager)
+     */
+    public final boolean DEFAULT_STATEFUL_SERVICE = false;
+
     @Getter
     final ResourceConfig resourceConfig = new ResourceConfig();
 
@@ -20,6 +25,8 @@ public class JerseyConfig {
 
     final ServiceBuilder serviceBuilder;
 
+    boolean stateful = DEFAULT_STATEFUL_SERVICE;
+
     public JerseyConfig(ServiceBuilder serviceBuilder) {
         this.serviceBuilder = serviceBuilder;
         resourceConfig.register(injectionBinder);
@@ -28,6 +35,11 @@ public class JerseyConfig {
     public JerseyConfig() {
         this.serviceBuilder = null;
         resourceConfig.register(injectionBinder);
+    }
+
+    public JerseyConfig enableStateful() {
+        stateful = true;
+        return this;
     }
 
     public JerseyConfig addBinder(Binder binder) {

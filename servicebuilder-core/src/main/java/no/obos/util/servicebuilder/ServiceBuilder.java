@@ -41,7 +41,9 @@ public class ServiceBuilder {
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
-            setServiceVersion(classOnLocalClassPath, appConfig);
+            if (! appConfig.present(CONFIG_KEY_SERVICE_VERSION)) {
+                setServiceVersionProgrammatically(classOnLocalClassPath, appConfig);
+            }
         }
         return new ServiceBuilder(appConfig, configuration);
     }
@@ -51,7 +53,7 @@ public class ServiceBuilder {
         AppConfig appConfig = null;
         if (configuration.appConfigFromJvmArg) {
             appConfig = new AppConfigLoader().load(APPCONFIG_KEY);
-            setServiceVersion(classOnLocalClassPath, appConfig);
+            setServiceVersionProgrammatically(classOnLocalClassPath, appConfig);
         }
         return new ServiceBuilder(appConfig, configuration);
     }
@@ -79,7 +81,7 @@ public class ServiceBuilder {
 
 
     public ServiceBuilder with(ServiceAddonConfig<?> addonConfig) {
-        if(appConfig != null) {
+        if (appConfig != null) {
             addonConfig.addAppConfig(appConfig);
         }
         addonConfig.addContext(this);
@@ -91,7 +93,7 @@ public class ServiceBuilder {
     }
 
     public <T extends ServiceAddon> T with2(ServiceAddonConfig<T> addonConfig) {
-        if(appConfig != null) {
+        if (appConfig != null) {
             addonConfig.addAppConfig(appConfig);
         }
         addonConfig.addContext(this);
@@ -110,7 +112,7 @@ public class ServiceBuilder {
     }
 
     public <Addon extends ServiceAddon> Addon newAddon(ServiceAddonConfig<Addon> addonConfig) {
-        if(appConfig != null) {
+        if (appConfig != null) {
             addonConfig.addAppConfig(appConfig);
         }
         addonConfig.addContext(this);
@@ -183,7 +185,7 @@ public class ServiceBuilder {
         Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder cfg);
     }
 
-    private static void setServiceVersion(Class classOnLocalClassPath, AppConfig appConfig) {
+    private static void setServiceVersionProgrammatically(Class classOnLocalClassPath, AppConfig appConfig) {
         final Version version = new VersionUtil(classOnLocalClassPath).getVersion();
         appConfig.put(CONFIG_KEY_SERVICE_VERSION, version == null ? "" : version.getMajor() + "." + version.getMinor());
     }

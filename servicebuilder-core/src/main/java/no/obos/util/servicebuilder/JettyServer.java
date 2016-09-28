@@ -8,7 +8,11 @@ import lombok.Setter;
 import no.obos.util.config.AppConfig;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -39,7 +43,25 @@ public final class JettyServer {
         this.resourceConfig = resourceConfig;
         this.configuration = configuration;
         server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
-        servletContext = new ServletContextHandler(server, configuration.contextPath);
+//        if(resourceConfig.stateful) {
+//            WebAppContext webAppContext = new WebAppContext();
+//
+//            webAppContext.setContextPath(configuration.contextPath);
+//            webAppContext.setParentLoaderPriority(true);
+//            webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(WebAppAddon.DEFAULT_SESSION_TIMEOUT_SECONDS);
+//            servletContext = webAppContext;
+//
+//        } else {
+            servletContext = new ServletContextHandler(server, configuration.contextPath);
+
+        if(resourceConfig.stateful) {
+            HashSessionIdManager hashSessionIdManager = new HashSessionIdManager();
+            SessionHandler sessionHandler = new SessionHandler();
+            SessionManager sessionManager = new HashSessionManager();
+            sessionManager.setSessionIdManager(hashSessionIdManager);
+            sessionHandler.setSessionManager(sessionManager);
+            servletContext.setSessionHandler(sessionHandler);
+        }
     }
 
     public JettyServer start() throws Exception {

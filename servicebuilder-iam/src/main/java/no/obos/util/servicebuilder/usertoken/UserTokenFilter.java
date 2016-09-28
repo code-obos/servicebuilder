@@ -44,7 +44,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
             try {
                 userToken = tokenServiceClient.getUserTokenById(usertokenId);
             } catch (TokenServiceClientException e) {
-                throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid");
+                throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid", e);
             }
             if (configuration.requireUserToken && userToken == null) {
                 throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
