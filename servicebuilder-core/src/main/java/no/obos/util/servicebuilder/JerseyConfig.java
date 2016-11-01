@@ -123,7 +123,7 @@ public class JerseyConfig {
     public interface Hk2ConfigModule extends Binder, Registrator {}
 
 
-    final class InjectionBinder extends AbstractBinder {
+    class InjectionBinder extends AbstractBinder {
         @Override
         protected void configure() {
             for (Binder binder : binders) {

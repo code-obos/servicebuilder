@@ -20,7 +20,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import java.net.InetSocketAddress;
 
 @SuppressWarnings("squid:S00112")
-public final class JettyServer {
+public class JettyServer {
     public static final String CONFIG_KEY_SERVER_CONTEXT_PATH = "server.contextPath";
     public static final String CONFIG_KEY_SERVER_PORT = "server.port";
     private static final String DEFAULT_API_PATH_SPEC = "/api/*";

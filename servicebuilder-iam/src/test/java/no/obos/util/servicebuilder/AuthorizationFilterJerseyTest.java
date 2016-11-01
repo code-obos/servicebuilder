@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
+import no.obos.util.servicebuilder.client.TestService;
 import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import no.obos.util.servicebuilder.usertoken.UibToJavaxRole;
 import org.glassfish.jersey.jackson.JacksonFeature;

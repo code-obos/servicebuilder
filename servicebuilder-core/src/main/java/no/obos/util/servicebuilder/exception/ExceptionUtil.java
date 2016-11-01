@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
-public final class ExceptionUtil {
+public class ExceptionUtil {
 
     public static final String APPLICATION_PROBLEM_JSON = "application/problem+json";
     public static final String APPLICATION_PROBLEM_XML = MediaType.APPLICATION_XML;
@@ -101,7 +101,7 @@ public final class ExceptionUtil {
     }
 
     public Response problemDescriptionToReponse(ExceptionDescription problem) {
-        val problemResponse = new ProblemResponse(problem.title, problem.detail, problem.status, problem.reference);
+        ProblemResponse problemResponse = new ProblemResponse(problem.title, problem.detail, problem.status, problem.reference);
         String mediaType = getMediaType();
         return Response.status(problem.status).type(mediaType).entity(problemResponse).build();
     }

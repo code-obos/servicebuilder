@@ -12,11 +12,6 @@ class TestService implements ServiceDefinition {
     }
 
     @Override
-    public String getDescription() {
-        return "test";
-    }
-
-    @Override
     public List<Class> getResources() {
         return Lists.newArrayList();
     }
