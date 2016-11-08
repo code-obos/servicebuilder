@@ -26,7 +26,7 @@ public class BasicUibBruker implements UibBruker {
     public final String userTokenId;
 
     private final Tilgangssjekker tilgangssjekker;
-    private final ImmutableSet<String> tilganger;
+    public final ImmutableSet<String> tilganger;
 
     public BasicUibBruker(UserToken userToken, ImmutableList<UibToJavaxRole> tilganger) {
         this.personid = userToken.getPersonid();
