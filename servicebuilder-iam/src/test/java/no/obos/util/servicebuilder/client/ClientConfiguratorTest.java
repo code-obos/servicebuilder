@@ -7,6 +7,7 @@ import lombok.Setter;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceDefinition;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -23,6 +24,7 @@ public class ClientConfiguratorTest extends JerseyTest {
 
 
     @Test
+    @Ignore
     public void can_call() {
         //Given
     }
@@ -30,7 +32,6 @@ public class ClientConfiguratorTest extends JerseyTest {
 
     @Getter
     @Setter
-    @AllArgsConstructor
     static class Payload {
         LocalDate date;
     }
@@ -41,18 +42,18 @@ public class ClientConfiguratorTest extends JerseyTest {
         Payload call(Payload payload);
     }
 
-    ServiceDefinition serviceDefinition = new ServiceDefinition() {
-        public String getName() {
-            return "testservice";
-        }
-
-        public List<Class> getResources() {
-            return Lists.newArrayList(Resource.class);
-        }
-
-    };
 
     public Application configure() {
+        ServiceDefinition serviceDefinition = new ServiceDefinition() {
+            public String getName() {
+                return "testservice";
+            }
+
+            public List<Class> getResources() {
+                return Lists.newArrayList(Resource.class);
+            }
+
+        };
         return new JerseyConfig(serviceDefinition)
                 .addBinder(binder -> binder.bind(resource).to(Resource.class))
                 .getResourceConfig();
