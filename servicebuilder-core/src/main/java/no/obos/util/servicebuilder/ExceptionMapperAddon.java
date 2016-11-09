@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.config.AppConfig;
+import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
@@ -11,6 +12,7 @@ import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
 import no.obos.util.servicebuilder.exception.ValidationExceptionMapper;
 import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
 
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.NotFoundException;
 
 /**
@@ -65,6 +67,7 @@ public class ExceptionMapperAddon extends ServiceAddonEmptyDefaults {
             if (configuration.mapWebApplication) {
                 registrator.register(WebApplicationExceptionMapper.class);
             }
+            registrator.register(ConstraintViolationExceptionMapper.class);
         });
         jerseyConfig.addBinder(binder -> {
             binder.bind(configuration).to(Configuration.class);
