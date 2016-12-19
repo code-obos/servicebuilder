@@ -6,9 +6,9 @@ import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.ServiceClientAddon;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.server.ResourceConfig;
 
 import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
@@ -19,17 +19,19 @@ import javax.ws.rs.client.ClientRequestFilter;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 public class ClientGenerator {
-    public static <T> T createClient(Class<T> resourceClass, ServiceClientAddon.Configuration configuration) {
-        ObjectMapper mapper = configuration.serviceDefinition.getJsonConfig().get();
+
+
+
+    public static void addConfig(ClientConfig clientConfig, ServiceClientAddon.Configuration params) {
+
+        ObjectMapper mapper = params.serviceDefinition.getJsonConfig().get();
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
-
-        Configuration resourceConfig = new ResourceConfig()
+        clientConfig
                 .register(ErrorResponseFilter.class)
                 .register(UserTokenHeaderFilter.class)
                 .register(JacksonFeature.class)
@@ -41,12 +43,21 @@ public class ClientGenerator {
                         bind(mapper).to(ObjectMapper.class);
                     }
                 });
+    }
+
+    public static <T> T createClient(Class<T> resourceClass, ServiceClientAddon.Configuration configuration) {
+
+        ClientConfig clientConfig = new ClientConfig();
+        addConfig(clientConfig, configuration);
 
 
-
-        Client client = ClientBuilder.newClient(resourceConfig);
+        Client client = ClientBuilder.newClient(clientConfig);
         WebTarget webTarget = client.target(configuration.url);
 
+        return WebResourceFactory.newResource(resourceClass, webTarget);
+    }
+
+    public static <T> T createClient(Class<T> resourceClass, WebTarget webTarget) {
         return WebResourceFactory.newResource(resourceClass, webTarget);
     }
 
