@@ -10,13 +10,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
 
 public class JerseyClientAddonTest {
@@ -34,11 +38,20 @@ public class JerseyClientAddonTest {
 
     static class ApiImpl implements Api {
         @Inject
-        NestedApi nestedApi;
+        NestedApi resource;
+
+        @Inject
+        @Named(ServiceDefinition.ANONYMOUS_SERVICE_NAME)
+        WebTarget target;
 
         @Override
         public LocalDate call(LocalDate payload) {
-            return (nestedApi.shouldUpdate(payload)) ? payload.plusYears(100) : payload;
+            boolean shouldUpdateResource = resource.shouldUpdate(payload);
+            boolean shouldUpdateTarget = target.path("service").request().post(Entity.entity(payload, MediaType.APPLICATION_JSON_TYPE)).readEntity(Boolean.class);
+            if (shouldUpdateResource != shouldUpdateTarget) {
+                return null;
+            }
+            return shouldUpdateResource ? payload.plusYears(100) : payload;
         }
     }
 
@@ -63,7 +76,7 @@ public class JerseyClientAddonTest {
     final ServiceDefinition nestedServiceDefinition = ServiceDefinition.simple(NestedApi.class);
 
     @Test
-    public void can_call() {
+    public void can_call_with_injected() {
         //Given
         LocalDate payloadIn = LocalDate.now();
         LocalDate payloadOut = LocalDate.now().plusYears(100);
@@ -75,7 +88,7 @@ public class JerseyClientAddonTest {
                 .getResourceConfig();
 
 
-        LocalDate actual = EmbeddedJerseyServer.run(nestedResourceConfig, (nestedClientConfig, nestedUri) -> {
+        EmbeddedJerseyServer.run(nestedResourceConfig, (nestedClientConfig, nestedUri) -> {
             final ResourceConfig resourceConfig = new JerseyConfig(serviceDefinition)
                     .addBinder(binder -> binder.bind(ApiImpl.class).to(Api.class))
                     .with(ExceptionMapperAddon.defaults())
@@ -93,18 +106,29 @@ public class JerseyClientAddonTest {
                         .exceptionMapping(true)
                         .jsonConfig(serviceDefinition.getJsonConfig())
                         .build().generate();
-                Api api = StubGenerator.builder()
+                Api apiEple = StubGenerator.builder()
                         .client(client)
                         .userToken("eple")
                         .uri(uri)
                         .build()
                         .generateClient(Api.class);
-                return api.call(payloadIn);
+                LocalDate actualWithUpdate = apiEple.call(payloadIn);
+
+                Api apiBanan = StubGenerator.builder()
+                        .client(client)
+                        .userToken("banan")
+                        .uri(uri)
+                        .build()
+                        .generateClient(Api.class);
+                LocalDate actualNoUpdate = apiBanan.call(payloadIn);
+
+                //then
+                Assert.assertEquals(actualNoUpdate, payloadIn);
+                Assert.assertEquals(actualWithUpdate, payloadOut);
+                return "";
 
             });
         });
-        //then
-        Assert.assertEquals(actual, payloadOut);
     }
 
 

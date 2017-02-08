@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
+import no.obos.util.servicebuilder.client.TargetGenerator;
+import no.obos.util.servicebuilder.util.Hk2Helper;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstantiationData;
@@ -13,6 +15,7 @@ import org.glassfish.jersey.client.ClientConfig;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.URI;
 
@@ -66,11 +69,12 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
                             .jsonConfig(configuration.serviceDefinition.getJsonConfig())
                             .build().generate();
                     binder.bind(client).to(Client.class).named(serviceName);
+                    binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
                     configuration.serviceDefinition.getResources().forEach(clazz -> {
                                 binder.bind(configuration).to(Configuration.class).named(clazz.getCanonicalName());
                                 binder.bind(client).to(Client.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
-                                binder.bindFactory(StubFactory3.class).to(clazz).named(serviceName);
+                                binder.bindFactory(StubFactory.class).to(clazz).named(serviceName);
                             }
 
                     );
@@ -79,14 +83,14 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
     }
 
 
-    public static class StubFactory3 implements Factory<Object> {
+    public static class StubFactory implements Factory<Object> {
 
         final HttpHeaders headers;
         final InstantiationService instantiationService;
         final ServiceLocator serviceLocator;
 
         @Inject
-        public StubFactory3(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator) {
+        public StubFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator) {
             this.headers = headers;
             this.instantiationService = instantiationService;
             this.serviceLocator = serviceLocator;
@@ -114,6 +118,36 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
             InstantiationData instantiationData = instantiationService.getInstantiationData();
             Injectee parentInjectee = instantiationData.getParentInjectee();
             return (Class) parentInjectee.getRequiredType();
+        }
+    }
+    public static class WebTargetFactory implements Factory<WebTarget> {
+
+        final HttpHeaders headers;
+        final InstantiationService instantiationService;
+        final ServiceLocator serviceLocator;
+
+        @Inject
+        public WebTargetFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator) {
+            this.headers = headers;
+            this.instantiationService = instantiationService;
+            this.serviceLocator = serviceLocator;
+        }
+
+        public WebTarget provide() {
+            String serviceName = Hk2Helper.getInjecteeName(instantiationService);
+            Client client = serviceLocator.getService(Client.class, serviceName);
+
+            Configuration configuration = serviceLocator.getService(Configuration.class, serviceName);
+            String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
+            return TargetGenerator.builder()
+                    .client(client)
+                    .uri(configuration.uri)
+                    .userToken(userToken)
+                    .build().generate();
+        }
+
+        @Override
+        public void dispose(WebTarget instance) {
         }
     }
 

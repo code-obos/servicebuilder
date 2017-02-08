@@ -9,7 +9,7 @@ import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 public class Hk2Helper {
-    static protected String getInjecteeName(InstantiationService instantiationService) {
+    public static String getInjecteeName(InstantiationService instantiationService) {
         InstantiationData instantiationData = instantiationService.getInstantiationData();
         Injectee parentInjectee = instantiationData.getParentInjectee();
         String name = null;
