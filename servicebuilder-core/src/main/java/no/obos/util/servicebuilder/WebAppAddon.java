@@ -15,45 +15,43 @@ import java.net.URL;
  * Legger serving av statiske filer. Standard path er tjeneste/versjon/webapp/ .
  * Lokasjon av statiske filer kan spesifiseres med file:// (relativ path på filsystemet) eller classpath:// .
  */
-@AllArgsConstructor
-public class WebAppAddon extends ServiceAddonEmptyDefaults {
-
-    public static final String DEFAULT_PATH_SPEC = "/webapp/*";
-    public static final Integer DEFAULT_SESSION_TIMEOUT_SECONDS = 28800;
+@Builder(toBuilder = true)
+public class WebAppAddon implements Addon {
     public static final String CONFIG_KEY_RESOURCE_URL = "webapp.resource.url";
-
     static final Logger LOGGER = LoggerFactory.getLogger(WebAppAddon.class);
 
-    public final Configuration configuration;
+    public final String pathSpec;
+    public final int sessionTimeoutSeconds;
+    public final URI resourceUri;
 
-    public static Configuration.ConfigurationBuilder defaultConfigurationuration() {
-        return Configuration.builder()
-                .pathSpec(DEFAULT_PATH_SPEC)
-                .sessionTimeoutSeconds(DEFAULT_SESSION_TIMEOUT_SECONDS);
+    public static class WebAppAddonBuilder {
+        String pathSpec = "/webapp/*";
+        int sessionTimeoutSeconds = 28800;
     }
 
-    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
+
+
+    @Override
+    public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            configBuilder.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
+            return this.toBuilder().resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL))).build();
         } catch (URISyntaxException e) {
-            throw new IllegalArgumentException(e);
+            throw new RuntimeException(e);
         }
     }
 
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
-
-
         WebAppContext webAppContext;
         webAppContext = new WebAppContext();
         String warUrlString;
-        String scheme = configuration.resourceUri.getScheme();
+        String scheme = resourceUri.getScheme();
         if (scheme == null) {
-            throw new IllegalStateException("URI did not contain scheme: " + configuration.resourceUri.toString());
+            throw new IllegalStateException("URI did not contain scheme: " + resourceUri.toString());
         }
-        String path = configuration.resourceUri.getSchemeSpecificPart();
+        String path = resourceUri.getSchemeSpecificPart();
         path = (path.startsWith("//")) ? path.substring(2) : path;
         switch (scheme) {
             case "file":
@@ -73,54 +71,9 @@ public class WebAppAddon extends ServiceAddonEmptyDefaults {
                 throw new IllegalArgumentException("Unrecognized URI scheme " + scheme + ". Allowed: classpath, file");
         }
         webAppContext.setResourceBase(warUrlString);
-        webAppContext.setContextPath(jettyServer.configuration.contextPath + configuration.pathSpec);
+        webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
         webAppContext.setParentLoaderPriority(true);
-        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(configuration.sessionTimeoutSeconds);
+        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
         jettyServer.addAppContext(webAppContext);
-    }
-
-
-    @Builder
-    @AllArgsConstructor
-    public static class Configuration {
-        public final String pathSpec;
-        public final int sessionTimeoutSeconds;
-        public final URI resourceUri;
-    }
-
-
-    //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
-    @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<WebAppAddon> {
-        Configurator options;
-        Configuration.ConfigurationBuilder configBuilder;
-
-        @Override
-        public void addProperties(PropertyProvider properties) {
-            configFromProperties(properties, configBuilder);
-        }
-
-        @Override
-        public void addContext(ServiceBuilder serviceBuilder) {
-            configFromContext(serviceBuilder, configBuilder);
-        }
-
-        @Override
-        public WebAppAddon init() {
-            configBuilder = options.apply(configBuilder);
-            return new WebAppAddon(configBuilder.build());
-        }
-    }
-
-    public static AddonBuilder configure(Configurator options) {
-        return new AddonBuilder(options, defaultConfigurationuration());
-    }
-
-    public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfigurationuration());
-    }
-
-    public interface Configurator {
-        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

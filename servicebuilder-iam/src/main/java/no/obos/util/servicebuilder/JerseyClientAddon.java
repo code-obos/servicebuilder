@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
@@ -22,59 +21,49 @@ import java.net.URI;
 /**
  * Genererer klienter for en service med jersey klient-api og binder dem til context.
  */
-public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
+@Builder(toBuilder = true)
+public class JerseyClientAddon implements Addon {
 
     public static final String CONFIG_KEY_URL = "service.url";
 
-    public static final boolean DEFAULT_USERTOKEN = true;
+    public final ServiceDefinition serviceDefinition;
+    public final URI uri;
+    public final boolean usertoken;
+    public final ClientConfig clientConfigBase;
 
-    public final Configuration configuration;
 
-    public JerseyClientAddon(Configuration configuration) {
-        this.configuration = configuration;
+    public static class JerseyClientAddonBuilder {
+        boolean usertoken = false;
     }
 
-    @Builder
-    @AllArgsConstructor
-    public static class Configuration {
-        public final ServiceDefinition serviceDefinition;
-        public final URI uri;
-        public final boolean usertoken;
-        public final ClientConfig clientConfigBase;
-    }
 
-    public static Configuration.ConfigurationBuilder defaultConfiguration(ServiceDefinition serviceDefinition) {
-        return Configuration.builder()
-                .serviceDefinition(serviceDefinition)
-                .usertoken(DEFAULT_USERTOKEN);
-    }
-
-    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
-        String name = configBuilder.build().serviceDefinition.getName();
+    @Override
+    public Addon withProperties(PropertyProvider properties) {
+        String name = serviceDefinition.getName();
         String prefix = name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
-        configBuilder
-                .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
-
+        return toBuilder()
+                .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)))
+                .build();
     }
 
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
-                    String serviceName = configuration.serviceDefinition.getName();
-                    binder.bind(configuration).to(Configuration.class).named(serviceName);
+                    String serviceName = serviceDefinition.getName();
+                    binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
                     Client client = ClientGenerator.builder()
-                            .clientConfigBase(configuration.clientConfigBase)
-                            .jsonConfig(configuration.serviceDefinition.getJsonConfig())
+                            .clientConfigBase(clientConfigBase)
+                            .jsonConfig(serviceDefinition.getJsonConfig())
                             .build().generate();
                     binder.bind(client).to(Client.class).named(serviceName);
                     binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
-                    configuration.serviceDefinition.getResources().forEach(clazz -> {
-                                binder.bind(configuration).to(Configuration.class).named(clazz.getCanonicalName());
+                    serviceDefinition.getResources().forEach(clazz -> {
+                                binder.bind(this).to(JerseyClientAddon.class).named(clazz.getCanonicalName());
                                 binder.bind(client).to(Client.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
-                                binder.bindFactory(StubFactory.class).to(clazz).named(serviceName);
+                                binder.bindFactory(StubFactory.class).to(clazz);
                             }
 
                     );
@@ -100,7 +89,7 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
             Class<?> requiredType = getStubClass();
             Client client = serviceLocator.getService(Client.class, requiredType.getCanonicalName());
 
-            Configuration configuration = serviceLocator.getService(Configuration.class, requiredType.getCanonicalName());
+            JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
             String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             return StubGenerator.builder()
                     .client(client)
@@ -120,6 +109,8 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
             return (Class) parentInjectee.getRequiredType();
         }
     }
+
+
     public static class WebTargetFactory implements Factory<WebTarget> {
 
         final HttpHeaders headers;
@@ -137,7 +128,7 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
             String serviceName = Hk2Helper.getInjecteeName(instantiationService);
             Client client = serviceLocator.getService(Client.class, serviceName);
 
-            Configuration configuration = serviceLocator.getService(Configuration.class, serviceName);
+            JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
             String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             return TargetGenerator.builder()
                     .client(client)
@@ -149,47 +140,5 @@ public class JerseyClientAddon extends ServiceAddonEmptyDefaults {
         @Override
         public void dispose(WebTarget instance) {
         }
-    }
-
-
-
-    @Override
-    public void addToJettyServer(JettyServer jettyServer) {
-    }
-
-    public static AddonBuilder configure(ServiceDefinition serviceDefinition, Configurator options) {
-        return new AddonBuilder(options, defaultConfiguration(serviceDefinition));
-    }
-
-    public static AddonBuilder defaults(ServiceDefinition serviceDefinition) {
-        return new AddonBuilder(cfg -> cfg, defaultConfiguration(serviceDefinition));
-    }
-
-    //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
-    @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<JerseyClientAddon> {
-        Configurator options;
-        Configuration.ConfigurationBuilder configBuilder;
-
-        @Override
-        public void addProperties(PropertyProvider properties) {
-            configFromProperties(properties, configBuilder);
-        }
-
-        @Override
-        public void addContext(ServiceBuilder serviceBuilder) {
-            configFromContext(serviceBuilder, configBuilder);
-        }
-
-        @Override
-        public JerseyClientAddon init() {
-            configBuilder = options.apply(configBuilder);
-            return new JerseyClientAddon(configBuilder.build());
-        }
-    }
-
-
-    public interface Configurator {
-        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

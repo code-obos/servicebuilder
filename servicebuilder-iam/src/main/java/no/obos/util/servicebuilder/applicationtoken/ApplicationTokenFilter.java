@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
@@ -22,14 +21,16 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
 
     public static final String APPTOKENID_HEADER = "X-OBOS-APPTOKENID";
 
-    @Inject
-    private ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    final private ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    final ApplicationTokenFilterAddon configuration;
+    final private UriInfo uriInfo;
 
     @Inject
-    ApplicationTokenFilterAddon.Configuration configuration;
-
-    @Context
-    private UriInfo uriInfo;
+    public ApplicationTokenFilter(ApplicationTokenAccessValidator applicationTokenAccessValidator, ApplicationTokenFilterAddon configuration, UriInfo uriInfo) {
+        this.applicationTokenAccessValidator = applicationTokenAccessValidator;
+        this.configuration = configuration;
+        this.uriInfo = uriInfo;
+    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {

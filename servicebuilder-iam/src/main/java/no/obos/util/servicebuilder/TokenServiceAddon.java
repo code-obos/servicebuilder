@@ -7,33 +7,38 @@ import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceHttpClient;
 import no.obos.metrics.ObosHealthCheckRegistry;
 
+import javax.inject.Inject;
+
 /**
  * Konfigurerer klient til TokenService.
  */
-public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
+@Builder(toBuilder = true)
+public class TokenServiceAddon implements Addon {
 
     public static final String CONFIG_KEY_TOKENSERVICE_URL = "tokenservice.url";
     public static final String CONFIG_KEY_APP_ID = "tokenservice.app.id";
     public static final String CONFIG_KEY_APP_SECRET = "tokenservice.app.secret";
-    public final Configuration configuration;
     public final TokenServiceClient tokenServiceClient;
 
+    public final String url;
+    public final String appId;
+    public final String appSecret;
 
-    public TokenServiceAddon(Configuration configuration) {
-        this.configuration = configuration;
-        tokenServiceClient = new TokenServiceHttpClient(new WebClientImpl(configuration.url), configuration.appId, configuration.appSecret);
+    @Inject
+    public Addon withDependencies(ServiceConfig serviceConfig) {
+        return this.toBuilder()
+                .tokenServiceClient(
+                        new TokenServiceHttpClient(new WebClientImpl(url), appId, appSecret)
+                ).build();
     }
 
-    public static void configFromProperties(PropertyProvider properties, Configuration.ConfigurationBuilder configBuilder) {
+    public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
-        configBuilder
+        return toBuilder()
                 .url(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
                 .appId(properties.get(CONFIG_KEY_APP_ID))
-                .appSecret(properties.get(CONFIG_KEY_APP_SECRET));
-    }
-
-    public static Configuration.ConfigurationBuilder defaultConfiguration() {
-        return Configuration.builder();
+                .appSecret(properties.get(CONFIG_KEY_APP_SECRET))
+                .build();
     }
 
     @Override
@@ -43,51 +48,6 @@ public class TokenServiceAddon extends ServiceAddonEmptyDefaults {
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
-        ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + configuration.url, configuration.url);
-    }
-
-
-    @Builder
-    @AllArgsConstructor
-    public static class Configuration {
-        public final String url;
-        public final String appId;
-        public final String appSecret;
-    }
-
-
-    //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
-    @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<TokenServiceAddon> {
-        Configurator options;
-        Configuration.ConfigurationBuilder configBuilder;
-
-        @Override
-        public void addProperties(PropertyProvider properties) {
-            configFromProperties(properties, configBuilder);
-        }
-
-        @Override
-        public void addContext(ServiceBuilder serviceBuilder) {
-            configFromContext(serviceBuilder, configBuilder);
-        }
-
-        @Override
-        public TokenServiceAddon init() {
-            configBuilder = options.apply(configBuilder);
-            return new TokenServiceAddon(configBuilder.build());
-        }
-    }
-
-    public static AddonBuilder configure(Configurator options) {
-        return new AddonBuilder(options, defaultConfiguration());
-    }
-
-    public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
-    }
-
-    public interface Configurator {
-        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
+        ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + url, url);
     }
 }

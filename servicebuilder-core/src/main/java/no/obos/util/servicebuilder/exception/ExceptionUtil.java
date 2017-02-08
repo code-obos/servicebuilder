@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.ExceptionDescription;
 import no.obos.util.servicebuilder.ExceptionMapperAddon;
@@ -19,6 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -28,21 +28,22 @@ public class ExceptionUtil {
     public static final String APPLICATION_PROBLEM_JSON = "application/problem+json";
     public static final String APPLICATION_PROBLEM_XML = MediaType.APPLICATION_XML;
 
-
-    @Context
-    HttpHeaders headers;
-
-    @Inject
-    ExceptionMapperAddon.Configuration config;
-
-    @Context
-    HttpServletRequest request;
+    final HttpHeaders headers;
+    final ExceptionMapperAddon config;
+    final HttpServletRequest request;
 
 
     private final static ImmutableMap<MediaType, String> mediaTypeMap = ImmutableMap.<MediaType, String>builder()
             .put(MediaType.APPLICATION_JSON_TYPE, ExceptionUtil.APPLICATION_PROBLEM_JSON)
             .put(MediaType.APPLICATION_XML_TYPE, ExceptionUtil.APPLICATION_PROBLEM_XML)
             .build();
+
+    @Inject
+    public ExceptionUtil(@Context HttpHeaders headers, ExceptionMapperAddon config, @Context HttpServletRequest request) {
+        this.headers = headers;
+        this.config = config;
+        this.request = request;
+    }
 
 
     public ExceptionDescription withDefaults(ExceptionDescription problem) {
@@ -241,7 +242,7 @@ public class ExceptionUtil {
             return APPLICATION_PROBLEM_JSON;
         }
         List<MediaType> acceptableMediaTypes = headers.getAcceptableMediaTypes();
-        Optional<String> firstAcceptableMediaType = acceptableMediaTypes.stream().map(mediaTypeMap::get).filter(mt -> mt != null).findFirst();
+        Optional<String> firstAcceptableMediaType = acceptableMediaTypes.stream().map(mediaTypeMap::get).filter(Objects::nonNull).findFirst();
         return firstAcceptableMediaType.orElse(APPLICATION_PROBLEM_JSON);
     }
 

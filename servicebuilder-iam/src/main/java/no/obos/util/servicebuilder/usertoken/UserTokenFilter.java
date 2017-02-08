@@ -19,11 +19,15 @@ import java.security.Principal;
 @PreMatching
 public class UserTokenFilter implements ContainerRequestFilter {
 
-    @Inject
-    private TokenServiceClient tokenServiceClient;
+    final private TokenServiceClient tokenServiceClient;
+
+    final UserTokenFilterAddon configuration;
 
     @Inject
-    UserTokenFilterAddon.Configuration configuration;
+    public UserTokenFilter(TokenServiceClient tokenServiceClient, UserTokenFilterAddon configuration) {
+        this.tokenServiceClient = tokenServiceClient;
+        this.configuration = configuration;
+    }
 
     @Override
     @SuppressWarnings("squid:S1166")

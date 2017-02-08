@@ -16,10 +16,10 @@ public class BasicUibBrukerInjectionFactory implements Factory<BasicUibBruker> {
 
     final SecurityContext context;
 
-    final UserTokenFilterAddon.Configuration config;
+    final UserTokenFilterAddon config;
 
     @Inject
-    public BasicUibBrukerInjectionFactory(SecurityContext context, UserTokenFilterAddon.Configuration config) {
+    public BasicUibBrukerInjectionFactory(SecurityContext context, UserTokenFilterAddon config) {
         this.context = context;
         this.config = config;
     }

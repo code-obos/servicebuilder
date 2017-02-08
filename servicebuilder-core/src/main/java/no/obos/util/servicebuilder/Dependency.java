@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.experimental;
+package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.ToString;

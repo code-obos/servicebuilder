@@ -1,10 +1,8 @@
-package no.obos.util.servicebuilder.experimental;
+package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Singular;
-import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.ServiceDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +21,10 @@ public class ServiceConfig {
 
     public static class ServiceConfigBuilder {
         public <T> ServiceConfigBuilder bind(Class<? extends T> toBind, Class<T> bindTo) {
+            return binder(binder -> binder.bind(toBind).to(bindTo));
+        }
+
+        public <T> ServiceConfigBuilder bind(T toBind, Class<T> bindTo) {
             return binder(binder -> binder.bind(toBind).to(bindTo));
         }
         public ServiceConfigBuilder register(Class toRegister) {

@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
@@ -21,42 +20,46 @@ import static java.util.stream.Collectors.toList;
 /**
  * Legger inn applikasjonsfilter. Avhenger av at TokenServiceAddon er lagt til.
  */
-@AllArgsConstructor
-public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
-    public static final String ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
-    public static final Predicate<ContainerRequestContext> DEFAULT_FASTTRACK_FILTER = it -> false;
-    public final Configuration configuration;
+@Builder(toBuilder = true)
+public class ApplicationTokenFilterAddon implements Addon {
+    public static final String CONFIG_KEY_ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
 
-    public static Configuration.ConfigurationBuilder defaultConfiguration() {
-        return Configuration.builder()
-                .fasttrackFilter(DEFAULT_FASTTRACK_FILTER);
+    public final ImmutableList<Integer> acceptedAppIds;
+    public final Predicate<ContainerRequestContext> fasttrackFilter;
+
+    public static class ApplicationTokenFilterAddonBuilder {
+        Predicate<ContainerRequestContext> fasttrackFilter = it -> false;
     }
 
-    public static void configFromProperties(PropertyProvider properties, ApplicationTokenFilterAddon.Configuration.ConfigurationBuilder configBuilder) {
-        properties.failIfNotPresent(ACCEPTED_APP_IDS);
-        ArrayList<String> acceptedIdStrings = Lists.newArrayList(properties.get(ACCEPTED_APP_IDS).split(","));
+
+    @Override
+    public Addon withProperties(PropertyProvider properties) {
+        properties.failIfNotPresent(CONFIG_KEY_ACCEPTED_APP_IDS);
+        ArrayList<String> acceptedIdStrings = Lists.newArrayList(properties.get(CONFIG_KEY_ACCEPTED_APP_IDS).split(","));
         List<Integer> acceptedIds = acceptedIdStrings.stream()
                 .map(Integer::valueOf)
                 .collect(toList());
-        configBuilder.acceptedAppIds(ImmutableList.copyOf(acceptedIds));
+        return toBuilder().acceptedAppIds(ImmutableList.copyOf(acceptedIds)).build();
     }
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        super.addToJerseyConfig(jerseyConfig);
         jerseyConfig.addRegistations(registrator -> registrator.register(ApplicationTokenFilter.class));
         jerseyConfig.addBinder(binder -> {
             binder.bindFactory(ApplicationTokenAccessValidatorFactory.class).to(ApplicationTokenAccessValidator.class);
-            binder.bind(configuration).to(Configuration.class);
+            binder.bind(this).to(ApplicationTokenFilterAddon.class);
         });
     }
 
     private static class ApplicationTokenAccessValidatorFactory implements Factory<ApplicationTokenAccessValidator> {
-        @Inject
-        private TokenServiceClient tokenServiceClient;
+        final TokenServiceClient tokenServiceClient;
+        final ApplicationTokenFilterAddon configuration;
 
         @Inject
-        private Configuration configuration;
+        private ApplicationTokenAccessValidatorFactory(TokenServiceClient tokenServiceClient, ApplicationTokenFilterAddon configuration) {
+            this.tokenServiceClient = tokenServiceClient;
+            this.configuration = configuration;
+        }
 
         @Override
         public ApplicationTokenAccessValidator provide() {
@@ -70,49 +73,5 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         public void dispose(ApplicationTokenAccessValidator instance) {
 
         }
-    }
-
-
-    @Builder
-    @AllArgsConstructor
-    public static class Configuration {
-        public final ImmutableList<Integer> acceptedAppIds;
-        public final Predicate<ContainerRequestContext> fasttrackFilter;
-    }
-
-
-    //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
-    @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<ApplicationTokenFilterAddon> {
-        Configurator options;
-        Configuration.ConfigurationBuilder configBuilder;
-
-        @Override
-        public void addProperties(PropertyProvider properties) {
-            configFromProperties(properties, configBuilder);
-        }
-
-        @Override
-        public void addContext(ServiceBuilder serviceBuilder) {
-            configFromContext(serviceBuilder, configBuilder);
-        }
-
-        @Override
-        public ApplicationTokenFilterAddon init() {
-            configBuilder = options.apply(configBuilder);
-            return new ApplicationTokenFilterAddon(configBuilder.build());
-        }
-    }
-
-    public static AddonBuilder configure(Configurator options) {
-        return new AddonBuilder(options, defaultConfiguration());
-    }
-
-    public static AddonBuilder defaults() {
-        return new AddonBuilder(cfg -> cfg, defaultConfiguration());
-    }
-
-    public interface Configurator {
-        Configuration.ConfigurationBuilder apply(Configuration.ConfigurationBuilder configBuilder);
     }
 }

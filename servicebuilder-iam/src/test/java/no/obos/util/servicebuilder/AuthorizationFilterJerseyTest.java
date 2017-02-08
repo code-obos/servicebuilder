@@ -29,7 +29,6 @@ import static junit.framework.TestCase.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorizationFilterJerseyTest extends JerseyTest {
 
-    @Mock
     private TokenServiceClient tokenServiceClient;
 
     static final String javaxRole = "Mr. Tilgang";
@@ -38,16 +37,16 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
 
     @Override
     protected Application configure() {
-        return new JerseyConfig(new TestService())
-                .addRegistations(context -> context
-                        .register(Resource.class)
-                        .register(JacksonFeature.class)
-
-                ).addBinder(binder -> {
-                    binder.bind(tokenServiceClient).to(TokenServiceClient.class);
-                })
-                .with(UserTokenFilterAddon.configure(cfg -> cfg.uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))))
-                .getResourceConfig();
+        tokenServiceClient = Mockito.mock(TokenServiceClient.class);
+        return new TestServiceRunner(ServiceConfig.builder()
+                .serviceDefinition(new TestService())
+                .register(Resource.class)
+                .bind(tokenServiceClient, TokenServiceClient.class)
+                .addon(UserTokenFilterAddon.builder()
+                        .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))
+                        .build()
+                ).build()
+        ).init().getResourceConfig();
     }
 
     @Test

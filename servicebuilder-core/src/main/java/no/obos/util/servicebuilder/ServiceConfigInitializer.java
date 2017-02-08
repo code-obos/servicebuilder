@@ -1,6 +1,7 @@
-package no.obos.util.servicebuilder.experimental;
+package no.obos.util.servicebuilder;
 
 import com.google.common.collect.Lists;
+import no.obos.util.servicebuilder.exception.DependenceException;
 
 import java.util.List;
 

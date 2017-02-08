@@ -1,10 +1,6 @@
-package no.obos.util.servicebuilder.experimental;
+package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
-import no.obos.util.servicebuilder.AppConfigBackedPropertyProvider;
-import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.JettyServer;
-import no.obos.util.servicebuilder.PropertyProvider;
 
 import java.util.stream.Collectors;
 

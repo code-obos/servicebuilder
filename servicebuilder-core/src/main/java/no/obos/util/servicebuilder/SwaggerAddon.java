@@ -1,13 +1,9 @@
-package no.obos.util.servicebuilder.experimental;
+package no.obos.util.servicebuilder;
 
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.jersey.config.JerseyJaxrsConfig;
 import lombok.Builder;
-import no.obos.util.servicebuilder.Constants;
-import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.JettyServer;
-import no.obos.util.servicebuilder.PropertyProvider;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 @Builder(toBuilder = true)
