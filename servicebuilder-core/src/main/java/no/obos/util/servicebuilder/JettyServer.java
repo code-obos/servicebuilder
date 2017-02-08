@@ -18,6 +18,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.glassfish.jersey.servlet.ServletContainer;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 
 @SuppressWarnings("squid:S00112")
 public class JettyServer {
@@ -38,55 +39,50 @@ public class JettyServer {
     @Getter
     final Configuration configuration;
 
-    JettyServer(Configuration configuration, JerseyConfig resourceConfig) {
+    public JettyServer(Configuration configuration, JerseyConfig resourceConfig) {
         this.resourceConfig = resourceConfig;
         this.configuration = configuration;
         server = new Server(InetSocketAddress.createUnresolved(configuration.bindAddress, configuration.bindPort));
-        //        if(resourceConfig.stateful) {
-        //            WebAppContext webAppContext = new WebAppContext();
-        //
-        //            webAppContext.setContextPath(configuration.contextPath);
-        //            webAppContext.setParentLoaderPriority(true);
-        //            webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(WebAppAddon.DEFAULT_SESSION_TIMEOUT_SECONDS);
-        //            servletContext = webAppContext;
-        //
-        //        } else {
         servletContext = new ServletContextHandler(server, configuration.contextPath);
-
-        if (resourceConfig.stateful) {
-            HashSessionIdManager hashSessionIdManager = new HashSessionIdManager();
-            SessionHandler sessionHandler = new SessionHandler();
-            SessionManager sessionManager = new HashSessionManager();
-            sessionManager.setSessionIdManager(hashSessionIdManager);
-            sessionHandler.setSessionManager(sessionManager);
-            servletContext.setSessionHandler(sessionHandler);
-        }
     }
 
-    public JettyServer start() throws Exception {
+    public JettyServer start() {
         ServletHolder servletHolder = new ServletHolder(new ServletContainer(resourceConfig.getResourceConfig()));
         servletContext.addServlet(servletHolder, configuration.apiPathSpec);
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         Handler[] handlers = Lists.newArrayList(servletContext, webAppContext)
-                .stream().filter(it -> it != null).toArray(Handler[]::new);
+                .stream().filter(Objects::nonNull).toArray(Handler[]::new);
         contexts.setHandlers(handlers);
 
         server.setHandler(contexts);
-        server.start();
+        try {
+            server.start();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         return this;
     }
 
-    /**
-     * Fletter tråder slik at main metoden ikke avsluttes med en gang
-     *
-     * @throws Exception hvis tråden allerede er opptatt
-     */
-    public void join() throws Exception {
-        server.join();
+    public void join() {
+        try {
+            server.join();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
-    public void stop() throws Exception {
-        server.stop();
+    public void stop() {
+        try {
+            server.stop();
+        } catch (RuntimeException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
 
     }
 
@@ -98,19 +94,22 @@ public class JettyServer {
         this.webAppContext = webAppContext;
     }
 
-    @Builder
     @Getter
     @AllArgsConstructor
+    @Builder
     public static class Configuration {
         final String apiPathSpec;
         final String bindAddress;
         final String contextPath;
         final int bindPort;
 
+        public static class ConfigurationBuilder {
+            String apiPathSpec = DEFAULT_API_PATH_SPEC;
+            String bindAddress = DEFAULT_BIND_ADDRESS;
+        }
+
         public static ConfigurationBuilder defaultBuilder() {
-            return Configuration.builder()
-                    .apiPathSpec(DEFAULT_API_PATH_SPEC)
-                    .bindAddress(DEFAULT_BIND_ADDRESS);
+            return Configuration.builder();
         }
 
         public static ConfigurationBuilder fromProperties(PropertyProvider properties) {

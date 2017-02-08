@@ -61,13 +61,13 @@ public class ServiceBuilder {
         return new ServiceBuilder(serviceDefinition, new AppConfigBackedPropertyProvider(appConfig), configuration);
     }
 
-    public ServiceBuilder configJersey(JerseyConfig.Configurator configurator) {
-        jerseyConfig = configurator.apply(new JerseyConfig(this));
-        if (properties != null) {
-            jerseyConfig.addBinder(binder -> binder.bind(properties).to(PropertyProvider.class));
-        }
-        return this;
-    }
+//    public ServiceBuilder configJersey(JerseyConfig.Configurator configurator) {
+//        jerseyConfig = configurator.apply(new JerseyConfig(this));
+//        if (properties != null) {
+//            jerseyConfig.addBinder(binder -> binder.bind(properties).to(PropertyProvider.class));
+//        }
+//        return this;
+//    }
 
 
     public ServiceBuilder configJettyServer(JettyServer.Configurator configurator) {
