@@ -9,16 +9,20 @@ import java.util.List;
 
 public class TestService implements ServiceDefinition {
 
-    @Path("service")
-    interface Resource {
-        @POST
-        ClientConfiguratorTest.Payload call(ClientConfiguratorTest.Payload payload);
+    public static class Payload {
+
     }
 
-    @Path("service2")
-    interface Resource2 {
+
+    @Path("service") interface Resource {
         @POST
-        ClientConfiguratorTest.Payload call2(ClientConfiguratorTest.Payload payload);
+        Payload call(Payload payload);
+    }
+
+
+    @Path("service2") interface Resource2 {
+        @POST
+        Payload call2(Payload payload);
     }
 
     @Override

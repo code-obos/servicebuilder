@@ -5,6 +5,9 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 public interface ServiceDefinition {
+
+    String ANONYMOUS_SERVICE_NAME = "anonymous_service";
+
     String getName();
 
     List<Class> getResources();
@@ -13,12 +16,13 @@ public interface ServiceDefinition {
         return JsonConfig.standard;
     }
 
-    static ServiceDefinition simple (final String name, final Class ... resources) {
+    static ServiceDefinition simple(final Class... resources) {
         return new ServiceDefinition() {
             ImmutableList<Class> classes = ImmutableList.copyOf(resources);
+
             @Override
             public String getName() {
-                return name;
+                return ANONYMOUS_SERVICE_NAME;
             }
 
             @Override

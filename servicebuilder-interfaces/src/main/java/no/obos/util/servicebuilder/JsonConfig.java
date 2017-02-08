@@ -10,13 +10,9 @@ import java.util.function.Supplier;
 public interface JsonConfig extends Supplier<ObjectMapper> {
 
 
-    JsonConfig standard = () -> {
-        JSR310Module module = new JSR310Module();
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(module);
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
-        return mapper;
-    };
+    JsonConfig standard = () -> new ObjectMapper()
+            .registerModule(new JSR310Module())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
 }
