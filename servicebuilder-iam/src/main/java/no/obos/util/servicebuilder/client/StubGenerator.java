@@ -1,11 +1,11 @@
 package no.obos.util.servicebuilder.client;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
 import lombok.Singular;
 import no.obos.util.servicebuilder.Constants;
-import org.elasticsearch.common.Strings;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 import javax.ws.rs.client.Client;

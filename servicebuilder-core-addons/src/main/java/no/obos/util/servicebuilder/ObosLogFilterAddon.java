@@ -1,10 +1,8 @@
 package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Singular;
-import no.obos.util.log.ObosLogFilter;
+import no.obos.util.servicebuilder.log.ObosLogFilter;
 import org.eclipse.jetty.servlet.FilterHolder;
 
 import javax.servlet.DispatcherType;
