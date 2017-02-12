@@ -47,10 +47,8 @@ public class Main2 {
 
 
     static ServiceDefinition serviceDefinition = ServiceDefinition.simple(Api.class);
-    static ServiceConfig serviceConfig = ServiceConfig.builder()
+    static ServiceConfig serviceConfig = BasicService.defaults()
             .serviceDefinition(serviceDefinition)
-            .addon(SwaggerAddon.builder().build())
-            .addon(CorsFilterAddon.builder().build())
             .bind(ApiImpl.class,Api.class)
             .build();
 
