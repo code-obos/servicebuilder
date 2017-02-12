@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.LogLevel;
 
@@ -8,20 +7,23 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 @Slf4j
-public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProcessingException> {
+public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
+    final private ExceptionUtil exceptionUtil;
+
     @Inject
-    private ExceptionUtil exceptionUtil;
+    public RuntimeExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
 
     @Override
-    public Response toResponse(JsonProcessingException exception) {
+    public Response toResponse(RuntimeException exception) {
         return exceptionUtil.handle(exception, cfg -> cfg
-                .status(BAD_REQUEST.getStatusCode())
+                .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail("Det har oppstått en intern feil")
                 .logger(log)
         );
     }
+
 }

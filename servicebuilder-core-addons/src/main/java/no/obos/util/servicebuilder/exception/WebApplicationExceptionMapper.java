@@ -10,9 +10,10 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 @Slf4j
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
+    final private ExceptionUtil exceptionUtil;
 
     @Inject
-    private ExceptionUtil exceptionUtil;
+    public WebApplicationExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
 
     @Override
     public Response toResponse(WebApplicationException exception) {

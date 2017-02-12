@@ -16,8 +16,10 @@ import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Slf4j
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
+    final private ExceptionUtil exceptionUtil;
+
     @Inject
-    private ExceptionUtil exceptionUtil;
+    public ConstraintViolationExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {

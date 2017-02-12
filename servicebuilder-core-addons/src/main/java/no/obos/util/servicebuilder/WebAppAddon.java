@@ -65,6 +65,9 @@ public class WebAppAddon implements Addon {
                 break;
             case "classpath":
                 final URL warUrl = WebAppAddon.class.getClassLoader().getResource(path);
+                if(warUrl == null) {
+                    throw new NullPointerException();
+                }
                 warUrlString = warUrl.toExternalForm();
                 break;
             default:
