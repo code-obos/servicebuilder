@@ -26,7 +26,18 @@ public class ProblemResponseParserTest {
     public void setUp() throws Exception {
         Map<String, String> context = new HashMap<>();
         context.put("banos", "banos_val");
-        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
+//        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
+        problemResponse = ProblemResponse.builder()
+                .title("title")
+                .detail("detail")
+                .context("banos_key", "banos_val")
+                .context("nugatti_key", "nugatti_val")
+                .incidentReferenceId("incidentReferenceId")
+                .suggestedUserMessageInDetail(true)
+                .status(403)
+                .type("about:null")
+                .build();
+//                ("title", "detail", 1, "refId", true, "about:null", context);
     }
 
     @Test

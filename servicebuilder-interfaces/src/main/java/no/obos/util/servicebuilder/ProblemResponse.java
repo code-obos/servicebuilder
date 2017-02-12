@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -38,7 +39,7 @@ public class ProblemResponse {
             @JsonProperty("incidentReferenceId") String incidentReferenceId,
             @JsonProperty("suggestedUserMessageInDetail") boolean suggestedUserMessageInDetail,
             @JsonProperty("type") String type,
-            @JsonProperty("context") Map<String, String> context) {
+            @Singular("context") @JsonProperty("context") Map<String, String> context) {
         this.title = title;
         this.detail = detail;
         this.status = status;
