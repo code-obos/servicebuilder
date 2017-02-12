@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-activemq.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+

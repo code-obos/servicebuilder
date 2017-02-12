@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-core-addons.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+
