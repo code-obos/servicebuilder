@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import no.obos.util.config.AppConfig;
 import no.obos.util.config.AppConfigLoader;
+import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
 import no.obos.util.version.Version;
 import no.obos.util.version.VersionUtil;
 import org.slf4j.bridge.SLF4JBridgeHandler;

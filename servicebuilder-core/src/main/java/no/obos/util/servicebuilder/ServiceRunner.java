@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
+import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
 
 import java.util.stream.Collectors;
 
@@ -13,9 +14,7 @@ public class ServiceRunner {
     final JettyServer jettyServer;
     final JerseyConfig jerseyConfig;
     JettyServer.Configuration jettyConfig;
-
-    public ServiceRunner(ServiceConfig serviceConfigRaw) {
-        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(serviceConfigRaw.serviceDefinition);
+    public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
         ServiceConfig serviceConfigWithProps = serviceConfigRaw.toBuilder().clearAddons().addons(serviceConfigRaw.addons.stream().map(it -> it.withProperties(properties)).collect(Collectors.toList())).build();
         serviceConfig = ServiceConfigInitializer.addContext(serviceConfigWithProps);
         properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
@@ -25,8 +24,17 @@ public class ServiceRunner {
                 .contextPath(properties.get(CONFIG_KEY_SERVER_CONTEXT_PATH))
                 .build();
         jettyServer = new JettyServer(jettyConfig, jerseyConfig);
+
     }
 
+    public static ServiceRunner setUp(ServiceConfig serviceConfig) {
+        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(serviceConfig.serviceDefinition);
+        return new ServiceRunner(serviceConfig, properties);
+    }
+
+    public static ServiceRunner setUp(ServiceConfig serviceConfig, PropertyProvider properties) {
+        return new ServiceRunner(serviceConfig, properties);
+    }
 
     //    Map<Addon2, AddonRuntime2> runtimes = Maps.newHashMap();
     public ServiceRunner start() {
@@ -41,5 +49,9 @@ public class ServiceRunner {
 
     public void join() {
         jettyServer.join();
+    }
+
+    public void stop() {
+        jettyServer.stop();
     }
 }

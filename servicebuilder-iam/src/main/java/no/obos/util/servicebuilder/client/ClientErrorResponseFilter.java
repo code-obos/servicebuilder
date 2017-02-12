@@ -23,7 +23,7 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
         // for non-200 response, deal with the custom error messages
         if (! Response.Status.Family.SUCCESSFUL.equals(responseContext.getStatusInfo().getFamily())) {
             if (responseContext.hasEntity()) {
-                // get the "real" error message
+                // setUp the "real" error message
 
                 ProblemResponse error = mapper.readValue(responseContext.getEntityStream(), ProblemResponse.class);
                 throw new RuntimeException("Error from server. Status " + responseContext.getStatus() + ": " + error );

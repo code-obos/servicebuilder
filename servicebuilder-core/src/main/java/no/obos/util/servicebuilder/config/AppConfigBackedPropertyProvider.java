@@ -1,8 +1,11 @@
-package no.obos.util.servicebuilder;
+package no.obos.util.servicebuilder.config;
 
 import lombok.AllArgsConstructor;
 import no.obos.util.config.AppConfig;
 import no.obos.util.config.AppConfigLoader;
+import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.PropertyProvider;
+import no.obos.util.servicebuilder.ServiceDefinition;
 import no.obos.util.version.Version;
 import no.obos.util.version.VersionUtil;
 
