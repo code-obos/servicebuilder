@@ -26,7 +26,6 @@
         <module>servicebuilder-iam</module>
         <module>servicebuilder-db</module>
         <module>servicebuilder-activemq</module>
-        <module>servicebuilder-dbcp</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -58,11 +57,6 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-activemq</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-dbcp</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
