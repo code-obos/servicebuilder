@@ -19,14 +19,16 @@ public class ServiceConfig {
     @Singular
     final ImmutableList<JerseyConfig.Registrator> registrators;
 
+
     public static class ServiceConfigBuilder {
         public <T> ServiceConfigBuilder bind(Class<? extends T> toBind, Class<T> bindTo) {
             return binder(binder -> binder.bind(toBind).to(bindTo));
         }
 
-        public <T> ServiceConfigBuilder bind(T toBind, Class<T> bindTo) {
+        public <T> ServiceConfigBuilder bind(T toBind, Class<? super T> bindTo) {
             return binder(binder -> binder.bind(toBind).to(bindTo));
         }
+
         public ServiceConfigBuilder register(Class toRegister) {
             return registrator(registrator -> registrator.register(toRegister));
         }
@@ -46,18 +48,18 @@ public class ServiceConfig {
 
     public <T extends Addon> List<T> requireAddons(Class<T> clazz) {
         List<T> addons = getAddons(clazz);
-        if(addons.isEmpty()) {
-            throw new RuntimeException ("Required addon not found. Check config or priorities. " + clazz.getCanonicalName());
+        if (addons.isEmpty()) {
+            throw new RuntimeException("Required addon not found. Check config or priorities. " + clazz.getCanonicalName());
         }
         return addons;
     }
 
     public <T extends Addon> T getAddon(Class<T> clazz) {
         List<T> ret = getAddons(clazz);
-        if(ret.isEmpty()) {
+        if (ret.isEmpty()) {
             return null;
         }
-        if(ret.size() > 1) {
+        if (ret.size() > 1) {
             throw new RuntimeException("Found several implementations for addon " + clazz.getCanonicalName());
         }
         return ret.get(0);
@@ -65,7 +67,7 @@ public class ServiceConfig {
 
     public <T extends Addon> T requireAddon(Class<T> clazz) {
         List<T> ret = requireAddons(clazz);
-        if(ret.size() > 1) {
+        if (ret.size() > 1) {
             throw new RuntimeException("Found several implementations for addon " + clazz.getCanonicalName());
         }
         return ret.get(0);

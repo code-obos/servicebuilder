@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder.client;
 
 import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.EmbeddedJerseyServer;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceDefinition;
 import org.glassfish.jersey.server.ResourceConfig;

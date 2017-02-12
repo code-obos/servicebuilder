@@ -3,14 +3,10 @@ package no.obos.util.servicebuilder;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
-import no.obos.util.servicebuilder.client.TestService;
 import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import no.obos.util.servicebuilder.usertoken.UibToJavaxRole;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -18,7 +14,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
+import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,27 +23,23 @@ import static junit.framework.TestCase.assertEquals;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthorizationFilterJerseyTest extends JerseyTest {
+public class AuthorizationFilterJerseyTest {
 
-    private TokenServiceClient tokenServiceClient;
+    private static TokenServiceClient tokenServiceClient = Mockito.mock(TokenServiceClient.class);
+    ;
 
     static final String javaxRole = "Mr. Tilgang";
     static final String uibRoleNameValid = "superbruker";
     static final String uibRoleNameInvalid = "middelmådigbruker";
+    ServiceConfig serviceConfig = ServiceConfig.builder()
+            .serviceDefinition(ServiceDefinition.simple(Resource.class))
+            //                .register(Resource.class)
+            .bind(tokenServiceClient, TokenServiceClient.class)
+            .addon(UserTokenFilterAddon.builder()
+                    .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))
+                    .build()
+            ).build();
 
-    @Override
-    protected Application configure() {
-        tokenServiceClient = Mockito.mock(TokenServiceClient.class);
-        return new TestServiceRunner(ServiceConfig.builder()
-                .serviceDefinition(new TestService())
-                .register(Resource.class)
-                .bind(tokenServiceClient, TokenServiceClient.class)
-                .addon(UserTokenFilterAddon.builder()
-                        .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))
-                        .build()
-                ).build()
-        ).init().getResourceConfig();
-    }
 
     @Test
     public void validUserTokenIsAccepted() {
@@ -55,9 +47,13 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
 
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameValid));
 
-        Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(Constants.USERTOKENID_HEADER, usertoken)
-                .get();
+        Response response = TestServiceRunner.oneShot(serviceConfig, ((clientConfig, uri) ->
+                ClientBuilder.newClient(clientConfig).target(uri)
+                        .path(Resource.PATH)
+                        .path(Resource.RESOURCE_PATH).request()
+                        .header(Constants.USERTOKENID_HEADER, usertoken)
+                        .get()
+        ));
         assertEquals(200, response.getStatus());
     }
 
@@ -67,9 +63,13 @@ public class AuthorizationFilterJerseyTest extends JerseyTest {
 
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameInvalid));
 
-        Response response = target(Resource.PATH).path(Resource.RESOURCE_PATH).request()
-                .header(Constants.USERTOKENID_HEADER, usertoken)
-                .get();
+        Response response = TestServiceRunner.oneShot(serviceConfig, ((clientConfig, uri) ->
+                ClientBuilder.newClient(clientConfig).target(uri)
+                        .path(Resource.PATH)
+                        .path(Resource.RESOURCE_PATH).request()
+                        .header(Constants.USERTOKENID_HEADER, usertoken)
+                        .get()
+        ));
         assertEquals(403, response.getStatus());
     }
 

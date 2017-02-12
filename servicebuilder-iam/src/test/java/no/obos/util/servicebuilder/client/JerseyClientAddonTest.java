@@ -6,7 +6,6 @@ import no.obos.util.servicebuilder.JerseyClientAddon;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinition;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -83,31 +82,26 @@ public class JerseyClientAddonTest {
         LocalDate payloadOut = LocalDate.now().plusYears(100);
 
 
-        final ResourceConfig nestedResourceConfig =
-                new TestServiceRunner(ServiceConfig.builder()
-                        .serviceDefinition(nestedServiceDefinition)
-                        .bind(NestedApiImpl.class, NestedApi.class)
-                        .addon(ExceptionMapperAddon.builder().build())
-                        .build()
-                ).init().getResourceConfig();
+        ServiceConfig nestedServiceConfig = ServiceConfig.builder()
+                .serviceDefinition(nestedServiceDefinition)
+                .bind(NestedApiImpl.class, NestedApi.class)
+                .addon(ExceptionMapperAddon.builder().build())
+                .build();
 
-
-        EmbeddedJerseyServer.run(nestedResourceConfig, (nestedClientConfig, nestedUri) -> {
-            final ResourceConfig resourceConfig =
-                    new TestServiceRunner(ServiceConfig.builder()
-                            .serviceDefinition(serviceDefinition)
-                            .bind(ApiImpl.class, Api.class)
-                            .addon(ExceptionMapperAddon.builder().build())
-                            .addon(JerseyClientAddon.builder()
-                                    .serviceDefinition(nestedServiceDefinition)
-                                    .clientConfigBase(nestedClientConfig)
-                                    .usertoken(true)
-                                    .uri(nestedUri)
-                                    .build()
-                            )
+        TestServiceRunner.oneShot(nestedServiceConfig, (nestedClientConfig, nestedUri) -> {
+            ServiceConfig serviceConfig = ServiceConfig.builder()
+                    .serviceDefinition(serviceDefinition)
+                    .bind(ApiImpl.class, Api.class)
+                    .addon(ExceptionMapperAddon.builder().build())
+                    .addon(JerseyClientAddon.builder()
+                            .serviceDefinition(nestedServiceDefinition)
+                            .clientConfigBase(nestedClientConfig)
+                            .usertoken(true)
+                            .uri(nestedUri)
                             .build()
-                    ).init().getResourceConfig();
-            return EmbeddedJerseyServer.run(resourceConfig, (clientConfig, uri) -> {
+                    )
+                    .build();
+            return TestServiceRunner.oneShot(serviceConfig, (clientConfig, uri) -> {
 
 
                 //when

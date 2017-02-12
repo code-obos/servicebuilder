@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.client;
+package no.obos.util.servicebuilder;
 
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.test.DeploymentContext;
