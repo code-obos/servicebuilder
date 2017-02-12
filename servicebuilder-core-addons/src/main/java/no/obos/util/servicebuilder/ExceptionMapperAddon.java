@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
+import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
 import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
 import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
@@ -65,6 +66,7 @@ public class ExceptionMapperAddon implements Addon {
                 registrator.register(WebApplicationExceptionMapper.class);
             }
             registrator.register(ConstraintViolationExceptionMapper.class);
+            registrator.register(ExternalResourceExceptionMapper.class);
         });
         jerseyConfig.addBinder(binder -> {
             binder.bind(this).to(ExceptionMapperAddon.class);

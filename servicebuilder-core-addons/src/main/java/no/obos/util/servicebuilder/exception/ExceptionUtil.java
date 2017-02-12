@@ -102,7 +102,12 @@ public class ExceptionUtil {
     }
 
     public Response problemDescriptionToReponse(ExceptionDescription problem) {
-        ProblemResponse problemResponse = new ProblemResponse(problem.title, problem.detail, problem.status, problem.reference);
+        ProblemResponse problemResponse = ProblemResponse.builder()
+                .title(problem.title)
+                .detail(problem.detail)
+                .status(problem.status)
+                .incidentReferenceId(problem.reference)
+                .build();
         String mediaType = getMediaType();
         return Response.status(problem.status).type(mediaType).entity(problemResponse).build();
     }

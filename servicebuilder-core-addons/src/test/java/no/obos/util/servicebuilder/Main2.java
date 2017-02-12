@@ -53,7 +53,7 @@ public class Main2 {
             .build();
 
     public static void main(String[] args) {
-        new ServiceRunner(serviceConfig).start();//.join();
+        ServiceRunner.setUp(serviceConfig).start();//.join();
     }
 
 }
