@@ -18,6 +18,10 @@
             <artifactId>servicebuilder-core-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-core-addons</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
