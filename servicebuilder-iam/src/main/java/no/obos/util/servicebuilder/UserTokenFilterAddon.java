@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
 import no.obos.util.servicebuilder.usertoken.BasicUibBrukerInjectionFactory;
 import no.obos.util.servicebuilder.usertoken.UibBrukerProvider;
@@ -22,17 +22,13 @@ import java.util.function.Predicate;
  * Kan også sette opp filtrering på javax-roller.
  * Sjekk implementasjon av dette i aarsregnskapsplanlegging
  */
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserTokenFilterAddon implements Addon {
     public final boolean requireUserToken;
     public final UibBrukerProvider uibBrukerProvider;
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
-    public static class UserTokenFilterAddonBuilder {
-        boolean requireUserToken = true;
-        UibBrukerProvider uibBrukerProvider = BasicUibBruker.provider();
-        Predicate<ContainerRequestContext> fasttrackFilter = it -> false;
-    }
+    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, BasicUibBruker.provider(), it -> false);
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
@@ -48,4 +44,10 @@ public class UserTokenFilterAddon implements Addon {
                 .register(UserTokenFilter.class)
         );
     }
+
+    public UserTokenFilterAddon requireUserToken(boolean requireUserToken) {return this.requireUserToken == requireUserToken ? this : new UserTokenFilterAddon(requireUserToken, this.uibBrukerProvider, this.fasttrackFilter);}
+
+    public UserTokenFilterAddon uibBrukerProvider(UibBrukerProvider uibBrukerProvider) {return this.uibBrukerProvider == uibBrukerProvider ? this : new UserTokenFilterAddon(this.requireUserToken, uibBrukerProvider, this.fasttrackFilter);}
+
+    public UserTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return this.fasttrackFilter == fasttrackFilter ? this : new UserTokenFilterAddon(this.requireUserToken, this.uibBrukerProvider, fasttrackFilter);}
 }

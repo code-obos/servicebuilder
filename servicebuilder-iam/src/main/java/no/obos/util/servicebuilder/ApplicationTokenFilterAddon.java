@@ -2,7 +2,8 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
@@ -20,17 +21,14 @@ import static java.util.stream.Collectors.toList;
 /**
  * Legger inn applikasjonsfilter. Avhenger av at TokenServiceAddon er lagt til.
  */
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationTokenFilterAddon implements Addon {
     public static final String CONFIG_KEY_ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
 
     public final ImmutableList<Integer> acceptedAppIds;
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
-    public static class ApplicationTokenFilterAddonBuilder {
-        Predicate<ContainerRequestContext> fasttrackFilter = it -> false;
-    }
-
+    public static ApplicationTokenFilterAddon defaults = new ApplicationTokenFilterAddon(ImmutableList.of(), it -> false);
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
@@ -39,7 +37,7 @@ public class ApplicationTokenFilterAddon implements Addon {
         List<Integer> acceptedIds = acceptedIdStrings.stream()
                 .map(Integer::valueOf)
                 .collect(toList());
-        return toBuilder().acceptedAppIds(ImmutableList.copyOf(acceptedIds)).build();
+        return this.acceptedAppIds(ImmutableList.copyOf(acceptedIds));
     }
 
     @Override
@@ -74,4 +72,8 @@ public class ApplicationTokenFilterAddon implements Addon {
 
         }
     }
+
+    public ApplicationTokenFilterAddon acceptedAppIds(ImmutableList<Integer> acceptedAppIds) {return this.acceptedAppIds == acceptedAppIds ? this : new ApplicationTokenFilterAddon(acceptedAppIds, this.fasttrackFilter);}
+
+    public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return this.fasttrackFilter == fasttrackFilter ? this : new ApplicationTokenFilterAddon(this.acceptedAppIds, fasttrackFilter);}
 }
