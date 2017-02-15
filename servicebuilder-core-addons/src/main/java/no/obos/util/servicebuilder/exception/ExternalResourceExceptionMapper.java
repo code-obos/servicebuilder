@@ -19,16 +19,16 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
     @Override
     public Response toResponse(ExternalResourceException exception) {
         String detail;
-        if(exception.metaData.gotAnswer) {
-            detail = "Feil under kommunikasjon med " + exception.metaData.targetName;
+        if (exception.getMetaData().gotAnswer) {
+            detail = "Feil under kommunikasjon med " + exception.getMetaData().targetName;
         } else {
-            detail = "Kan ikke nå " + exception.metaData.targetName;
+            detail = "Kan ikke nå " + exception.getMetaData().targetName;
         }
         return exceptionUtil.handle(exception, cfg -> cfg
                 .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)
-                .detail("Det har oppstått en intern feil")
-                .internalMessage(exception.metaData.toString())
+                .detail(detail)
+                .internalMessage(exception.getMetaData().toString())
                 .logger(log)
         );
     }

@@ -2,11 +2,13 @@ package no.obos.util.servicebuilder.exception;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
 
+@Getter
 public class ExternalResourceException extends RuntimeException {
-    public final MetaData metaData;
+    private final MetaData metaData;
 
     public ExternalResourceException(MetaData metaData, Exception ex) {
         super("Feil ved kall til ekstern ressurs. " + metaData.toString(), ex);

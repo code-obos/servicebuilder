@@ -106,6 +106,7 @@ public class ExceptionUtil {
                 .title(problem.title)
                 .detail(problem.detail)
                 .status(problem.status)
+                .suggestedUserMessageInDetail(problem.userMessageInDetail)
                 .incidentReferenceId(problem.reference)
                 .build();
         String mediaType = getMediaType();

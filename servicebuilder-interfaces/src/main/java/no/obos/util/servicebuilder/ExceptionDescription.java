@@ -34,6 +34,11 @@ public class ExceptionDescription {
     public final String detail;
 
     /**
+     * If true, detail is user-friendly and may be displayed in gui of calling application
+     */
+    public final boolean userMessageInDetail;
+
+    /**
      * String identifying error for easy log searching. Default to randomly generated uuid.
      */
     public final String reference;
