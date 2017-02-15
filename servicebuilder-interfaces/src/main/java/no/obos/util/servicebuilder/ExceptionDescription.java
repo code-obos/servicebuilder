@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.slf4j.Logger;
 
+import java.util.Map;
+
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -21,6 +23,21 @@ public class ExceptionDescription {
      * Http status code of error. Defaults to 500.
      */
     public final Integer status;
+
+    /**
+     "type" (string) - A URI reference [RFC3986] that identifies the
+     problem type.  This specification encourages that, when
+     dereferenced, it provide human-readable documentation for the
+     problem type (e.g., using HTML [W3C.REC-html5-20141028]).  When
+     this member is not present, its value is assumed to be
+     "about:blank".
+     */
+    public final String type;
+
+    /**
+     * Additional fileds exposed in return to client
+     */
+    public final Map<String, String> context;
 
     /**
      * A brief title for the error condition. Should be the same for every problem of the same type.

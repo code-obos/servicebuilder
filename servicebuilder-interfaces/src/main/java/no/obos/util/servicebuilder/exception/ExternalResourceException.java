@@ -24,6 +24,7 @@ public class ExternalResourceException extends RuntimeException {
         public final Boolean gotAnswer;
         public final String targetUrl;
         public final Integer httpStatus;
+        public final String incidentReferenceId;
         @Singular("context")
         public final ImmutableMap<String, String> context;
     }

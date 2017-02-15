@@ -107,8 +107,12 @@ public class ExceptionUtil {
                 .detail(problem.detail)
                 .status(problem.status)
                 .suggestedUserMessageInDetail(problem.userMessageInDetail)
+                .type(problem.type)
                 .incidentReferenceId(problem.reference)
                 .build();
+        if(problem.context != null) {
+            problemResponse = problemResponse.toBuilder().context(problem.context).build();
+        }
         String mediaType = getMediaType();
         return Response.status(problem.status).type(mediaType).entity(problemResponse).build();
     }

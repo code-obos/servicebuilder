@@ -28,6 +28,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
                 .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)
                 .detail(detail)
+                .reference(exception.getMetaData().incidentReferenceId)
                 .internalMessage(exception.getMetaData().toString())
                 .logger(log)
         );

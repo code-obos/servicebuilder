@@ -2,10 +2,12 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
+import lombok.Singular;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
 import no.obos.util.servicebuilder.exception.FieldLevelExceptionMapper;
+import no.obos.util.servicebuilder.exception.HttpProblemExceptionMapper;
 import no.obos.util.servicebuilder.exception.JsonProcessingExceptionMapper;
 import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
 import no.obos.util.servicebuilder.exception.UserMessageExceptionMapper;
@@ -68,6 +70,7 @@ public class ExceptionMapperAddon implements Addon {
             registrator.register(ConstraintViolationExceptionMapper.class);
             registrator.register(ExternalResourceExceptionMapper.class);
             registrator.register(UserMessageExceptionMapper.class);
+            registrator.register(HttpProblemExceptionMapper.class);
         });
         jerseyConfig.addBinder(binder -> {
             binder.bind(this).to(ExceptionMapperAddon.class);

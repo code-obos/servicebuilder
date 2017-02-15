@@ -31,7 +31,7 @@ public class ProblemResponse {
     private ProblemResponse() {}
 
     @JsonCreator
-    @Builder
+    @Builder(toBuilder = true)
     public ProblemResponse(
             @JsonProperty("title") String title,
             @JsonProperty("detail") String detail,
