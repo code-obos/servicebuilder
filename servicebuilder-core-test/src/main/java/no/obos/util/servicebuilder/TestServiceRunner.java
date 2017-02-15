@@ -1,27 +1,72 @@
 package no.obos.util.servicebuilder;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import no.obos.util.servicebuilder.client.ClientGenerator;
+import no.obos.util.servicebuilder.client.StubGenerator;
+import no.obos.util.servicebuilder.client.TargetGenerator;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.DeploymentContext;
 import org.glassfish.jersey.test.inmemory.InMemoryTestContainerFactory;
 import org.glassfish.jersey.test.spi.TestContainer;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true)
 public class TestServiceRunner {
     public final ServiceConfig serviceConfig;
-    public final JerseyConfig jerseyConfig;
-    public final TestContainer testContainer;
-    public final ClientConfig clientConfig;
-    public final URI uri;
+    public final Function<ClientGenerator.ClientGeneratorBuilder, ClientGenerator.ClientGeneratorBuilder> clientConfigurator;
+    public final Function<StubGenerator.StubGeneratorBuilder, StubGenerator.StubGeneratorBuilder> stubConfigurator;
+    public final Function<TargetGenerator.TargetGeneratorBuilder, TargetGenerator.TargetGeneratorBuilder> targetConfigurator;
 
 
-    public static TestServiceRunner start(ServiceConfig serviceConfig) {
+    @AllArgsConstructor
+    public static class Runtime {
+        public final JerseyConfig jerseyConfig;
+        public final TestContainer testContainer;
+        public final ClientConfig clientConfig;
+        public final URI uri;
+        public final StubGenerator stubGenerator;
+        public final ClientGenerator clientGenerator;
+        public final TargetGenerator targetGenerator;
+
+        public void stop() {
+            testContainer.stop();
+        }
+
+        public <T> T call(BiFunction<ClientConfig, URI, T> testfun) {
+            return testfun.apply(clientConfig, uri);
+        }
+
+        public <T> T call(Function<WebTarget, T> testfun) {
+            return testfun.apply(targetGenerator.generate());
+        }
+
+        public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
+            return testfun.apply(stubGenerator.generateClient(clazz));
+        }
+
+        public ResourceConfig getResourceConfig() {
+            return jerseyConfig.getResourceConfig();
+        }
+
+    }
+
+
+    public static class TestServiceRunnerBuilder {
+        Function<ClientGenerator.ClientGeneratorBuilder, ClientGenerator.ClientGeneratorBuilder> clientConfigurator = (cfg -> cfg);
+        Function<StubGenerator.StubGeneratorBuilder, StubGenerator.StubGeneratorBuilder> stubConfigurator = (cfg -> cfg);
+        Function<TargetGenerator.TargetGeneratorBuilder, TargetGenerator.TargetGeneratorBuilder> targetConfigurator = (cfg -> cfg);
+    }
+
+
+    public TestServiceRunner.Runtime start() {
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.addContext(serviceConfig);
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfig.registrators)
@@ -33,31 +78,49 @@ public class TestServiceRunner {
         TestContainer testContainer = new InMemoryTestContainerFactory().create(uri, context);
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
-        return new TestServiceRunner(serviceConfigWithContext, jerseyConfig, testContainer, clientConfig, uri);
+        ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.builder()
+                .clientConfigBase(clientConfig)
+                .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
+        ).build();
+        Client client = clientGenerator.generate();
+        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.builder().client(client).uri(uri)).build();
+
+        TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.builder()
+                .uri(uri)
+                .client(client)
+        ).build();
+
+        return new Runtime(jerseyConfig, testContainer, clientConfig, uri, stubGenerator, clientGenerator, targetGenerator);
     }
 
-    public <T> T call(BiFunction<ClientConfig, URI, T> testfun) {
-        return testfun.apply(clientConfig, uri);
-    }
-
-    public static <T> T oneShot(ServiceConfig serviceConfig, BiFunction<ClientConfig, URI, T> testfun) {
-        TestServiceRunner serviceRunner = start(serviceConfig);
+    public <T> T oneShot(BiFunction<ClientConfig, URI, T> testfun) {
+        Runtime runner = start();
         try {
-            return testfun.apply(serviceRunner.clientConfig, serviceRunner.uri);
+            return testfun.apply(runner.clientConfig, runner.uri);
         } finally {
-            serviceRunner.stop();
+            runner.stop();
         }
     }
 
-    public ResourceConfig getResourceConfig() {
-        return jerseyConfig.getResourceConfig();
+    public <T, Y> T oneShot(Class<Y> clazz, Function<Y, T> testfun) {
+        Runtime runner = start();
+        try {
+            return testfun.apply(runner.stubGenerator.generateClient(clazz));
+        } finally {
+            runner.stop();
+        }
+    }
+
+    public <T> T oneShot(Function<WebTarget, T> testfun) {
+        Runtime runner = start();
+        try {
+            return testfun.apply(runner.targetGenerator.generate());
+        } finally {
+            runner.stop();
+        }
     }
 
 
-
-    public void stop() {
-        testContainer.stop();
-    }
 
     //    public void start() {
     //

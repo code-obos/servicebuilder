@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import no.obos.util.model.ProblemResponse;
+import no.obos.util.servicebuilder.ProblemResponse;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.ClientRequestContext;
@@ -26,9 +26,9 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
                 // setUp the "real" error message
 
                 ProblemResponse error = mapper.readValue(responseContext.getEntityStream(), ProblemResponse.class);
-                throw new RuntimeException("Error from server. Status " + responseContext.getStatus() + ": " + error );
+                throw new RuntimeException("Error from server. Status " + responseContext.getStatus() + ": " + error);
             } else {
-                throw new RuntimeException("Error from server. Status " + responseContext.getStatus() + ": Unknown" );
+                throw new RuntimeException("Error from server. Status " + responseContext.getStatus() + ": Unknown");
             }
         }
     }

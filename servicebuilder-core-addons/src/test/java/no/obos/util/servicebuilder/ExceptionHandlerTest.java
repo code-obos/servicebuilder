@@ -23,6 +23,10 @@ public class ExceptionHandlerTest {
             .bind(testService, TestService.Resource.class)
             .addon(ExceptionMapperAddon.builder().stacktraceConfig(disableStackTraceMap).build())
             .build();
+    TestServiceRunner testServiceRunner = TestServiceRunner.builder()
+            .serviceConfig(serviceConfig)
+            .clientConfigurator(cfg -> cfg.exceptionMapping(false))
+            .build();
 
     @Test
     public void userMessageException() {
@@ -30,7 +34,7 @@ public class ExceptionHandlerTest {
         when(testService.get()).thenThrow(new UserMessageException("Boooom!", 421));
 
         //when
-        Response response = TestServiceRunner.oneShot(serviceConfig, (clientconfig, uri) ->
+        Response response = testServiceRunner.oneShot((clientconfig, uri) ->
                 ClientBuilder.newClient(clientconfig).target(uri)
                         .path(TestService.PATH)
                         .request()
@@ -59,7 +63,7 @@ public class ExceptionHandlerTest {
         when(testService.get()).thenThrow(new HttpProblemException(expected, LogLevel.INFO, false));
 
         //when
-        Response response = TestServiceRunner.oneShot(serviceConfig, (clientconfig, uri) ->
+        Response response = testServiceRunner.oneShot((clientconfig, uri) ->
                 ClientBuilder.newClient(clientconfig).target(uri)
                         .path(TestService.PATH)
                         .request()

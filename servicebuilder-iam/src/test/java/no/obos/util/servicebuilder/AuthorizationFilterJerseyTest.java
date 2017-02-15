@@ -26,7 +26,6 @@ import static junit.framework.TestCase.assertEquals;
 public class AuthorizationFilterJerseyTest {
 
     private static TokenServiceClient tokenServiceClient = Mockito.mock(TokenServiceClient.class);
-    ;
 
     static final String javaxRole = "Mr. Tilgang";
     static final String uibRoleNameValid = "superbruker";
@@ -40,6 +39,12 @@ public class AuthorizationFilterJerseyTest {
                     .build()
             ).build();
 
+    TestServiceRunner testServiceRunner = TestServiceRunner.builder()
+            .serviceConfig(serviceConfig)
+            .clientConfigurator(cfg -> cfg.exceptionMapping(false))
+            .build();
+
+
 
     @Test
     public void validUserTokenIsAccepted() {
@@ -47,7 +52,7 @@ public class AuthorizationFilterJerseyTest {
 
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameValid));
 
-        Response response = TestServiceRunner.oneShot(serviceConfig, ((clientConfig, uri) ->
+        Response response = testServiceRunner.oneShot(((clientConfig, uri) ->
                 ClientBuilder.newClient(clientConfig).target(uri)
                         .path(Resource.PATH)
                         .path(Resource.RESOURCE_PATH).request()
@@ -63,7 +68,7 @@ public class AuthorizationFilterJerseyTest {
 
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameInvalid));
 
-        Response response = TestServiceRunner.oneShot(serviceConfig, ((clientConfig, uri) ->
+        Response response = testServiceRunner.oneShot(((clientConfig, uri) ->
                 ClientBuilder.newClient(clientConfig).target(uri)
                         .path(Resource.PATH)
                         .path(Resource.RESOURCE_PATH).request()
