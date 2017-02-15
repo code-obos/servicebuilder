@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.Builder;
-import lombok.Singular;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
@@ -24,21 +23,11 @@ import javax.ws.rs.NotFoundException;
 @Builder(toBuilder = true)
 public class ExceptionMapperAddon implements Addon {
 
-    public final boolean mapFieldLevelValidation;
-    public final boolean mapJsonProcessing;
-    public final boolean mapRuntime;
-    public final boolean mapValidation;
-    public final boolean mapWebApplication;
     public final boolean logAllStacktraces;
     public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
 
 
     public static class ExceptionMapperAddonBuilder {
-        boolean mapFieldLevelValidation = true;
-        boolean mapJsonProcessing = true;
-        boolean mapRuntime = true;
-        boolean mapValidation = true;
-        boolean mapWebApplication = true;
         boolean logAllStacktraces = false;
         ImmutableMap<Class<?>, Boolean> stacktraceConfig = ImmutableMap.<Class<?>, Boolean>builder()
                 .put(Throwable.class, true)
@@ -52,21 +41,11 @@ public class ExceptionMapperAddon implements Addon {
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> {
-            if (mapFieldLevelValidation) {
-                registrator.register(FieldLevelExceptionMapper.class);
-            }
-            if (mapJsonProcessing) {
-                registrator.register(JsonProcessingExceptionMapper.class);
-            }
-            if (mapRuntime) {
-                registrator.register(RuntimeExceptionMapper.class);
-            }
-            if (mapValidation) {
-                registrator.register(ValidationExceptionMapper.class);
-            }
-            if (mapWebApplication) {
-                registrator.register(WebApplicationExceptionMapper.class);
-            }
+            registrator.register(FieldLevelExceptionMapper.class);
+            registrator.register(JsonProcessingExceptionMapper.class);
+            registrator.register(RuntimeExceptionMapper.class);
+            registrator.register(ValidationExceptionMapper.class);
+            registrator.register(WebApplicationExceptionMapper.class);
             registrator.register(ConstraintViolationExceptionMapper.class);
             registrator.register(ExternalResourceExceptionMapper.class);
             registrator.register(UserMessageExceptionMapper.class);
