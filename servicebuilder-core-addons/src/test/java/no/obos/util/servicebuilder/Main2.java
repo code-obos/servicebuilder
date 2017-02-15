@@ -47,10 +47,8 @@ public class Main2 {
 
 
     static ServiceDefinition serviceDefinition = ServiceDefinition.simple(Api.class);
-    static ServiceConfig serviceConfig = BasicService.defaults()
-            .serviceDefinition(serviceDefinition)
-            .bind(ApiImpl.class,Api.class)
-            .build();
+    static ServiceConfig serviceConfig = BasicService.defaults(serviceDefinition)
+            .bind(ApiImpl.class,Api.class);
 
     public static void main(String[] args) {
         ServiceRunner.setUp(serviceConfig).start();//.join();

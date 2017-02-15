@@ -56,17 +56,14 @@ public class TargetGeneratorTest {
         EmbeddedJerseyServer.run(resourceConfig, (clientConfig, uri) -> {
 
             //when
-            Client client = ClientGenerator.builder()
+            Client client = ClientGenerator.defaults
                     .clientConfigBase(clientConfig)
                     .exceptionMapping(true)
                     .jsonConfig(serviceDefinition.getJsonConfig())
-                    .build().generate();
+                    .generate();
 
-            WebTarget targetShouldUpdate = TargetGenerator.builder()
-                    .client(client)
+            WebTarget targetShouldUpdate = TargetGenerator.defaults(client, uri)
                     .userToken("banan")
-                    .uri(uri)
-                    .build()
                     .generate();
             LocalDate actualShouldUpdate = targetShouldUpdate
                     .path("service")
@@ -74,11 +71,8 @@ public class TargetGeneratorTest {
                     .post(Entity.entity(payloadIn, MediaType.APPLICATION_JSON_TYPE))
                     .readEntity(LocalDate.class);
 
-            WebTarget targetNoUpdate = TargetGenerator.builder()
-                    .client(client)
+            WebTarget targetNoUpdate = TargetGenerator.defaults(client, uri)
                     .userToken("eple")
-                    .uri(uri)
-                    .build()
                     .generate();
             LocalDate actualNoUpdate = targetNoUpdate
                     .path("service")

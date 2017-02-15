@@ -1,7 +1,8 @@
 package no.obos.util.servicebuilder.client;
 
 import com.google.common.collect.Maps;
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.Constants;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -12,11 +13,15 @@ import javax.ws.rs.client.WebTarget;
 import java.net.URI;
 import java.util.Map;
 
-@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TargetGenerator {
-    final URI uri;
     final Client client;
+    final URI uri;
     final String userToken;
+
+    public static TargetGenerator defaults(Client client, URI uri) {
+        return new TargetGenerator(client, uri, null);
+    }
 
     public WebTarget generate() {
         Client clientToUse = client != null
@@ -45,4 +50,6 @@ public class TargetGenerator {
 
         return target;
     }
+
+    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken);}
 }

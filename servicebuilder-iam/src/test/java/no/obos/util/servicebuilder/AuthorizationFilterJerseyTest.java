@@ -30,14 +30,13 @@ public class AuthorizationFilterJerseyTest {
     static final String javaxRole = "Mr. Tilgang";
     static final String uibRoleNameValid = "superbruker";
     static final String uibRoleNameInvalid = "middelmådigbruker";
-    ServiceConfig serviceConfig = ServiceConfig.builder()
-            .serviceDefinition(ServiceDefinition.simple(Resource.class))
+    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Resource.class))
             //                .register(Resource.class)
             .bind(tokenServiceClient, TokenServiceClient.class)
-            .addon(UserTokenFilterAddon.builder()
-                    .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE))
-                    .build()
-            ).build();
+            .withAddon(UserTokenFilterAddon.builder()
+                    .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)
+                    ).build()
+            );
 
     TestServiceRunner testServiceRunner = TestServiceRunner.builder()
             .serviceConfig(serviceConfig)

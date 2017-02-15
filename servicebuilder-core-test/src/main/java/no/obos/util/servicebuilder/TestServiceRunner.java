@@ -21,9 +21,9 @@ import java.util.function.Function;
 @Builder(toBuilder = true)
 public class TestServiceRunner {
     public final ServiceConfig serviceConfig;
-    public final Function<ClientGenerator.ClientGeneratorBuilder, ClientGenerator.ClientGeneratorBuilder> clientConfigurator;
-    public final Function<StubGenerator.StubGeneratorBuilder, StubGenerator.StubGeneratorBuilder> stubConfigurator;
-    public final Function<TargetGenerator.TargetGeneratorBuilder, TargetGenerator.TargetGeneratorBuilder> targetConfigurator;
+    public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
+    public final Function<StubGenerator, StubGenerator> stubConfigurator;
+    public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
 
     @AllArgsConstructor
@@ -60,9 +60,9 @@ public class TestServiceRunner {
 
 
     public static class TestServiceRunnerBuilder {
-        Function<ClientGenerator.ClientGeneratorBuilder, ClientGenerator.ClientGeneratorBuilder> clientConfigurator = (cfg -> cfg);
-        Function<StubGenerator.StubGeneratorBuilder, StubGenerator.StubGeneratorBuilder> stubConfigurator = (cfg -> cfg);
-        Function<TargetGenerator.TargetGeneratorBuilder, TargetGenerator.TargetGeneratorBuilder> targetConfigurator = (cfg -> cfg);
+        Function<ClientGenerator, ClientGenerator> clientConfigurator = (cfg -> cfg);
+        Function<StubGenerator, StubGenerator> stubConfigurator = (cfg -> cfg);
+        Function<TargetGenerator, TargetGenerator> targetConfigurator = (cfg -> cfg);
     }
 
 
@@ -78,17 +78,14 @@ public class TestServiceRunner {
         TestContainer testContainer = new InMemoryTestContainerFactory().create(uri, context);
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
-        ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.builder()
+        ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
                 .clientConfigBase(clientConfig)
                 .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
-        ).build();
+        );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.builder().client(client).uri(uri)).build();
+        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client,uri));
 
-        TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.builder()
-                .uri(uri)
-                .client(client)
-        ).build();
+        TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
 
         return new Runtime(jerseyConfig, testContainer, clientConfig, uri, stubGenerator, clientGenerator, targetGenerator);
     }

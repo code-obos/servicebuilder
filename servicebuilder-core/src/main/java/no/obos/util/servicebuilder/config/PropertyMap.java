@@ -1,14 +1,23 @@
 package no.obos.util.servicebuilder.config;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Builder;
-import lombok.Singular;
 import no.obos.util.servicebuilder.PropertyProvider;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 
-@Builder(toBuilder = true)
+import java.util.Map;
+
 public class PropertyMap implements PropertyProvider {
-    @Singular("property")
     public final ImmutableMap<String, String> properties;
+
+    public PropertyMap(Map<String, String> properties) {
+        this.properties = ImmutableMap.copyOf(properties);
+    }
+
+    public static PropertyMap empty = new PropertyMap(ImmutableMap.of());
+
+    public PropertyMap put(String key, String value) {
+        return new PropertyMap(GuavaHelper.plus(properties, key, value));
+    }
 
     @Override
     public String get(String key) {
@@ -17,8 +26,8 @@ public class PropertyMap implements PropertyProvider {
 
     @Override
     public void failIfNotPresent(String... keys) {
-        for(String key : keys) {
-            if(keyIsValid(key)) {
+        for (String key : keys) {
+            if (keyIsValid(key)) {
                 throw new RuntimeException("missing property: " + key);
             }
         }
@@ -30,8 +39,8 @@ public class PropertyMap implements PropertyProvider {
 
     @Override
     public void failIfNotPresent(Iterable<String> keys) {
-        for(String key : keys) {
-            if(keyIsValid(key)) {
+        for (String key : keys) {
+            if (keyIsValid(key)) {
                 throw new RuntimeException("missing property: " + key);
             }
         }

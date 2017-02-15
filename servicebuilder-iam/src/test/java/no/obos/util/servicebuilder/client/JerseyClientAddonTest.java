@@ -82,29 +82,25 @@ public class JerseyClientAddonTest {
         LocalDate payloadOut = LocalDate.now().plusYears(100);
 
 
-        ServiceConfig nestedServiceConfig = ServiceConfig.builder()
-                .serviceDefinition(nestedServiceDefinition)
+        ServiceConfig nestedServiceConfig = ServiceConfig.defaults(nestedServiceDefinition)
                 .bind(NestedApiImpl.class, NestedApi.class)
-                .addon(ExceptionMapperAddon.builder().build())
-                .build();
+                .withAddon(ExceptionMapperAddon.builder().build());
 
         TestServiceRunner nestedTestServiceRunner = TestServiceRunner.builder()
                 .serviceConfig(nestedServiceConfig)
                 .build();
 
         nestedTestServiceRunner.oneShot((nestedClientConfig, nestedUri) -> {
-            ServiceConfig serviceConfig = ServiceConfig.builder()
-                    .serviceDefinition(serviceDefinition)
+            ServiceConfig serviceConfig = ServiceConfig.defaults(serviceDefinition)
                     .bind(ApiImpl.class, Api.class)
-                    .addon(ExceptionMapperAddon.builder().build())
-                    .addon(JerseyClientAddon.builder()
+                    .withAddon(ExceptionMapperAddon.builder().build())
+                    .withAddon(JerseyClientAddon.builder()
                             .serviceDefinition(nestedServiceDefinition)
                             .clientConfigBase(nestedClientConfig)
                             .usertoken(true)
                             .uri(nestedUri)
                             .build()
-                    )
-                    .build();
+                    );
             TestServiceRunner testServiceRunner = TestServiceRunner.builder()
                     .serviceConfig(serviceConfig)
                     .build();
@@ -112,24 +108,18 @@ public class JerseyClientAddonTest {
 
 
                 //when
-                Client client = ClientGenerator.builder()
+                Client client = ClientGenerator.defaults
                         .clientConfigBase(clientConfig)
                         .exceptionMapping(true)
                         .jsonConfig(serviceDefinition.getJsonConfig())
-                        .build().generate();
-                Api apiEple = StubGenerator.builder()
-                        .client(client)
+                        .generate();
+                Api apiEple = StubGenerator.defaults(client,uri)
                         .userToken("eple")
-                        .uri(uri)
-                        .build()
                         .generateClient(Api.class);
                 LocalDate actualWithUpdate = apiEple.call(payloadIn);
 
-                Api apiBanan = StubGenerator.builder()
-                        .client(client)
+                Api apiBanan = StubGenerator.defaults(client,uri)
                         .userToken("banan")
-                        .uri(uri)
-                        .build()
                         .generateClient(Api.class);
                 LocalDate actualNoUpdate = apiBanan.call(payloadIn);
 

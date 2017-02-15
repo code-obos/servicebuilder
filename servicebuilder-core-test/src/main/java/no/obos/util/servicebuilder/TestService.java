@@ -69,8 +69,6 @@ public class TestService implements ServiceDefinition {
     }
 
     public final static TestService instance = new TestService();
-    public final static ServiceConfig config = ServiceConfig.builder()
-            .serviceDefinition(instance)
-            .bind(TestService.Impl.class, TestService.Resource.class)
-            .build();
+    public final static ServiceConfig config = ServiceConfig.defaults(instance)
+            .bind(TestService.Impl.class, TestService.Resource.class);
 }

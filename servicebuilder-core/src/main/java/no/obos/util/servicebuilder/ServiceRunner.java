@@ -3,8 +3,7 @@ package no.obos.util.servicebuilder;
 import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
 
-import java.util.stream.Collectors;
-
+import static java.util.stream.Collectors.toList;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_CONTEXT_PATH;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_PORT;
 
@@ -14,8 +13,15 @@ public class ServiceRunner {
     final JettyServer jettyServer;
     final JerseyConfig jerseyConfig;
     JettyServer.Configuration jettyConfig;
+
     public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
-        ServiceConfig serviceConfigWithProps = serviceConfigRaw.toBuilder().clearAddons().addons(serviceConfigRaw.addons.stream().map(it -> it.withProperties(properties)).collect(Collectors.toList())).build();
+        ServiceConfig serviceConfigWithProps = serviceConfigRaw
+                .addons(serviceConfigRaw
+                        .addons.stream()
+                        .map(it -> it.withProperties(properties))
+                        .collect(toList()
+                        )
+                );
         serviceConfig = ServiceConfigInitializer.addContext(serviceConfigWithProps);
         properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
         jerseyConfig = new JerseyConfig(serviceConfig.serviceDefinition);

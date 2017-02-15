@@ -53,10 +53,10 @@ public class JerseyClientAddon implements Addon {
         jerseyConfig.addBinder(binder -> {
                     String serviceName = serviceDefinition.getName();
                     binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
-                    Client client = ClientGenerator.builder()
+                    Client client = ClientGenerator.defaults
                             .clientConfigBase(clientConfigBase)
                             .jsonConfig(serviceDefinition.getJsonConfig())
-                            .build().generate();
+                            .generate();
                     binder.bind(client).to(Client.class).named(serviceName);
                     binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
                     serviceDefinition.getResources().forEach(clazz -> {
@@ -91,11 +91,9 @@ public class JerseyClientAddon implements Addon {
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
             String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            return StubGenerator.builder()
-                    .client(client)
-                    .uri(configuration.uri)
+            return StubGenerator.defaults(client,configuration.uri)
                     .userToken(userToken)
-                    .build().generateClient(requiredType);
+                    .generateClient(requiredType);
         }
 
         @Override
@@ -130,11 +128,9 @@ public class JerseyClientAddon implements Addon {
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
             String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            return TargetGenerator.builder()
-                    .client(client)
-                    .uri(configuration.uri)
+            return TargetGenerator.defaults(client, configuration.uri)
                     .userToken(userToken)
-                    .build().generate();
+                    .generate();
         }
 
         @Override
