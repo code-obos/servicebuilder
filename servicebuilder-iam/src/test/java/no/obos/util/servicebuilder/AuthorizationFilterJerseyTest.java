@@ -38,10 +38,8 @@ public class AuthorizationFilterJerseyTest {
                     ).build()
             );
 
-    TestServiceRunner testServiceRunner = TestServiceRunner.builder()
-            .serviceConfig(serviceConfig)
-            .clientConfigurator(cfg -> cfg.exceptionMapping(false))
-            .build();
+    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig)
+            .clientConfigurator(cfg -> cfg.exceptionMapping(false));
 
 
 

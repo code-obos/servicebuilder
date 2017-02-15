@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
@@ -18,12 +18,19 @@ import java.net.URI;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Builder(toBuilder = true)
+import static java.util.function.Function.identity;
+
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestServiceRunner {
     public final ServiceConfig serviceConfig;
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
+
+    public static TestServiceRunner defaults (ServiceConfig serviceConfig) {
+        return new TestServiceRunner(serviceConfig, identity(), identity(), identity());
+    }
 
 
     @AllArgsConstructor
@@ -83,7 +90,7 @@ public class TestServiceRunner {
                 .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
         );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client,uri));
+        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));
 
         TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
 
@@ -118,12 +125,10 @@ public class TestServiceRunner {
     }
 
 
+    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return this.clientConfigurator == clientConfigurator ? this : new TestServiceRunner(this.serviceConfig, clientConfigurator, this.stubConfigurator, this.targetConfigurator);}
 
-    //    public void start() {
-    //
-    //        try {
-    //            return testfun.apply(clientConfig1, uri);
-    //        } finally {
-    //        }
-    //    }
+    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, stubConfigurator, this.targetConfigurator);}
+
+    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator);}
+
 }

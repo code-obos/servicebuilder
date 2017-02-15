@@ -21,10 +21,8 @@ public class ExceptionHandlerTest {
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
             .bind(testService, TestService.Resource.class)
             .withAddon(ExceptionMapperAddon.builder().stacktraceConfig(disableStackTraceMap).build());
-    TestServiceRunner testServiceRunner = TestServiceRunner.builder()
-            .serviceConfig(serviceConfig)
-            .clientConfigurator(cfg -> cfg.exceptionMapping(false))
-            .build();
+    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig)
+            .clientConfigurator(cfg -> cfg.exceptionMapping(false));
 
     @Test
     public void userMessageException() {

@@ -8,9 +8,7 @@ import java.time.LocalDate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestServiceRunnerTest {
-    TestServiceRunner testServiceRunner = TestServiceRunner.builder()
-            .serviceConfig(TestService.config)
-            .build();
+    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(TestService.config);
 
     @Test
     public void can_call_basic() {
