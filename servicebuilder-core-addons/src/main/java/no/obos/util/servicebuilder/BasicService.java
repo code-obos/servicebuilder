@@ -4,11 +4,11 @@ public class BasicService {
 
     public static ServiceConfig defaults(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)
-                .withAddon(SwaggerAddon.builder().build())
-                .withAddon(CorsFilterAddon.builder().build())
-                .withAddon(MetricsAddon.builder().build())
-                .withAddon(ObosLogFilterAddon.builder().build())
-                .withAddon(ExceptionMapperAddon.builder().build())
+                .addon(SwaggerAddon.builder().build())
+                .addon(CorsFilterAddon.builder().build())
+                .addon(MetricsAddon.builder().build())
+                .addon(ObosLogFilterAddon.builder().build())
+                .addon(ExceptionMapperAddon.builder().build())
                 ;
     }
 }

@@ -16,7 +16,7 @@ public class ServiceConfigInitializer {
             for (Addon toInitialize : uninitializedAddons) {
                 try {
                     Addon finalizedAddon = toInitialize.withDependencies(withContext);
-                    withContext = withContext.withAddon(finalizedAddon);
+                    withContext = withContext.addon(finalizedAddon);
                     finalizedInThisRun.add(finalizedAddon);
                 } catch(DependenceException ex) {
                     dependencies.add(new Dependency(toInitialize.getClass(), ex.dependency));

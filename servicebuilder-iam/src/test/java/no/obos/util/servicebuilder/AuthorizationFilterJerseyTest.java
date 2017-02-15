@@ -33,7 +33,7 @@ public class AuthorizationFilterJerseyTest {
     ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Resource.class))
             //                .register(Resource.class)
             .bind(tokenServiceClient, TokenServiceClient.class)
-            .withAddon(UserTokenFilterAddon.builder()
+            .addon(UserTokenFilterAddon.builder()
                     .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)
                     ).build()
             );

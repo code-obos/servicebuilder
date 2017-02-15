@@ -84,15 +84,15 @@ public class JerseyClientAddonTest {
 
         ServiceConfig nestedServiceConfig = ServiceConfig.defaults(nestedServiceDefinition)
                 .bind(NestedApiImpl.class, NestedApi.class)
-                .withAddon(ExceptionMapperAddon.builder().build());
+                .addon(ExceptionMapperAddon.builder().build());
 
         TestServiceRunner nestedTestServiceRunner = TestServiceRunner.defaults(nestedServiceConfig);
 
         nestedTestServiceRunner.oneShot((nestedClientConfig, nestedUri) -> {
             ServiceConfig serviceConfig = ServiceConfig.defaults(serviceDefinition)
                     .bind(ApiImpl.class, Api.class)
-                    .withAddon(ExceptionMapperAddon.builder().build())
-                    .withAddon(JerseyClientAddon.builder()
+                    .addon(ExceptionMapperAddon.builder().build())
+                    .addon(JerseyClientAddon.builder()
                             .serviceDefinition(nestedServiceDefinition)
                             .clientConfigBase(nestedClientConfig)
                             .usertoken(true)

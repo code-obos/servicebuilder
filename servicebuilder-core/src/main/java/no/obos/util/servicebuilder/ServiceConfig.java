@@ -23,11 +23,11 @@ public class ServiceConfig {
     }
 
     public <T> ServiceConfig bind(Class<? extends T> toBind, Class<T> bindTo) {
-        return withBinder(binder -> binder.bind(toBind).to(bindTo));
+        return binder(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public <T> ServiceConfig bind(T toBind, Class<? super T> bindTo) {
-        return withBinder(binder -> binder.bind(toBind).to(bindTo));
+        return binder(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public ServiceConfig register(Class toRegister) {
@@ -36,7 +36,7 @@ public class ServiceConfig {
 
     public ServiceConfig addHk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
         return registrator(hk2ConfigModule)
-                .withBinder(hk2ConfigModule);
+                .binder(hk2ConfigModule);
     }
 
     @SuppressWarnings("unchecked")
@@ -78,15 +78,15 @@ public class ServiceConfig {
                 .addons(addons.stream()
                         .filter(existingAddon -> ! existingAddon.getClass().equals(addon.getClass()))
                         .collect(toList())
-                ).withAddon(addon);
+                ).addon(addon);
     }
 
 
-    public ServiceConfig withBinder(Binder binder) {
+    public ServiceConfig binder(Binder binder) {
         return binders(GuavaHelper.plus(binders, binder));
     }
 
-    public ServiceConfig withAddon(Addon addon) {
+    public ServiceConfig addon(Addon addon) {
         return addons(GuavaHelper.plus(addons, addon));
     }
 
