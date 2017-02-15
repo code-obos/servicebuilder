@@ -1,7 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import no.obos.metrics.ObosMetricsServlet;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -10,10 +8,11 @@ import org.eclipse.jetty.servlet.ServletHolder;
  * registreres i deres respektive addons.
  * Standard path er tjeneste/versjon/metrics/
  */
-@Builder(toBuilder = true)
 public class MetricsAddon implements Addon {
 
     private static final String PATH_SPEC = "/metrics/*";
+
+    public static MetricsAddon defaults = new MetricsAddon();
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {

@@ -84,20 +84,18 @@ public class JerseyClientAddonTest {
 
         ServiceConfig nestedServiceConfig = ServiceConfig.defaults(nestedServiceDefinition)
                 .bind(NestedApiImpl.class, NestedApi.class)
-                .addon(ExceptionMapperAddon.builder().build());
+                .addon(ExceptionMapperAddon.defaults);
 
         TestServiceRunner nestedTestServiceRunner = TestServiceRunner.defaults(nestedServiceConfig);
 
         nestedTestServiceRunner.oneShot((nestedClientConfig, nestedUri) -> {
             ServiceConfig serviceConfig = ServiceConfig.defaults(serviceDefinition)
                     .bind(ApiImpl.class, Api.class)
-                    .addon(ExceptionMapperAddon.builder().build())
-                    .addon(JerseyClientAddon.builder()
-                            .serviceDefinition(nestedServiceDefinition)
+                    .addon(ExceptionMapperAddon.defaults)
+                    .addon(JerseyClientAddon.defaults(nestedServiceDefinition)
                             .clientConfigBase(nestedClientConfig)
                             .usertoken(true)
                             .uri(nestedUri)
-                            .build()
                     );
             TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
             return testServiceRunner.oneShot((clientConfig, uri) -> {
@@ -109,12 +107,12 @@ public class JerseyClientAddonTest {
                         .exceptionMapping(true)
                         .jsonConfig(serviceDefinition.getJsonConfig())
                         .generate();
-                Api apiEple = StubGenerator.defaults(client,uri)
+                Api apiEple = StubGenerator.defaults(client, uri)
                         .userToken("eple")
                         .generateClient(Api.class);
                 LocalDate actualWithUpdate = apiEple.call(payloadIn);
 
-                Api apiBanan = StubGenerator.defaults(client,uri)
+                Api apiBanan = StubGenerator.defaults(client, uri)
                         .userToken("banan")
                         .generateClient(Api.class);
                 LocalDate actualNoUpdate = apiBanan.call(payloadIn);

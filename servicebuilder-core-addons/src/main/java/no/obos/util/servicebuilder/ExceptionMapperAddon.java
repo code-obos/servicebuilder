@@ -1,7 +1,8 @@
 package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
@@ -20,22 +21,18 @@ import javax.ws.rs.NotFoundException;
  * Logger stacktrace for de fleste exceptions, med unntak av exceptions og underexceptions satt til false i config.stacktraceConfig.
  * Config.logAllStackTraces er ment for debug-bruk.
  */
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMapperAddon implements Addon {
 
     public final boolean logAllStacktraces;
     public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
 
-
-    public static class ExceptionMapperAddonBuilder {
-        boolean logAllStacktraces = false;
-        ImmutableMap<Class<?>, Boolean> stacktraceConfig = ImmutableMap.<Class<?>, Boolean>builder()
-                .put(Throwable.class, true)
-                .put(NotFoundException.class, false)
-                .build();
-
-    }
-
+    public static ExceptionMapperAddon defaults = new ExceptionMapperAddon(false,
+            ImmutableMap.<Class<?>, Boolean>builder()
+                    .put(Throwable.class, true)
+                    .put(NotFoundException.class, false)
+                    .build()
+    );
 
 
     @Override
@@ -56,4 +53,8 @@ public class ExceptionMapperAddon implements Addon {
             binder.bindAsContract(ExceptionUtil.class);
         });
     }
+
+    public ExceptionMapperAddon logAllStacktraces(boolean logAllStacktraces) {return this.logAllStacktraces == logAllStacktraces ? this : new ExceptionMapperAddon(logAllStacktraces, this.stacktraceConfig);}
+
+    public ExceptionMapperAddon stacktraceConfig(ImmutableMap<Class<?>, Boolean> stacktraceConfig) {return this.stacktraceConfig == stacktraceConfig ? this : new ExceptionMapperAddon(this.logAllStacktraces, stacktraceConfig);}
 }

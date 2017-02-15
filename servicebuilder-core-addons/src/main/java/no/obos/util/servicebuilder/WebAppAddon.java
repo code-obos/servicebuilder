@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +10,13 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * Legger serving av statiske filer. Standard path er tjeneste/versjon/webapp/ .
  * Lokasjon av statiske filer kan spesifiseres med file:// (relativ path på filsystemet) eller classpath:// .
  */
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebAppAddon implements Addon {
     public static final String CONFIG_KEY_RESOURCE_URL = "webapp.resource.url";
     static final Logger LOGGER = LoggerFactory.getLogger(WebAppAddon.class);
@@ -24,10 +25,7 @@ public class WebAppAddon implements Addon {
     public final int sessionTimeoutSeconds;
     public final URI resourceUri;
 
-    public static class WebAppAddonBuilder {
-        String pathSpec = "/webapp/*";
-        int sessionTimeoutSeconds = 28800;
-    }
+    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null);
 
 
 
@@ -35,7 +33,7 @@ public class WebAppAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            return this.toBuilder().resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL))).build();
+            return this.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -65,7 +63,7 @@ public class WebAppAddon implements Addon {
                 break;
             case "classpath":
                 final URL warUrl = WebAppAddon.class.getClassLoader().getResource(path);
-                if(warUrl == null) {
+                if (warUrl == null) {
                     throw new NullPointerException();
                 }
                 warUrlString = warUrl.toExternalForm();
@@ -79,4 +77,11 @@ public class WebAppAddon implements Addon {
         webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
         jettyServer.addAppContext(webAppContext);
     }
+
+
+    public WebAppAddon pathSpec(String pathSpec) {return Objects.equals(this.pathSpec, pathSpec) ? this : new WebAppAddon(pathSpec, this.sessionTimeoutSeconds, this.resourceUri);}
+
+    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {return this.sessionTimeoutSeconds == sessionTimeoutSeconds ? this : new WebAppAddon(this.pathSpec, sessionTimeoutSeconds, this.resourceUri);}
+
+    public WebAppAddon resourceUri(URI resourceUri) {return this.resourceUri == resourceUri ? this : new WebAppAddon(this.pathSpec, this.sessionTimeoutSeconds, resourceUri);}
 }

@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder;
 
-import lombok.Builder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
@@ -21,7 +22,7 @@ import java.net.URI;
 /**
  * Genererer klienter for en service med jersey klient-api og binder dem til context.
  */
-@Builder(toBuilder = true)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JerseyClientAddon implements Addon {
 
     public static final String CONFIG_KEY_URL = "service.url";
@@ -31,10 +32,10 @@ public class JerseyClientAddon implements Addon {
     public final boolean usertoken;
     public final ClientConfig clientConfigBase;
 
-
-    public static class JerseyClientAddonBuilder {
-        boolean usertoken = false;
+    public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
+        return new JerseyClientAddon(serviceDefinition, null, false, null);
     }
+
 
 
     @Override
@@ -42,9 +43,8 @@ public class JerseyClientAddon implements Addon {
         String name = serviceDefinition.getName();
         String prefix = name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
-        return toBuilder()
-                .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)))
-                .build();
+        return this
+                .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
     }
 
 
@@ -72,6 +72,7 @@ public class JerseyClientAddon implements Addon {
     }
 
 
+
     public static class StubFactory implements Factory<Object> {
 
         final HttpHeaders headers;
@@ -91,7 +92,7 @@ public class JerseyClientAddon implements Addon {
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
             String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            return StubGenerator.defaults(client,configuration.uri)
+            return StubGenerator.defaults(client, configuration.uri)
                     .userToken(userToken)
                     .generateClient(requiredType);
         }
@@ -137,4 +138,10 @@ public class JerseyClientAddon implements Addon {
         public void dispose(WebTarget instance) {
         }
     }
+
+    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.usertoken, this.clientConfigBase);}
+
+    public JerseyClientAddon usertoken(boolean usertoken) {return this.usertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase);}
+
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.usertoken, clientConfigBase);}
 }
