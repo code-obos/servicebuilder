@@ -51,7 +51,7 @@ public class Main2 {
             .bind(ApiImpl.class,Api.class);
 
     public static void main(String[] args) {
-        ServiceRunner.setUp(serviceConfig).start();//.join();
+        ServiceRunner.defaults(serviceConfig).start();//.join();
     }
 
 }

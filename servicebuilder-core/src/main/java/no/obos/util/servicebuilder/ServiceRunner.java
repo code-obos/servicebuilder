@@ -33,12 +33,12 @@ public class ServiceRunner {
 
     }
 
-    public static ServiceRunner setUp(ServiceConfig serviceConfig) {
+    public static ServiceRunner defaults(ServiceConfig serviceConfig) {
         PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(serviceConfig.serviceDefinition);
         return new ServiceRunner(serviceConfig, properties);
     }
 
-    public static ServiceRunner setUp(ServiceConfig serviceConfig, PropertyProvider properties) {
+    public static ServiceRunner defaults(ServiceConfig serviceConfig, PropertyProvider properties) {
         return new ServiceRunner(serviceConfig, properties);
     }
 

@@ -7,7 +7,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
 public class ResponseCorsFilter implements ContainerResponseFilter {
-
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException

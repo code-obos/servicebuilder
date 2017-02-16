@@ -41,7 +41,7 @@ public class ClientGenerator {
             clientConfig.register(ClientErrorResponseFilter.class);
         }
 
-        return ClientBuilder.newClient(clientConfigBase);
+        return ClientBuilder.newClient(clientConfig);
     }
 
     public ClientGenerator jsonConfig(JsonConfig jsonConfig) {return this.jsonConfig == jsonConfig ? this : new ClientGenerator(jsonConfig, this.clientConfigBase, this.exceptionMapping);}
