@@ -31,6 +31,8 @@ public class TestServiceFull implements ServiceDefinition {
 
     public static final String PATH = "full";
 
+    public static final String NAME = "test_service_full";
+
 
     @Builder(toBuilder = true)
     @EqualsAndHashCode
@@ -144,7 +146,7 @@ public class TestServiceFull implements ServiceDefinition {
 
     @Override
     public String getName() {
-        return "test";
+        return NAME;
     }
 
     @Override

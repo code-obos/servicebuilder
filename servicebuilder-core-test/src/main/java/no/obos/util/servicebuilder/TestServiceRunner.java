@@ -29,7 +29,7 @@ public class TestServiceRunner {
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
     public final Runtime runtime;
 
-    public static TestServiceRunner defaults (ServiceConfig serviceConfig) {
+    public static TestServiceRunner defaults(ServiceConfig serviceConfig) {
         return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null);
     }
 

@@ -29,7 +29,7 @@ public class JerseyClientAddon implements Addon {
 
     public final ServiceDefinition serviceDefinition;
     public final URI uri;
-    public final boolean usertoken;
+    public final boolean forwardUsertoken;
     public final ClientConfig clientConfigBase;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
@@ -91,7 +91,7 @@ public class JerseyClientAddon implements Addon {
             Client client = serviceLocator.getService(Client.class, requiredType.getCanonicalName());
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
-            String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
+            String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             return StubGenerator.defaults(client, configuration.uri)
                     .userToken(userToken)
                     .generateClient(requiredType);
@@ -128,7 +128,7 @@ public class JerseyClientAddon implements Addon {
             Client client = serviceLocator.getService(Client.class, serviceName);
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
-            String userToken = configuration.usertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
+            String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             return TargetGenerator.defaults(client, configuration.uri)
                     .userToken(userToken)
                     .generate();
@@ -139,9 +139,9 @@ public class JerseyClientAddon implements Addon {
         }
     }
 
-    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.usertoken, this.clientConfigBase);}
+    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, this.clientConfigBase);}
 
-    public JerseyClientAddon usertoken(boolean usertoken) {return this.usertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase);}
+    public JerseyClientAddon forwardUsertoken(boolean usertoken) {return this.forwardUsertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase);}
 
-    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.usertoken, clientConfigBase);}
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, clientConfigBase);}
 }
