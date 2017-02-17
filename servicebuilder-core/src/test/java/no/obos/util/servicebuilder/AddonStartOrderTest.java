@@ -18,21 +18,21 @@ public class AddonStartOrderTest {
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
                 .addon(new Addon() {
                     @Override
-                    public Addon withDependencies(ServiceConfig serviceConfig) {
+                    public Addon finalize(ServiceConfig serviceConfig) {
                         startOrder.add(1);
                         return this;
                     }
                 })
                 .addon(new Addon() {
                     @Override
-                    public Addon withDependencies(ServiceConfig serviceConfig) {
+                    public Addon finalize(ServiceConfig serviceConfig) {
                         startOrder.add(2);
                         return this;
                     }
                 });
 
         //When
-        ServiceConfigInitializer.addContext(config);
+        ServiceConfigInitializer.finalize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -44,20 +44,20 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Dependent implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(2);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> startAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
@@ -65,7 +65,7 @@ public class AddonStartOrderTest {
                 .addon(new Dependee());
 
         //When
-        ServiceConfigInitializer.addContext(config);
+        ServiceConfigInitializer.finalize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
@@ -77,41 +77,40 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Immediate implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(2);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> startAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
         class Dependent implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(3);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> startAfter() {return ImmutableSet.of(Immediate.class);}
+            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Immediate.class);}
         }
 
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
                 .addon(new Immediate())
                 .addon(new Dependent())
-                .addon(new Dependee())
-                ;
+                .addon(new Dependee());
 
         //When
-        ServiceConfigInitializer.addContext(config);
+        ServiceConfigInitializer.finalize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(2, 3, 1));
     }
@@ -123,31 +122,31 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Immediate implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(2);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> startAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
         class Dependent implements Addon {
             @Override
-            public Addon withDependencies(ServiceConfig serviceConfig) {
+            public Addon finalize(ServiceConfig serviceConfig) {
                 startOrder.add(3);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> startAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
+            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
         }
 
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
@@ -156,7 +155,7 @@ public class AddonStartOrderTest {
                 .addon(new Immediate());
 
         //When
-        ServiceConfigInitializer.addContext(config);
+        ServiceConfigInitializer.finalize(config);
 
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2, 3));
     }

@@ -23,7 +23,7 @@ public class ServiceRunner {
                         .collect(toList()
                         )
                 );
-        serviceConfig = ServiceConfigInitializer.addContext(serviceConfigWithProps);
+        serviceConfig = ServiceConfigInitializer.finalize(serviceConfigWithProps);
         properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
         jerseyConfig = new JerseyConfig(serviceConfig.serviceDefinition);
         jettyConfig = JettyServer.Configuration.builder()

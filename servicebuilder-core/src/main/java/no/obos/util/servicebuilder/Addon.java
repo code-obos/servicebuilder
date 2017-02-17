@@ -9,7 +9,7 @@ public interface Addon {
         return this;
     }
 
-    default Addon withDependencies(ServiceConfig serviceConfig) {
+    default Addon finalize(ServiceConfig serviceConfig) {
         return this;
     }
 
@@ -19,6 +19,7 @@ public interface Addon {
     default void addToJettyServer(JettyServer serviceConfig) {
     }
 
-    default Set<Class<?>> startBefore() {return ImmutableSet.of();}
-    default Set<Class<?>> startAfter() {return ImmutableSet.of();}
+    default Set<Class<?>> finalizeBefore() {return ImmutableSet.of();}
+
+    default Set<Class<?>> finalizeAfter() {return ImmutableSet.of();}
 }

@@ -29,7 +29,7 @@ public class TokenServiceAddon implements Addon {
     public static TokenServiceAddon defaults = new TokenServiceAddon(null, null, null, null);
 
     @Inject
-    public Addon withDependencies(ServiceConfig serviceConfig) {
+    public Addon finalize(ServiceConfig serviceConfig) {
         return this
                 .tokenServiceClient(
                         new TokenServiceHttpClient(new WebClientImpl(url), appId, appSecret)

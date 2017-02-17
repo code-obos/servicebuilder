@@ -34,8 +34,10 @@ public class JerseyClientAddon implements Addon {
     public final ClientConfig clientConfigBase;
     public final boolean monitorIntegration;
 
+    public final Runtime runtime;
+
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, null, true);
+        return new JerseyClientAddon(serviceDefinition, null, false, null, true, null);
     }
 
 
@@ -49,21 +51,26 @@ public class JerseyClientAddon implements Addon {
                 .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
     }
 
+    @Override
+    public Addon finalize(ServiceConfig serviceConfig) {
+        Client client = ClientGenerator.defaults
+                .clientConfigBase(clientConfigBase)
+                .jsonConfig(serviceDefinition.getJsonConfig())
+                .generate();
+        return runtime(new Runtime(client));
+    }
+
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     String serviceName = serviceDefinition.getName();
                     binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
-                    Client client = ClientGenerator.defaults
-                            .clientConfigBase(clientConfigBase)
-                            .jsonConfig(serviceDefinition.getJsonConfig())
-                            .generate();
-                    binder.bind(client).to(Client.class).named(serviceName);
+                    binder.bind(runtime.client).to(Client.class).named(serviceName);
                     binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
                     serviceDefinition.getResources().forEach(clazz -> {
                                 binder.bind(this).to(JerseyClientAddon.class).named(clazz.getCanonicalName());
-                                binder.bind(client).to(Client.class).named(clazz.getCanonicalName());
+                                binder.bind(runtime.client).to(Client.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
                                 binder.bindFactory(StubFactory.class).to(clazz);
                             }
@@ -147,11 +154,19 @@ public class JerseyClientAddon implements Addon {
         }
     }
 
-    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, this.clientConfigBase, true);}
 
-    public JerseyClientAddon forwardUsertoken(boolean usertoken) {return this.forwardUsertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase, true);}
+    @AllArgsConstructor
+    public static class Runtime {
+        public final Client client;
+    }
 
-    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, clientConfigBase, true);}
+    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, this.clientConfigBase, true, runtime);}
 
-    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, monitorIntegration);}
+    public JerseyClientAddon forwardUsertoken(boolean usertoken) {return this.forwardUsertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase, true, runtime);}
+
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, clientConfigBase, true, runtime);}
+
+    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, monitorIntegration, runtime);}
+
+    public JerseyClientAddon runtime(Runtime runtime) {return this.runtime == runtime ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, this.monitorIntegration, runtime);}
 }

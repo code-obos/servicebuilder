@@ -73,11 +73,11 @@ public class TestServiceRunner {
 
 
     public TestServiceRunner start() {
-        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.addContext(serviceConfig);
+        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfig);
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
-                .addRegistrators(serviceConfig.registrators)
-                .addBinders(serviceConfig.binders);
-        serviceConfig.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
+                .addRegistrators(serviceConfigWithContext.registrators)
+                .addBinders(serviceConfigWithContext.binders);
+        serviceConfigWithContext.addons.forEach(it -> it.addToJerseyConfig(jerseyConfig));
 
         DeploymentContext context = DeploymentContext.builder(jerseyConfig.getResourceConfig()).build();
         URI uri = UriBuilder.fromUri("http://localhost/").port(0).build();
@@ -86,11 +86,12 @@ public class TestServiceRunner {
         ClientConfig clientConfig = testContainer.getClientConfig();
         ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
                 .clientConfigBase(clientConfig)
-                .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
+                .jsonConfig(serviceConfigWithContext.serviceDefinition.getJsonConfig())
         );
         Client client = clientGenerator.generate();
 
-        return runtime(new Runtime(jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator));
+        Runtime runtime = new Runtime(jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
+        return new TestServiceRunner(serviceConfigWithContext, this.clientConfigurator, this.stubConfigurator, targetConfigurator, runtime);
     }
 
     public <T> T oneShot(BiFunction<ClientConfig, URI, T> testfun) {
@@ -127,6 +128,5 @@ public class TestServiceRunner {
 
     public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, null);}
 
-    public TestServiceRunner runtime(Runtime runtime) {return new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, runtime);}
 
 }
