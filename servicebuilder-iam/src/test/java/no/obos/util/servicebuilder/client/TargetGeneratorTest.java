@@ -56,10 +56,8 @@ public class TargetGeneratorTest {
         EmbeddedJerseyServer.run(resourceConfig, (clientConfig, uri) -> {
 
             //when
-            Client client = ClientGenerator.defaults
+            Client client = ClientGenerator.defaults(serviceDefinition)
                     .clientConfigBase(clientConfig)
-                    .exceptionMapping(true)
-                    .jsonConfig(serviceDefinition.getJsonConfig())
                     .generate();
 
             WebTarget targetShouldUpdate = TargetGenerator.defaults(client, uri)

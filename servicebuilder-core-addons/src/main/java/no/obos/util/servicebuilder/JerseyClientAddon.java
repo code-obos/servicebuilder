@@ -33,11 +33,12 @@ public class JerseyClientAddon implements Addon {
     public final boolean forwardUsertoken;
     public final ClientConfig clientConfigBase;
     public final boolean monitorIntegration;
+    public final boolean targetThrowsExceptions;
 
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, null, true, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, null, true, true, null);
     }
 
 
@@ -53,9 +54,8 @@ public class JerseyClientAddon implements Addon {
 
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
-        Client client = ClientGenerator.defaults
+        Client client = ClientGenerator.defaults(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
-                .jsonConfig(serviceDefinition.getJsonConfig())
                 .generate();
         return runtime(new Runtime(client));
     }
@@ -146,6 +146,7 @@ public class JerseyClientAddon implements Addon {
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             return TargetGenerator.defaults(client, configuration.uri)
                     .userToken(userToken)
+                    .throwExceptionForErrors(true)
                     .generate();
         }
 
@@ -160,13 +161,13 @@ public class JerseyClientAddon implements Addon {
         public final Client client;
     }
 
-    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, this.clientConfigBase, true, runtime);}
+    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, this.clientConfigBase, true, targetThrowsExceptions, runtime);}
 
-    public JerseyClientAddon forwardUsertoken(boolean usertoken) {return this.forwardUsertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase, true, runtime);}
+    public JerseyClientAddon forwardUsertoken(boolean usertoken) {return this.forwardUsertoken == usertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, usertoken, this.clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
 
-    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, clientConfigBase, true, runtime);}
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
 
-    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, monitorIntegration, runtime);}
+    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
 
-    public JerseyClientAddon runtime(Runtime runtime) {return this.runtime == runtime ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, this.monitorIntegration, runtime);}
+    public JerseyClientAddon runtime(Runtime runtime) {return this.runtime == runtime ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, this.clientConfigBase, this.monitorIntegration, targetThrowsExceptions, runtime);}
 }

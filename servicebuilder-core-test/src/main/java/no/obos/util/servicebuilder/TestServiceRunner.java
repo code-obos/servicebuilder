@@ -84,9 +84,9 @@ public class TestServiceRunner {
         TestContainer testContainer = new InMemoryTestContainerFactory().create(uri, context);
         testContainer.start();
         ClientConfig clientConfig = testContainer.getClientConfig();
-        ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
-                .clientConfigBase(clientConfig)
-                .jsonConfig(serviceConfigWithContext.serviceDefinition.getJsonConfig())
+        ClientGenerator clientGenerator = clientConfigurator.apply(
+                ClientGenerator.defaults(serviceConfigWithContext.serviceDefinition)
+                        .clientConfigBase(clientConfig)
         );
         Client client = clientGenerator.generate();
 

@@ -38,8 +38,7 @@ public class AuthorizationFilterJerseyTest {
                     )
             );
 
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig)
-            .clientConfigurator(cfg -> cfg.exceptionMapping(false));
+    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
 
 

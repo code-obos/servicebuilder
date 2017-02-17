@@ -21,8 +21,7 @@ public class ExceptionMapperAddonTest {
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
             .bind(testService, TestService.Resource.class)
             .addon(ExceptionMapperAddon.defaults.stacktraceConfig(disableStackTraceMap));
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig)
-            .clientConfigurator(cfg -> cfg.exceptionMapping(false));
+    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
     @Test
     public void userMessageException() {

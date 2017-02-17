@@ -18,9 +18,10 @@ public class TargetGenerator {
     final Client client;
     final URI uri;
     final String userToken;
+    final boolean throwExceptionForErrors;
 
     public static TargetGenerator defaults(Client client, URI uri) {
-        return new TargetGenerator(client, uri, null);
+        return new TargetGenerator(client, uri, null, false);
     }
 
     public WebTarget generate() {
@@ -48,8 +49,14 @@ public class TargetGenerator {
             target.register(WebTargetRequestHeaderFilter.class);
         }
 
+        if (throwExceptionForErrors) {
+            target.register(ClientErrorResponseFilter.class);
+        }
+
         return target;
     }
 
-    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken);}
+    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken, false);}
+
+    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.userToken, throwExceptionForErrors);}
 }

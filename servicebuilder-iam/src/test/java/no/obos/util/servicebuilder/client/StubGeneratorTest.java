@@ -52,12 +52,10 @@ public class StubGeneratorTest {
         LocalDate actual = EmbeddedJerseyServer.run(resourceConfig, (clientConfig, uri) -> {
 
             //when
-            Client client = ClientGenerator.defaults
+            Client client = ClientGenerator.defaults(serviceDefinition)
                     .clientConfigBase(clientConfig)
-                    .exceptionMapping(true)
-                    .jsonConfig(serviceDefinition.getJsonConfig())
                     .generate();
-            Api api = StubGenerator.defaults(client,uri)
+            Api api = StubGenerator.defaults(client, uri)
                     .userToken("banan")
                     .generateClient(Api.class);
             return api.call(payloadIn);

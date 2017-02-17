@@ -80,10 +80,9 @@ public class TestServiceRunnerJetty {
         serviceRunner.start();
 
         URI uri = serviceRunner.jettyServer.server.getURI();
-//        URI uri = URI.create("http://localhost:" + DEFAULT_PORT + DEFAULT_CONTEXTPATH);
 
-        ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
-                .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
+        ClientGenerator clientGenerator = clientConfigurator.apply(
+                ClientGenerator.defaults(serviceConfig.serviceDefinition)
         );
         Client client = clientGenerator.generate();
         StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));

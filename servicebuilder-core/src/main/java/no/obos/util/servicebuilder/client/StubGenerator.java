@@ -46,6 +46,7 @@ public class StubGenerator {
         }
 
         WebTarget webTarget = clientToUse.target(uri);
+        webTarget.register(ClientErrorResponseFilter.class);
 
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }

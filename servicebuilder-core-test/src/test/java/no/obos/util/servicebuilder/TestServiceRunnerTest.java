@@ -60,9 +60,8 @@ public class TestServiceRunnerTest {
     @Test
     public void can_call_stub() {
         when(impl.get()).thenReturn(TestService.defaultPayload);
-        Payload payload = testServiceRunner.oneShot(Resource.class, (Resource::get
-                )
-        );
+        Payload payload = testServiceRunner
+                .oneShot(Resource.class, (Resource::get));
         assertThat(payload).isEqualTo(TestService.defaultPayload);
     }
 

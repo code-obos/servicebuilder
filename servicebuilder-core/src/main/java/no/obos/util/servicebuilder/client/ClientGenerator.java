@@ -4,49 +4,51 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JsonConfig;
+import no.obos.util.servicebuilder.ServiceDefinition;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientGenerator {
+    public static final String SERVICE_DEFINITION_INJECTION = "servicedefinition";
     //    final String appToken;
-    public final JsonConfig jsonConfig;
     public final ClientConfig clientConfigBase;
-    public final Boolean exceptionMapping;
+    public final ServiceDefinition serviceDefinition;
 
-    public static ClientGenerator defaults = new ClientGenerator(JsonConfig.standard, null, false);
+    public static ClientGenerator defaults(ServiceDefinition serviceDefinition) {
+        return new ClientGenerator(null, serviceDefinition);
+    }
 
     public Client generate() {
         ClientConfig clientConfig = clientConfigBase != null
                 ? clientConfigBase
                 : new ClientConfig();
-        if (jsonConfig != null) {
-            ObjectMapper mapper = jsonConfig.get();
-            JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
-            provider.setMapper(mapper);
-            clientConfig.register(provider);
-            clientConfig.register(new AbstractBinder() {
+        final List<JerseyConfig.Binder> binders = new ArrayList<>();
+        binders.add(binder -> binder.bind(serviceDefinition).to(ServiceDefinition.class).named(SERVICE_DEFINITION_INJECTION));
 
-                @Override
-                protected void configure() {
-                    bind(mapper).to(ObjectMapper.class);
-                }
-            });
-        }
-        if (exceptionMapping == null || exceptionMapping) {
-            clientConfig.register(ClientErrorResponseFilter.class);
-        }
+        JsonConfig jsonConfig = serviceDefinition.getJsonConfig();
+        ObjectMapper mapper = jsonConfig.get();
+        JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
+        provider.setMapper(mapper);
+        clientConfig.register(provider);
+        binders.add(binder -> binder.bind(mapper).to(ObjectMapper.class));
+
+        clientConfig.register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+                binders.forEach(it -> it.addBindings(this));
+            }
+        });
 
         return ClientBuilder.newClient(clientConfig);
     }
 
-    public ClientGenerator jsonConfig(JsonConfig jsonConfig) {return this.jsonConfig == jsonConfig ? this : new ClientGenerator(jsonConfig, this.clientConfigBase, this.exceptionMapping);}
-
-    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new ClientGenerator(this.jsonConfig, clientConfigBase, this.exceptionMapping);}
-
-    public ClientGenerator exceptionMapping(Boolean exceptionMapping) {return this.exceptionMapping == exceptionMapping ? this : new ClientGenerator(this.jsonConfig, this.clientConfigBase, exceptionMapping);}
+    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new ClientGenerator(clientConfigBase, this.serviceDefinition);}
 }
