@@ -30,11 +30,6 @@ public class TestService implements ServiceDefinition {
 
     @Api
     public @Path(PATH) interface Resource {
-        @POST
-        @Produces("application/json")
-        @Consumes("application/json")
-        Payload post(Payload payload);
-
         @GET
         @Produces("application/json")
         Payload get();
@@ -43,11 +38,6 @@ public class TestService implements ServiceDefinition {
 
     public static class Impl implements Resource {
         @Override
-        public Payload post(Payload payload) {
-            return new Payload(payload.string + "1", payload.date.plusYears(1));
-        }
-
-        @Override
         public Payload get() {
             return defaultPayload;
         }
@@ -55,7 +45,6 @@ public class TestService implements ServiceDefinition {
 
 
     public static Payload defaultPayload = new Payload("string", LocalDate.now());
-
 
 
     @Override

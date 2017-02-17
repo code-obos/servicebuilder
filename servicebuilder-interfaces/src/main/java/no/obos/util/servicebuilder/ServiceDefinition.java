@@ -16,6 +16,22 @@ public interface ServiceDefinition {
         return JsonConfig.standard;
     }
 
+    static ServiceDefinition simple(final String name, final Class... resources) {
+        return new ServiceDefinition() {
+            ImmutableList<Class> classes = ImmutableList.copyOf(resources);
+
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public List<Class> getResources() {
+                return classes;
+            }
+        };
+    }
+
     static ServiceDefinition simple(final Class... resources) {
         return new ServiceDefinition() {
             ImmutableList<Class> classes = ImmutableList.copyOf(resources);

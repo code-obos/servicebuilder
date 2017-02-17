@@ -27,9 +27,10 @@ public class TestServiceRunner {
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
+    public final Runtime runtime;
 
     public static TestServiceRunner defaults (ServiceConfig serviceConfig) {
-        return new TestServiceRunner(serviceConfig, identity(), identity(), identity());
+        return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null);
     }
 
 
@@ -73,7 +74,7 @@ public class TestServiceRunner {
     }
 
 
-    public TestServiceRunner.Runtime start() {
+    public TestServiceRunner start() {
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.addContext(serviceConfig);
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfig.registrators)
@@ -94,11 +95,11 @@ public class TestServiceRunner {
 
         TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
 
-        return new Runtime(jerseyConfig, testContainer, clientConfig, uri, stubGenerator, clientGenerator, targetGenerator);
+        return runtime(new Runtime(jerseyConfig, testContainer, clientConfig, uri, stubGenerator, clientGenerator, targetGenerator));
     }
 
     public <T> T oneShot(BiFunction<ClientConfig, URI, T> testfun) {
-        Runtime runner = start();
+        Runtime runner = start().runtime;
         try {
             return testfun.apply(runner.clientConfig, runner.uri);
         } finally {
@@ -107,7 +108,7 @@ public class TestServiceRunner {
     }
 
     public <T, Y> T oneShot(Class<Y> clazz, Function<Y, T> testfun) {
-        Runtime runner = start();
+        Runtime runner = start().runtime;
         try {
             return testfun.apply(runner.stubGenerator.generateClient(clazz));
         } finally {
@@ -116,7 +117,7 @@ public class TestServiceRunner {
     }
 
     public <T> T oneShot(Function<WebTarget, T> testfun) {
-        Runtime runner = start();
+        Runtime runner = start().runtime;
         try {
             return testfun.apply(runner.targetGenerator.generate());
         } finally {
@@ -125,10 +126,12 @@ public class TestServiceRunner {
     }
 
 
-    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return this.clientConfigurator == clientConfigurator ? this : new TestServiceRunner(this.serviceConfig, clientConfigurator, this.stubConfigurator, this.targetConfigurator);}
+    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return this.clientConfigurator == clientConfigurator ? this : new TestServiceRunner(this.serviceConfig, clientConfigurator, this.stubConfigurator, this.targetConfigurator, null);}
 
-    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, stubConfigurator, this.targetConfigurator);}
+    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, stubConfigurator, this.targetConfigurator, null);}
 
-    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator);}
+    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, null);}
+
+    public TestServiceRunner runtime(Runtime runtime) {return new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, runtime);}
 
 }

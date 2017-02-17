@@ -15,7 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ExceptionHandlerTest {
+public class ExceptionMapperAddonTest {
     TestService.Resource testService = mock(TestService.Resource.class);
     ImmutableMap<Class<?>, Boolean> disableStackTraceMap = ImmutableMap.<Class<?>, Boolean>builder().put(RuntimeException.class, false).build();
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
