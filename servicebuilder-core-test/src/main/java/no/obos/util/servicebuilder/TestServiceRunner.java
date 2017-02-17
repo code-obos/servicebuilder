@@ -40,9 +40,9 @@ public class TestServiceRunner {
         public final TestContainer testContainer;
         public final ClientConfig clientConfig;
         public final URI uri;
-        public final StubGenerator stubGenerator;
-        public final ClientGenerator clientGenerator;
-        public final TargetGenerator targetGenerator;
+        public final Client client;
+        public final Function<StubGenerator, StubGenerator> stubConfigurator;
+        public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
             testContainer.stop();
@@ -53,10 +53,12 @@ public class TestServiceRunner {
         }
 
         public <T> T call(Function<WebTarget, T> testfun) {
+            TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
             return testfun.apply(targetGenerator.generate());
         }
 
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
+            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
 
@@ -64,13 +66,9 @@ public class TestServiceRunner {
             return jerseyConfig.getResourceConfig();
         }
 
-    }
+        public Runtime stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new Runtime(this.jerseyConfig, this.testContainer, this.clientConfig, this.uri, this.client, stubConfigurator, this.targetConfigurator);}
 
-
-    public static class TestServiceRunnerBuilder {
-        Function<ClientGenerator, ClientGenerator> clientConfigurator = (cfg -> cfg);
-        Function<StubGenerator, StubGenerator> stubConfigurator = (cfg -> cfg);
-        Function<TargetGenerator, TargetGenerator> targetConfigurator = (cfg -> cfg);
+        public Runtime targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new Runtime(this.jerseyConfig, this.testContainer, this.clientConfig, this.uri, this.client, this.stubConfigurator, targetConfigurator);}
     }
 
 
@@ -91,11 +89,8 @@ public class TestServiceRunner {
                 .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
         );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));
 
-        TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
-
-        return runtime(new Runtime(jerseyConfig, testContainer, clientConfig, uri, stubGenerator, clientGenerator, targetGenerator));
+        return runtime(new Runtime(jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator));
     }
 
     public <T> T oneShot(BiFunction<ClientConfig, URI, T> testfun) {
@@ -110,7 +105,7 @@ public class TestServiceRunner {
     public <T, Y> T oneShot(Class<Y> clazz, Function<Y, T> testfun) {
         Runtime runner = start().runtime;
         try {
-            return testfun.apply(runner.stubGenerator.generateClient(clazz));
+            return runner.call(clazz, testfun);
         } finally {
             runner.stop();
         }
@@ -119,7 +114,7 @@ public class TestServiceRunner {
     public <T> T oneShot(Function<WebTarget, T> testfun) {
         Runtime runner = start().runtime;
         try {
-            return testfun.apply(runner.targetGenerator.generate());
+            return runner.call(testfun);
         } finally {
             runner.stop();
         }

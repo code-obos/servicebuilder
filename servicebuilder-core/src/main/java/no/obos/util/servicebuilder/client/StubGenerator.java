@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Singular;
 import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 import javax.ws.rs.client.Client;
@@ -54,4 +55,6 @@ public class StubGenerator {
     public StubGenerator cookies(ImmutableList<Cookie> cookies) {return this.cookies == cookies ? this : new StubGenerator(this.client, this.uri, this.userToken, cookies, this.headers);}
 
     public StubGenerator headers(ImmutableMap<String, String> headers) {return this.headers == headers ? this : new StubGenerator(this.client, this.uri, this.userToken, this.cookies, headers);}
+
+    public StubGenerator header(String key, String value) {return headers(GuavaHelper.plus(headers, key, value));}
 }

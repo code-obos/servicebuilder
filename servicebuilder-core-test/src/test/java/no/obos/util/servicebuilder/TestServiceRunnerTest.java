@@ -15,7 +15,7 @@ public class TestServiceRunnerTest {
     Resource impl = Mockito.mock(Resource.class);
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
             ServiceConfig.defaults(TestService.instance)
-            .bind(impl, Resource.class)
+                    .bind(impl, Resource.class)
     );
 
     @Test
@@ -66,25 +66,8 @@ public class TestServiceRunnerTest {
         assertThat(payload).isEqualTo(TestService.defaultPayload);
     }
 
-    @Test public void can_call_several_times () {
-        Payload expected1 = new Payload("eple", LocalDate.now().minusYears(55));
-        Payload expected2 = new Payload("banan", LocalDate.now().minusYears(66));
-
-        TestServiceRunner.Runtime runtime = testServiceRunner.start().runtime;
-
-        when(impl.get()).thenReturn(expected1);
-        Payload actual1 = runtime.call(Resource.class, Resource::get);
-
-        when(impl.get()).thenReturn(expected2);
-        Payload actual2 = runtime.call(Resource.class, Resource::get);
-        runtime.stop();
-
-        assertThat(actual1).isEqualTo(expected1);
-        assertThat(actual2).isEqualTo(expected2);
-    }
-
     @Test
-    public void can_call_several_times_with_different_headers () {
+    public void can_call_several_times() {
         Payload expected1 = new Payload("eple", LocalDate.now().minusYears(55));
         Payload expected2 = new Payload("banan", LocalDate.now().minusYears(66));
 
