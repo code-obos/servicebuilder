@@ -1,5 +1,9 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Set;
+
 public interface Addon {
     default Addon withProperties(PropertyProvider properties) {
         return this;
@@ -14,4 +18,7 @@ public interface Addon {
 
     default void addToJettyServer(JettyServer serviceConfig) {
     }
+
+    default Set<Class<?>> startBefore() {return ImmutableSet.of();}
+    default Set<Class<?>> startAfter() {return ImmutableSet.of();}
 }
