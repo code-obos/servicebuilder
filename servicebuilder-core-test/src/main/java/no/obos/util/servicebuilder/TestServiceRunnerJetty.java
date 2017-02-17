@@ -6,6 +6,7 @@ import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
 import no.obos.util.servicebuilder.config.PropertyMap;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -17,7 +18,7 @@ import static java.util.function.Function.identity;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestServiceRunnerJetty {
-    public static final int DEFAULT_PORT = 38373;
+    public static final int DEFAULT_PORT = 0;
     public static final String DEFAULT_VERSION = "1.0";
     public static final String DEFAULT_CONTEXTPATH = "/test/v" + DEFAULT_VERSION;
 
@@ -28,6 +29,8 @@ public class TestServiceRunnerJetty {
     public final PropertyMap propertyMap;
 
     public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
+
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
         return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), PropertyMap.empty
                 .put("server.port", String.valueOf(DEFAULT_PORT))
                 .put("service.version", String.valueOf(DEFAULT_VERSION))
@@ -45,6 +48,7 @@ public class TestServiceRunnerJetty {
 
         public void stop() {
             serviceRunner.stop();
+            serviceRunner.join();
         }
 
         public void join() {
@@ -69,10 +73,14 @@ public class TestServiceRunnerJetty {
 
 
     public TestServiceRunnerJetty.Runtime start() {
+
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
         ServiceRunner serviceRunner = new ServiceRunner(serviceConfig, propertyMap);
         serviceRunner.start();
 
-        URI uri = URI.create("http://localhost:" + DEFAULT_PORT + DEFAULT_CONTEXTPATH);
+        URI uri = serviceRunner.jettyServer.server.getURI();
+//        URI uri = URI.create("http://localhost:" + DEFAULT_PORT + DEFAULT_CONTEXTPATH);
 
         ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
                 .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())

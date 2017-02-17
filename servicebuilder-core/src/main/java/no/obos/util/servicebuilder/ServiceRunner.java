@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import static java.util.stream.Collectors.toList;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_CONTEXT_PATH;
@@ -44,6 +45,9 @@ public class ServiceRunner {
 
     //    Map<Addon2, AddonRuntime2> runtimes = Maps.newHashMap();
     public ServiceRunner start() {
+
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
         jerseyConfig
                 .addRegistrators(serviceConfig.registrators)
                 .addBinders(serviceConfig.binders);
