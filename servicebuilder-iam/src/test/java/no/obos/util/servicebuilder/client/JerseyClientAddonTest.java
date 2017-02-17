@@ -2,12 +2,14 @@ package no.obos.util.servicebuilder.client;
 
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.JerseyClientAddon;
+import no.obos.util.servicebuilder.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinition;
 import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import org.jboss.logging.MDC;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -27,6 +29,7 @@ public class JerseyClientAddonTest {
 
     TestServiceRunner nestedService = TestServiceRunner.defaults(
             TestServiceFull.config
+                    .addon(ObosLogFilterAddon.defaults)
                     .bind(nestedController, Controller.class)
     );
 
@@ -82,6 +85,32 @@ public class JerseyClientAddonTest {
     public void can_call_with_injected_target() {
         //Given
         TestServiceFull.Call expected = getCall();
+        TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
+
+        ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
+                .bind(ApiImpl.class, Api.class)
+                .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .uri(nestedRuntime.uri)
+                );
+
+        //when
+        TestServiceRunner.defaults(outerServiceConfig)
+                .oneShot(Api.class, Api::call_with_target);
+
+        //then
+        verify(nestedController).isCallValid(eq(expected));
+        nestedRuntime.stop();
+    }
+
+    @Test
+    public void request_id_gets_carried_over() {
+        MDC.put(Constants.X_OBOS_REQUEST_ID, "Banana");
+        //Given
+        TestServiceFull.Call expected = getCall()
+                .toBuilder()
+                .header(Constants.X_OBOS_REQUEST_ID, "Banana")
+                .build();
         TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
 
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)

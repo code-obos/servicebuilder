@@ -52,6 +52,7 @@ public class TargetGenerator {
         if (throwExceptionForErrors) {
             target.register(ClientErrorResponseFilter.class);
         }
+        target.register(RequestIdClientFilter.class);
 
         return target;
     }
