@@ -18,12 +18,13 @@ public class CorsFilterAddonTest {
         Response call = TestServiceRunnerJetty
                 .defaults(serviceConfig)
                 .oneShot(target -> target
-                                .path(TestService.PATH)
-                                .request()
-                                .header("Origin", "Vestfossen")
-                                .header("Access-Control-Request-Methods", "GET,PUT,POST")
-                                .header("Access-Control-Request-Headers", "X-OBOS-APPTOKENID")
-                                .options()
+                        .path("api")
+                        .path(TestService.PATH)
+                        .request()
+                        .header("Origin", "Vestfossen")
+                        .header("Access-Control-Request-Methods", "GET,PUT,POST")
+                        .header("Access-Control-Request-Headers", "X-OBOS-APPTOKENID")
+                        .options()
                 );
         MultivaluedMap<String, Object> headers = call.getHeaders();
         assertThat(headers.getFirst("Access-Control-Allow-Origin")).isEqualTo("Vestfossen");

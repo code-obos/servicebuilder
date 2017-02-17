@@ -72,7 +72,7 @@ public class TestServiceRunnerJetty {
         ServiceRunner serviceRunner = new ServiceRunner(serviceConfig, propertyMap);
         serviceRunner.start();
 
-        URI uri = URI.create("http://localhost:" + DEFAULT_PORT + DEFAULT_CONTEXTPATH + "/api");
+        URI uri = URI.create("http://localhost:" + DEFAULT_PORT + DEFAULT_CONTEXTPATH);
 
         ClientGenerator clientGenerator = clientConfigurator.apply(ClientGenerator.defaults
                 .jsonConfig(serviceConfig.serviceDefinition.getJsonConfig())
