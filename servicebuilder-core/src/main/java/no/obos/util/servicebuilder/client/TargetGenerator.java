@@ -19,9 +19,10 @@ public class TargetGenerator {
     final URI uri;
     final String userToken;
     final boolean throwExceptionForErrors;
+    final boolean logging;
 
     public static TargetGenerator defaults(Client client, URI uri) {
-        return new TargetGenerator(client, uri, null, false);
+        return new TargetGenerator(client, uri, null, false, true);
     }
 
     public WebTarget generate() {
@@ -53,11 +54,16 @@ public class TargetGenerator {
             target.register(ClientErrorResponseFilter.class);
         }
         target.register(RequestIdClientFilter.class);
+        if(logging) {
+            target.register(ClientLogFilter.class);
+        }
 
         return target;
     }
 
-    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken, false);}
+    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken, throwExceptionForErrors, logging);}
 
-    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.userToken, throwExceptionForErrors);}
+    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.userToken, throwExceptionForErrors, logging);}
+
+    public TargetGenerator logging(boolean logging) {return new TargetGenerator(this.client, this.uri, userToken, throwExceptionForErrors, logging);}
 }

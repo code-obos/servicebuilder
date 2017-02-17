@@ -26,13 +26,14 @@ public class StubGenerator {
     final Client client;
     final URI uri;
     final String userToken;
+    final boolean logging;
     @Singular
     final ImmutableList<Cookie> cookies;
     @Singular
     final ImmutableMap<String, String> headers;
 
     public static StubGenerator defaults(Client client, URI uri) {
-        return new StubGenerator(client, uri, null, ImmutableList.of(), ImmutableMap.of());
+        return new StubGenerator(client, uri, null, true, ImmutableList.of(), ImmutableMap.of());
     }
 
     public <T> T generateClient(Class<T> resource) {
@@ -48,15 +49,20 @@ public class StubGenerator {
         WebTarget webTarget = clientToUse.target(uri);
         webTarget.register(ClientErrorResponseFilter.class);
         webTarget.register(RequestIdClientFilter.class);
+        if(logging) {
+            webTarget.register(ClientLogFilter.class);
+        }
 
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
 
-    public StubGenerator userToken(String userToken) {return Objects.equals(this.userToken, userToken) ? this : new StubGenerator(this.client, this.uri, userToken, this.cookies, this.headers);}
+    public StubGenerator userToken(String userToken) {return Objects.equals(this.userToken, userToken) ? this : new StubGenerator(this.client, this.uri, userToken, logging, this.cookies, this.headers);}
 
-    public StubGenerator cookies(ImmutableList<Cookie> cookies) {return this.cookies == cookies ? this : new StubGenerator(this.client, this.uri, this.userToken, cookies, this.headers);}
+    public StubGenerator cookies(ImmutableList<Cookie> cookies) {return this.cookies == cookies ? this : new StubGenerator(this.client, this.uri, this.userToken, logging, cookies, this.headers);}
 
-    public StubGenerator headers(ImmutableMap<String, String> headers) {return this.headers == headers ? this : new StubGenerator(this.client, this.uri, this.userToken, this.cookies, headers);}
+    public StubGenerator headers(ImmutableMap<String, String> headers) {return this.headers == headers ? this : new StubGenerator(this.client, this.uri, this.userToken, logging, this.cookies, headers);}
+
+    public StubGenerator logging(boolean logging) {return new StubGenerator(this.client, this.uri, this.userToken, logging, this.cookies, headers);}
 
     public StubGenerator header(String key, String value) {return headers(GuavaHelper.plus(headers, key, value));}
 }
