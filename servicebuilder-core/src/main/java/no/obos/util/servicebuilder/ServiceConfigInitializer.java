@@ -21,16 +21,8 @@ public class ServiceConfigInitializer {
     static class StartupOrderComparator implements Comparator<Addon> {
         @Override
         public int compare(Addon o1, Addon o2) {
-            Set<Class<?>> o1StartBefore = o1.finalizeBefore();
             Set<Class<?>> o1StartAfter = o1.finalizeAfter();
-            Set<Class<?>> o2StartBefore = o2.finalizeBefore();
             Set<Class<?>> o2StartAfter = o2.finalizeAfter();
-            if (o1StartBefore.stream().anyMatch(clazz -> clazz.isInstance(o2))) {
-                return - 1;
-            }
-            if (o2StartBefore.stream().anyMatch(clazz -> clazz.isInstance(o1))) {
-                return 1;
-            }
             if (o1StartAfter.stream().anyMatch(clazz -> clazz.isInstance(o2))) {
                 return 1;
             }
