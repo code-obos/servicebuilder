@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
 import no.obos.util.servicebuilder.exception.ExternalResourceExceptionMapper;
@@ -13,6 +14,7 @@ import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
 import no.obos.util.servicebuilder.exception.UserMessageExceptionMapper;
 import no.obos.util.servicebuilder.exception.ValidationExceptionMapper;
 import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import javax.ws.rs.NotFoundException;
 
@@ -24,10 +26,10 @@ import javax.ws.rs.NotFoundException;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMapperAddon implements Addon {
 
-    public final boolean logAllStacktraces;
+    @Wither
     public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
 
-    public static ExceptionMapperAddon defaults = new ExceptionMapperAddon(false,
+    public static ExceptionMapperAddon defaults = new ExceptionMapperAddon(
             ImmutableMap.<Class<?>, Boolean>builder()
                     .put(Throwable.class, true)
                     .put(NotFoundException.class, false)
@@ -54,7 +56,5 @@ public class ExceptionMapperAddon implements Addon {
         });
     }
 
-    public ExceptionMapperAddon logAllStacktraces(boolean logAllStacktraces) {return this.logAllStacktraces == logAllStacktraces ? this : new ExceptionMapperAddon(logAllStacktraces, this.stacktraceConfig);}
-
-    public ExceptionMapperAddon stacktraceConfig(ImmutableMap<Class<?>, Boolean> stacktraceConfig) {return this.stacktraceConfig == stacktraceConfig ? this : new ExceptionMapperAddon(this.logAllStacktraces, stacktraceConfig);}
+    public ExceptionMapperAddon withStacktraceConfig(Class<?> key, boolean value) {return this.withStacktraceConfig(GuavaHelper.plus(stacktraceConfig, key, value));}
 }

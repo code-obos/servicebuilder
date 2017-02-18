@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.log.ObosLogFilter;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -19,9 +20,12 @@ public class ObosLogFilterAddon implements Addon {
     public static final ImmutableList<String> DEFAULT_BLACKLIST = ImmutableList.of("/swagger.json");
     public static final ImmutableList<DispatcherType> DEFAULT_DISPATCHES = ImmutableList.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
 
+    @Wither
     public final ImmutableList<String> blacklist;
+    @Wither
     public final ImmutableList<DispatcherType> dispatches;
 
+    @Wither
     public final String pathSpec;
 
     public static ObosLogFilterAddon defaults = new ObosLogFilterAddon(ImmutableList.of("/swagger.json"), ImmutableList.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC), null);
@@ -45,17 +49,11 @@ public class ObosLogFilterAddon implements Addon {
                 .addFilter(logFilterHolder, pathSpeckToUse, EnumSet.copyOf(dispatches));
     }
 
-    public ObosLogFilterAddon blacklist(ImmutableList<String> blacklist) {return this.blacklist == blacklist ? this : new ObosLogFilterAddon(blacklist, this.dispatches, this.pathSpec);}
-
-    public ObosLogFilterAddon blacklist(String blacklist) {
-        return blacklist(GuavaHelper.plus(this.blacklist, blacklist));
+    public ObosLogFilterAddon withBlacklisted(String blacklist) {
+        return withBlacklist(GuavaHelper.plus(this.blacklist, blacklist));
     }
 
-    public ObosLogFilterAddon dispatches(ImmutableList<DispatcherType> dispatches) {return this.dispatches == dispatches ? this : new ObosLogFilterAddon(this.blacklist, dispatches, this.pathSpec);}
-
-    public ObosLogFilterAddon dispatch(DispatcherType dispatcherType) {
-        return dispatches(GuavaHelper.plus(dispatches, dispatcherType));
+    public ObosLogFilterAddon withDispatch(DispatcherType dispatcherType) {
+        return withDispatches(GuavaHelper.plus(dispatches, dispatcherType));
     }
-
-    public ObosLogFilterAddon pathSpec(String pathSpec) {return Objects.equals(this.pathSpec, pathSpec) ? this : new ObosLogFilterAddon(this.blacklist, this.dispatches, pathSpec);}
 }

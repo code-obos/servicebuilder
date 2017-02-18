@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +22,11 @@ public class WebAppAddon implements Addon {
     public static final String CONFIG_KEY_RESOURCE_URL = "webapp.resource.url";
     static final Logger LOGGER = LoggerFactory.getLogger(WebAppAddon.class);
 
+    @Wither
     public final String pathSpec;
+    @Wither
     public final int sessionTimeoutSeconds;
+    @Wither
     public final URI resourceUri;
 
     public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null);
@@ -33,7 +37,7 @@ public class WebAppAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            return this.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
+            return this.withResourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -77,11 +81,4 @@ public class WebAppAddon implements Addon {
         webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
         jettyServer.addAppContext(webAppContext);
     }
-
-
-    public WebAppAddon pathSpec(String pathSpec) {return Objects.equals(this.pathSpec, pathSpec) ? this : new WebAppAddon(pathSpec, this.sessionTimeoutSeconds, this.resourceUri);}
-
-    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {return this.sessionTimeoutSeconds == sessionTimeoutSeconds ? this : new WebAppAddon(this.pathSpec, sessionTimeoutSeconds, this.resourceUri);}
-
-    public WebAppAddon resourceUri(URI resourceUri) {return this.resourceUri == resourceUri ? this : new WebAppAddon(this.pathSpec, this.sessionTimeoutSeconds, resourceUri);}
 }

@@ -30,9 +30,9 @@ public class JerseyClientAddonTest {
                 nestedTestService.oneShot((clientconfig, uri) -> TestServiceRunner.defaults(
                         outerServiceConfig
                                 .addon(JerseyClientAddon.defaults(TestService.instance)
-                                        .clientConfigBase(clientconfig)
-                                        .apptoken(false)
-                                        .uri(uri)
+                                        .withClientConfigBase(clientconfig)
+                                        .withApptoken(false)
+                                        .withUri(uri)
                                 )
                 ).oneShot(OuterResource.class, OuterResource::get));
         assertThat(actual).isEqualTo(expected);

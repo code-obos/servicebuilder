@@ -24,7 +24,7 @@ public class JerseyClientErrorHandlingTest {
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
             ServiceConfig.defaults(TestService.instance)
                     .addon(ExceptionMapperAddon.defaults
-                            .stacktraceConfig(ImmutableMap.of(RuntimeException.class, false))
+                            .withStacktraceConfig(ImmutableMap.of(RuntimeException.class, false))
                     )
                     .bind(resource, Resource.class)
     );

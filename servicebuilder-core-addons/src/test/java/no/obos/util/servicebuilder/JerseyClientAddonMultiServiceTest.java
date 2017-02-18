@@ -29,14 +29,14 @@ public class JerseyClientAddonMultiServiceTest {
             TestServiceRunner.defaults(
                     outerServiceConfig
                             .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME1, Nested1.class))
-                                    .clientConfigBase(nestedRuntime1.clientConfig)
-                                    .apptoken(false)
-                                    .uri(nestedRuntime1.uri)
+                                    .withClientConfigBase(nestedRuntime1.clientConfig)
+                                    .withApptoken(false)
+                                    .withUri(nestedRuntime1.uri)
                             )
                             .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME2, Nested2.class))
-                                    .clientConfigBase(nestedRuntime2.clientConfig)
-                                    .apptoken(false)
-                                    .uri(nestedRuntime2.uri)
+                                    .withClientConfigBase(nestedRuntime2.clientConfig)
+                                    .withApptoken(false)
+                                    .withUri(nestedRuntime2.uri)
                             )
             ).oneShot(Outer.class, client -> {
                 when(nestedMock1.get()).thenReturn("aaa");

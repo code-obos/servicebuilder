@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StringProvider;
@@ -32,14 +33,19 @@ public class JerseyClientAddon implements Addon {
     public static final String CONFIG_KEY_URL = "service.url";
 
     public final ServiceDefinition serviceDefinition;
+    @Wither
     public final URI uri;
+    @Wither
     public final boolean forwardUsertoken;
+    @Wither
     public final boolean apptoken;
-
+    @Wither
     public final ClientConfig clientConfigBase;
+    @Wither
     public final boolean monitorIntegration;
+    @Wither
     public final boolean targetThrowsExceptions;
-
+    @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
@@ -54,7 +60,7 @@ public class JerseyClientAddon implements Addon {
         String prefix = name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
         return this
-                .uri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
+                .withUri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
     }
 
     @Override
@@ -62,7 +68,7 @@ public class JerseyClientAddon implements Addon {
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .withClientConfigBase(clientConfigBase)
                 .generate();
-        return runtime(new Runtime(client));
+        return withRuntime(new Runtime(client));
     }
 
 
@@ -183,16 +189,4 @@ public class JerseyClientAddon implements Addon {
     public static class Runtime {
         public final Client client;
     }
-
-    public JerseyClientAddon uri(URI uri) {return this.uri == uri ? this : new JerseyClientAddon(this.serviceDefinition, uri, this.forwardUsertoken, apptoken, this.clientConfigBase, true, targetThrowsExceptions, runtime);}
-
-    public JerseyClientAddon forwardUsertoken(boolean forwardUsertoken) {return this.forwardUsertoken == forwardUsertoken ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, forwardUsertoken, apptoken, this.clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
-
-    public JerseyClientAddon apptoken(boolean apptoken) {return new JerseyClientAddon(this.serviceDefinition, this.uri, forwardUsertoken, apptoken, this.clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
-
-    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, apptoken, clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
-
-    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, apptoken, this.clientConfigBase, monitorIntegration, targetThrowsExceptions, runtime);}
-
-    public JerseyClientAddon runtime(Runtime runtime) {return this.runtime == runtime ? this : new JerseyClientAddon(this.serviceDefinition, this.uri, this.forwardUsertoken, apptoken, this.clientConfigBase, this.monitorIntegration, targetThrowsExceptions, runtime);}
 }
