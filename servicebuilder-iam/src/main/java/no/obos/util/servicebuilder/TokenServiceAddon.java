@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.iam.jersey.client.WebClientImpl;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceHttpClient;
@@ -20,10 +21,13 @@ public class TokenServiceAddon implements Addon {
     public static final String CONFIG_KEY_APP_ID = "tokenservice.app.id";
     public static final String CONFIG_KEY_APP_SECRET = "tokenservice.app.secret";
 
+    @Wither
     public final String url;
+    @Wither
     public final String appId;
+    @Wither
     public final String appSecret;
-
+    @Wither
     public final TokenServiceClient tokenServiceClient;
 
     public static TokenServiceAddon defaults = new TokenServiceAddon(null, null, null, null);
@@ -31,7 +35,7 @@ public class TokenServiceAddon implements Addon {
     @Inject
     public Addon finalize(ServiceConfig serviceConfig) {
         return this
-                .tokenServiceClient(
+                .withTokenServiceClient(
                         new TokenServiceHttpClient(new WebClientImpl(url), appId, appSecret)
                 );
     }
@@ -39,9 +43,9 @@ public class TokenServiceAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
         return this
-                .url(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
-                .appId(properties.get(CONFIG_KEY_APP_ID))
-                .appSecret(properties.get(CONFIG_KEY_APP_SECRET));
+                .withUrl(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
+                .withAppId(properties.get(CONFIG_KEY_APP_ID))
+                .withAppSecret(properties.get(CONFIG_KEY_APP_SECRET));
     }
 
     @Override
@@ -53,13 +57,4 @@ public class TokenServiceAddon implements Addon {
     public void addToJettyServer(JettyServer jettyServer) {
         ObosHealthCheckRegistry.registerPingCheck("Tokenservice: " + url, url);
     }
-
-
-    public TokenServiceAddon url(String url) {return Objects.equals(this.url, url) ? this : new TokenServiceAddon(url, this.appId, this.appSecret, this.tokenServiceClient);}
-
-    public TokenServiceAddon appId(String appId) {return Objects.equals(this.appId, appId) ? this : new TokenServiceAddon(this.url, appId, this.appSecret, this.tokenServiceClient);}
-
-    public TokenServiceAddon appSecret(String appSecret) {return Objects.equals(this.appSecret, appSecret) ? this : new TokenServiceAddon(this.url, this.appId, appSecret, this.tokenServiceClient);}
-
-    public TokenServiceAddon tokenServiceClient(TokenServiceClient tokenServiceClient) {return this.tokenServiceClient == tokenServiceClient ? this : new TokenServiceAddon(this.url, this.appId, this.appSecret, tokenServiceClient);}
 }

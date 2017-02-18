@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
@@ -25,7 +26,9 @@ import static java.util.stream.Collectors.toList;
 public class ApplicationTokenFilterAddon implements Addon {
     public static final String CONFIG_KEY_ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
 
+    @Wither
     public final ImmutableList<Integer> acceptedAppIds;
+    @Wither
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
     public static ApplicationTokenFilterAddon defaults = new ApplicationTokenFilterAddon(ImmutableList.of(), it -> false);
@@ -37,7 +40,7 @@ public class ApplicationTokenFilterAddon implements Addon {
         List<Integer> acceptedIds = acceptedIdStrings.stream()
                 .map(Integer::valueOf)
                 .collect(toList());
-        return this.acceptedAppIds(ImmutableList.copyOf(acceptedIds));
+        return this.withAcceptedAppIds(ImmutableList.copyOf(acceptedIds));
     }
 
     @Override
@@ -72,8 +75,4 @@ public class ApplicationTokenFilterAddon implements Addon {
 
         }
     }
-
-    public ApplicationTokenFilterAddon acceptedAppIds(ImmutableList<Integer> acceptedAppIds) {return this.acceptedAppIds == acceptedAppIds ? this : new ApplicationTokenFilterAddon(acceptedAppIds, this.fasttrackFilter);}
-
-    public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return this.fasttrackFilter == fasttrackFilter ? this : new ApplicationTokenFilterAddon(this.acceptedAppIds, fasttrackFilter);}
 }

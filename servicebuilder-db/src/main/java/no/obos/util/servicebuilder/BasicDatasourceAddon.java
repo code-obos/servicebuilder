@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbutils.QueryRunner;
@@ -25,16 +26,25 @@ public class BasicDatasourceAddon implements Addon {
     public static final String CONFIG_KEY_DB_PASSWORD = "db.password";
     public static final String CONFIG_KEY_DB_VALIDATION_QUERY = "db.validationQuery";
 
+    @Wither
     public final String name;
+    @Wither
     public final String url;
+    @Wither
     public final String driverClassName;
+    @Wither
     public final String username;
+    @Wither
     public final String password;
+    @Wither
     public final String validationQuery;
+    @Wither
     public final boolean monitorIntegration;
+    @Wither
     public final boolean bindQueryRunner;
-
+    @Wither
     public final BasicDataSource dataSource;
+    @Wither
     public final QueryRunner queryRunner;
 
     public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, true, null, null);
@@ -54,7 +64,7 @@ public class BasicDatasourceAddon implements Addon {
             queryRunner = new QueryRunner(dataSource);
         }
 
-        return this.dataSource(dataSource).queryRunner(queryRunner);
+        return this.withDataSource(dataSource).withQueryRunner(queryRunner);
     }
 
     @Override
@@ -62,11 +72,11 @@ public class BasicDatasourceAddon implements Addon {
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         return this
-                .url(properties.get(prefix + CONFIG_KEY_DB_URL))
-                .username(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
-                .password(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
-                .driverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .validationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
+                .withUrl(properties.get(prefix + CONFIG_KEY_DB_URL))
+                .withUsername(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
+                .withPassword(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
+                .withDriverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
+                .withValidationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
     }
 
 
@@ -100,25 +110,4 @@ public class BasicDatasourceAddon implements Addon {
             ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + url, dataSource, validationQuery);
         }
     }
-
-
-    public BasicDatasourceAddon name(String name) {return Objects.equals(this.name, name) ? this : new BasicDatasourceAddon(name, this.url, this.driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon url(String url) {return Objects.equals(this.url, url) ? this : new BasicDatasourceAddon(this.name, url, this.driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon driverClassName(String driverClassName) {return Objects.equals(this.driverClassName, driverClassName) ? this : new BasicDatasourceAddon(this.name, this.url, driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon username(String username) {return Objects.equals(this.username, username) ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon password(String password) {return Objects.equals(this.password, password) ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon validationQuery(String validationQuery) {return Objects.equals(this.validationQuery, validationQuery) ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, this.password, validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon monitorIntegration(boolean monitorIntegration) {return this.monitorIntegration == monitorIntegration ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, this.password, this.validationQuery, monitorIntegration, this.bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon bindQueryRunner(boolean bindQueryRunner) {return this.bindQueryRunner == bindQueryRunner ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, bindQueryRunner, this.dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon dataSource(BasicDataSource dataSource) {return this.dataSource == dataSource ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, dataSource, this.queryRunner);}
-
-    public BasicDatasourceAddon queryRunner(QueryRunner queryRunner) {return this.queryRunner == queryRunner ? this : new BasicDatasourceAddon(this.name, this.url, this.driverClassName, this.username, this.password, this.validationQuery, this.monitorIntegration, this.bindQueryRunner, this.dataSource, queryRunner);}
 }

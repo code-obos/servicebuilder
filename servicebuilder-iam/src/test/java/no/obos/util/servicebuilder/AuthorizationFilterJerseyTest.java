@@ -34,7 +34,7 @@ public class AuthorizationFilterJerseyTest {
             //                .register(Resource.class)
             .bind(tokenServiceClient, TokenServiceClient.class)
             .addon(UserTokenFilterAddon.defaults
-                    .uibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)
+                    .withUibBrukerProvider(BasicUibBruker.provider(UIB_TO_JAVAX_ROLE)
                     )
             );
 
