@@ -57,11 +57,11 @@ public class TargetGeneratorTest {
 
             //when
             Client client = ClientGenerator.defaults(serviceDefinition)
-                    .clientConfigBase(clientConfig)
+                    .withClientConfigBase(clientConfig)
                     .generate();
 
             WebTarget targetShouldUpdate = TargetGenerator.defaults(client, uri)
-                    .header(Constants.USERTOKENID_HEADER,"banan")
+                    .withHeader(Constants.USERTOKENID_HEADER,"banan")
                     .generate();
             LocalDate actualShouldUpdate = targetShouldUpdate
                     .path("service")
@@ -70,7 +70,7 @@ public class TargetGeneratorTest {
                     .readEntity(LocalDate.class);
 
             WebTarget targetNoUpdate = TargetGenerator.defaults(client, uri)
-                    .header(Constants.USERTOKENID_HEADER, "eple")
+                    .withHeader(Constants.USERTOKENID_HEADER, "eple")
                     .generate();
             LocalDate actualNoUpdate = targetNoUpdate
                     .path("service")

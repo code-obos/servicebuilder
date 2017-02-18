@@ -86,7 +86,7 @@ public class TestServiceRunner {
         ClientConfig clientConfig = testContainer.getClientConfig();
         ClientGenerator clientGenerator = clientConfigurator.apply(
                 ClientGenerator.defaults(serviceConfigWithContext.serviceDefinition)
-                        .clientConfigBase(clientConfig)
+                        .withClientConfigBase(clientConfig)
         );
         Client client = clientGenerator.generate();
 

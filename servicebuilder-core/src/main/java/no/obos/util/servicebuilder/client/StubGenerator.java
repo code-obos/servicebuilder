@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Singular;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
@@ -25,11 +26,13 @@ public class StubGenerator {
     //    final String appToken;
     final Client client;
     final URI uri;
+    @Wither
     final String userToken;
+    @Wither
     final boolean logging;
-    @Singular
+    @Wither
     final ImmutableList<Cookie> cookies;
-    @Singular
+    @Wither
     final ImmutableMap<String, String> headers;
 
     public static StubGenerator defaults(Client client, URI uri) {
@@ -56,13 +59,5 @@ public class StubGenerator {
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
 
-    public StubGenerator userToken(String userToken) {return Objects.equals(this.userToken, userToken) ? this : new StubGenerator(this.client, this.uri, userToken, logging, this.cookies, this.headers);}
-
-    public StubGenerator cookies(ImmutableList<Cookie> cookies) {return this.cookies == cookies ? this : new StubGenerator(this.client, this.uri, this.userToken, logging, cookies, this.headers);}
-
-    public StubGenerator headers(ImmutableMap<String, String> headers) {return this.headers == headers ? this : new StubGenerator(this.client, this.uri, this.userToken, logging, this.cookies, headers);}
-
-    public StubGenerator logging(boolean logging) {return new StubGenerator(this.client, this.uri, this.userToken, logging, this.cookies, headers);}
-
-    public StubGenerator header(String key, String value) {return headers(GuavaHelper.plus(headers, key, value));}
+    public StubGenerator withHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
 }

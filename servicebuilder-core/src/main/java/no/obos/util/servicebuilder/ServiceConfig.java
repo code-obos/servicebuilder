@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig.Binder;
 import no.obos.util.servicebuilder.JerseyConfig.Registrator;
 import no.obos.util.servicebuilder.util.GuavaHelper;
@@ -13,9 +14,12 @@ import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceConfig {
+    @Wither
     final ImmutableList<Addon> addons;
     final ServiceDefinition serviceDefinition;
+    @Wither
     final ImmutableList<Binder> binders;
+    @Wither
     final ImmutableList<Registrator> registrators;
 
     public static ServiceConfig defaults(ServiceDefinition serviceDefinition) {
@@ -23,20 +27,20 @@ public class ServiceConfig {
     }
 
     public <T> ServiceConfig bind(Class<? extends T> toBind, Class<T> bindTo) {
-        return binder(binder -> binder.bind(toBind).to(bindTo));
+        return withBinder(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public <T> ServiceConfig bind(T toBind, Class<? super T> bindTo) {
-        return binder(binder -> binder.bind(toBind).to(bindTo));
+        return withBinder(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public ServiceConfig register(Class toRegister) {
-        return registrator(registrator -> registrator.register(toRegister));
+        return withRegistrator(registrator -> registrator.register(toRegister));
     }
 
     public ServiceConfig addHk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
-        return registrator(hk2ConfigModule)
-                .binder(hk2ConfigModule);
+        return withRegistrator(hk2ConfigModule)
+                .withBinder(hk2ConfigModule);
     }
 
     @SuppressWarnings("unchecked")
@@ -75,34 +79,22 @@ public class ServiceConfig {
 
     public ServiceConfig replaceAddon(Addon addon) {
         return this
-                .addons(addons.stream()
+                .withAddons(ImmutableList.copyOf(addons.stream()
                         .filter(existingAddon -> ! existingAddon.getClass().equals(addon.getClass()))
-                        .collect(toList())
+                        .collect(toList()))
                 ).addon(addon);
     }
 
 
-    public ServiceConfig binder(Binder binder) {
-        return binders(GuavaHelper.plus(binders, binder));
+    public ServiceConfig withBinder(Binder binder) {
+        return withBinders(GuavaHelper.plus(binders, binder));
     }
 
     public ServiceConfig addon(Addon addon) {
-        return addons(GuavaHelper.plus(addons, addon));
+        return withAddons(GuavaHelper.plus(addons, addon));
     }
 
-    public ServiceConfig registrator(Registrator registrator) {
-        return registrators(GuavaHelper.plus(registrators, registrator));
-    }
-
-    public ServiceConfig addons(List<Addon> addons) {
-        return new ServiceConfig(ImmutableList.copyOf(addons), serviceDefinition, binders, registrators);
-    }
-
-    public ServiceConfig binders(List<Binder> binders) {
-        return new ServiceConfig(addons, serviceDefinition, ImmutableList.copyOf(binders), registrators);
-    }
-
-    public ServiceConfig registrators(List<Registrator> registrators) {
-        return new ServiceConfig(addons, serviceDefinition, binders, ImmutableList.copyOf(registrators));
+    public ServiceConfig withRegistrator(Registrator registrator) {
+        return withRegistrators(GuavaHelper.plus(registrators, registrator));
     }
 }

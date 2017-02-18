@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import no.obos.metrics.ObosHealthCheckRegistry;
@@ -19,7 +18,6 @@ import org.jvnet.hk2.annotations.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -62,7 +60,7 @@ public class JerseyClientAddon implements Addon {
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
         Client client = ClientGenerator.defaults(serviceDefinition)
-                .clientConfigBase(clientConfigBase)
+                .withClientConfigBase(clientConfigBase)
                 .generate();
         return runtime(new Runtime(client));
     }
@@ -121,10 +119,10 @@ public class JerseyClientAddon implements Addon {
 
             String appTokenId = configuration.apptoken ? apptokenProvider.get() : null;
             if (appTokenId != null) {
-                generator = generator.header(Constants.APPTOKENID_HEADER, appTokenId);
+                generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
             return generator
-                    .userToken(userToken)
+                    .withUserToken(userToken)
                     .generateClient(requiredType);
         }
 
@@ -162,14 +160,14 @@ public class JerseyClientAddon implements Addon {
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
             TargetGenerator generator = TargetGenerator.defaults(client, configuration.uri)
-                    .throwExceptionForErrors(true);
+                    .withThrowExceptionForErrors(true);
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if (userToken != null) {
-                generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
+                generator = generator.withHeader(Constants.USERTOKENID_HEADER, userToken);
             }
             String appTokenId = configuration.apptoken ? apptokenProvider.get() : null;
             if (appTokenId != null) {
-                generator = generator.header(Constants.APPTOKENID_HEADER, appTokenId);
+                generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
 
             return generator.generate();

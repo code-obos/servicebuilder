@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JsonConfig;
 import no.obos.util.servicebuilder.ServiceDefinition;
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientGenerator {
     public static final String SERVICE_DEFINITION_INJECTION = "servicedefinition";
-    //    final String appToken;
+    @Wither
     public final ClientConfig clientConfigBase;
     public final ServiceDefinition serviceDefinition;
 
@@ -49,6 +50,4 @@ public class ClientGenerator {
 
         return ClientBuilder.newClient(clientConfig);
     }
-
-    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return this.clientConfigBase == clientConfigBase ? this : new ClientGenerator(clientConfigBase, this.serviceDefinition);}
 }

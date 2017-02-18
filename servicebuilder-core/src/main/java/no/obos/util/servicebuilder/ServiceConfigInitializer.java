@@ -11,7 +11,7 @@ public class ServiceConfigInitializer {
     public static ServiceConfig finalize(ServiceConfig serviceConfig) {
         List<Addon> unFinalizedAddons = Lists.newArrayList(serviceConfig.addons);
         unFinalizedAddons.sort(new StartupOrderComparator());
-        ServiceConfig withFinalizedAddons = serviceConfig.addons(ImmutableList.of());
+        ServiceConfig withFinalizedAddons = serviceConfig.withAddons(ImmutableList.of());
         for (Addon addon : unFinalizedAddons) {
             withFinalizedAddons = withFinalizedAddons.addon(addon.finalize(withFinalizedAddons));
         }

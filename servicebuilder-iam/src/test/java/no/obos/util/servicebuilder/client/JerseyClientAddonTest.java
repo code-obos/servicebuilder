@@ -12,7 +12,6 @@ import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.TokenServiceAddon;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 
@@ -80,7 +79,7 @@ public class JerseyClientAddonTest {
 
         //when
         TestServiceRunner.defaults(outerServiceConfig)
-                .stubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
+                .stubConfigurator(it -> it.withHeader(Constants.USERTOKENID_HEADER, "something"))
                 .oneShot(Api.class, Api::call_with_stub);
 
         //then

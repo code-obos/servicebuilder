@@ -1,10 +1,9 @@
 package no.obos.util.servicebuilder.client;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import no.obos.util.servicebuilder.Constants;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -19,8 +18,11 @@ import java.util.Map;
 public class TargetGenerator {
     final Client client;
     final URI uri;
+    @Wither
     final ImmutableMap<String, String> headers;
+    @Wither
     final boolean throwExceptionForErrors;
+    @Wither
     final boolean logging;
 
     public static TargetGenerator defaults(Client client, URI uri) {
@@ -56,13 +58,5 @@ public class TargetGenerator {
         return target;
     }
 
-    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.headers, throwExceptionForErrors, logging);}
-
-    public TargetGenerator logging(boolean logging) {return new TargetGenerator(this.client, this.uri, headers, throwExceptionForErrors, logging);}
-
-    public TargetGenerator headers(Map<String, String> headers) {return new TargetGenerator(this.client, this.uri, ImmutableMap.copyOf(headers), throwExceptionForErrors, logging);}
-
-    public TargetGenerator header(String key, String value) {return headers(GuavaHelper.plus(headers, key, value));}
-
-
+    public TargetGenerator withHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
 }

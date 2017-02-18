@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -17,11 +18,11 @@ public class ServiceRunner {
 
     public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
         ServiceConfig serviceConfigWithProps = serviceConfigRaw
-                .addons(serviceConfigRaw
+                .withAddons(ImmutableList.copyOf(serviceConfigRaw
                         .addons.stream()
                         .map(it -> it.withProperties(properties))
                         .collect(toList()
-                        )
+                        ))
                 );
         serviceConfig = ServiceConfigInitializer.finalize(serviceConfigWithProps);
         properties.failIfNotPresent(CONFIG_KEY_SERVER_PORT, CONFIG_KEY_SERVER_CONTEXT_PATH);
