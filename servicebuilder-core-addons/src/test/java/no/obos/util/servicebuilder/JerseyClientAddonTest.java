@@ -31,6 +31,7 @@ public class JerseyClientAddonTest {
                         outerServiceConfig
                                 .addon(JerseyClientAddon.defaults(TestService.instance)
                                         .clientConfigBase(clientconfig)
+                                        .apptoken(false)
                                         .uri(uri)
                                 )
                 ).oneShot(OuterResource.class, OuterResource::get));

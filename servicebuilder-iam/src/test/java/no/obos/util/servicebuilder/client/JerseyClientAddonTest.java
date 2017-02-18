@@ -1,5 +1,8 @@
 package no.obos.util.servicebuilder.client;
 
+import no.obos.iam.tokenservice.ApplicationToken;
+import no.obos.iam.tokenservice.TokenServiceClient;
+import no.obos.util.servicebuilder.ApplicationTokenIdInjectorAddon;
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.JerseyClientAddon;
 import no.obos.util.servicebuilder.ObosLogFilterAddon;
@@ -9,6 +12,7 @@ import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import no.obos.util.servicebuilder.TokenServiceAddon;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 
@@ -23,6 +27,7 @@ import javax.ws.rs.core.Response;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JerseyClientAddonTest {
     Controller nestedController = mock(Controller.class);
@@ -43,6 +48,7 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
                         .uri(nestedRuntime.uri)
                 );
 
@@ -67,6 +73,7 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
                         .forwardUsertoken(true)
                         .uri(nestedRuntime.uri)
                 );
@@ -75,6 +82,62 @@ public class JerseyClientAddonTest {
         TestServiceRunner.defaults(outerServiceConfig)
                 .stubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
                 .oneShot(Api.class, Api::call_with_stub);
+
+        //then
+        verify(nestedController).isCallValid(eq(expected));
+        nestedRuntime.stop();
+    }
+
+    @Test
+    public void can_call_with_injected_stub_gets_apptoken() {
+        //Given
+        TestServiceFull.Call expected = getCall().toBuilder()
+                .header(Constants.APPTOKENID_HEADER, "something")
+                .build();
+        TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
+
+        TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
+        ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
+                .bind(ApiImpl.class, Api.class)
+                .bind(tokenServiceClient, TokenServiceClient.class)
+                .addon(ApplicationTokenIdInjectorAddon.defaults)
+                .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .uri(nestedRuntime.uri)
+                );
+
+        //when
+        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken(){public String getApplicationTokenId() {return "something";}});
+        TestServiceRunner.defaults(outerServiceConfig)
+                .oneShot(Api.class, Api::call_with_stub);
+
+        //then
+        verify(nestedController).isCallValid(eq(expected));
+        nestedRuntime.stop();
+    }
+
+    @Test
+    public void can_call_with_injected_target_gets_apptoken() {
+        //Given
+        TestServiceFull.Call expected = getCall().toBuilder()
+                .header(Constants.APPTOKENID_HEADER, "something")
+                .build();
+        TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
+
+        TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
+        ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
+                .bind(ApiImpl.class, Api.class)
+                .bind(tokenServiceClient, TokenServiceClient.class)
+                .addon(ApplicationTokenIdInjectorAddon.defaults)
+                .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .uri(nestedRuntime.uri)
+                );
+
+        //when
+        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken(){public String getApplicationTokenId() {return "something";}});
+        TestServiceRunner.defaults(outerServiceConfig)
+                .oneShot(Api.class, Api::call_with_target);
 
         //then
         verify(nestedController).isCallValid(eq(expected));
@@ -91,6 +154,7 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
                         .uri(nestedRuntime.uri)
                 );
 
@@ -117,6 +181,7 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
                         .uri(nestedRuntime.uri)
                 );
 
@@ -127,6 +192,7 @@ public class JerseyClientAddonTest {
         //then
         verify(nestedController).isCallValid(eq(expected));
         nestedRuntime.stop();
+        MDC.remove(Constants.X_OBOS_REQUEST_ID);
     }
 
     @Path("service") public interface Api {

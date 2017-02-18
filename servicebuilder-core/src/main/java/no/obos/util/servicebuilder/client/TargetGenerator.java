@@ -1,9 +1,11 @@
 package no.obos.util.servicebuilder.client;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
@@ -17,25 +19,18 @@ import java.util.Map;
 public class TargetGenerator {
     final Client client;
     final URI uri;
-    final String userToken;
+    final ImmutableMap<String, String> headers;
     final boolean throwExceptionForErrors;
     final boolean logging;
 
     public static TargetGenerator defaults(Client client, URI uri) {
-        return new TargetGenerator(client, uri, null, false, true);
+        return new TargetGenerator(client, uri, ImmutableMap.of(), false, true);
     }
 
     public WebTarget generate() {
         Client clientToUse = client != null
                 ? client
                 : ClientBuilder.newClient();
-
-        Map<String, String> headers = Maps.newHashMap();
-
-        if (userToken != null) {
-            headers.put(Constants.USERTOKENID_HEADER, userToken);
-        }
-
 
         WebTarget target = clientToUse.target(uri);
 
@@ -61,9 +56,13 @@ public class TargetGenerator {
         return target;
     }
 
-    public TargetGenerator userToken(String userToken) {return new TargetGenerator(this.client, this.uri, userToken, throwExceptionForErrors, logging);}
+    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.headers, throwExceptionForErrors, logging);}
 
-    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return new TargetGenerator(this.client, this.uri, this.userToken, throwExceptionForErrors, logging);}
+    public TargetGenerator logging(boolean logging) {return new TargetGenerator(this.client, this.uri, headers, throwExceptionForErrors, logging);}
 
-    public TargetGenerator logging(boolean logging) {return new TargetGenerator(this.client, this.uri, userToken, throwExceptionForErrors, logging);}
+    public TargetGenerator headers(Map<String, String> headers) {return new TargetGenerator(this.client, this.uri, ImmutableMap.copyOf(headers), throwExceptionForErrors, logging);}
+
+    public TargetGenerator header(String key, String value) {return headers(GuavaHelper.plus(headers, key, value));}
+
+
 }
