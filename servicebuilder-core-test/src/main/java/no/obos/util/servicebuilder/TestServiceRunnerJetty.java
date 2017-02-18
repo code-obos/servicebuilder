@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
@@ -23,9 +24,13 @@ public class TestServiceRunnerJetty {
     public static final String DEFAULT_CONTEXTPATH = "/test/v" + DEFAULT_VERSION;
 
     public final ServiceConfig serviceConfig;
+    @Wither
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
+    @Wither
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
+    @Wither
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
+    @Wither
     public final PropertyMap propertyMap;
 
     public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
@@ -62,13 +67,6 @@ public class TestServiceRunnerJetty {
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
-    }
-
-
-    public static class TestServiceRunnerBuilder {
-        Function<ClientGenerator, ClientGenerator> clientConfigurator = (cfg -> cfg);
-        Function<StubGenerator, StubGenerator> stubConfigurator = (cfg -> cfg);
-        Function<TargetGenerator, TargetGenerator> targetConfigurator = (cfg -> cfg);
     }
 
 
@@ -111,12 +109,6 @@ public class TestServiceRunnerJetty {
     }
 
 
-    public TestServiceRunnerJetty clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return this.clientConfigurator == clientConfigurator ? this : new TestServiceRunnerJetty(this.serviceConfig, clientConfigurator, this.stubConfigurator, this.targetConfigurator, propertyMap);}
-
-    public TestServiceRunnerJetty stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new TestServiceRunnerJetty(this.serviceConfig, this.clientConfigurator, stubConfigurator, this.targetConfigurator, propertyMap);}
-
-    public TestServiceRunnerJetty targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunnerJetty(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, propertyMap);}
-
-    public TestServiceRunnerJetty property(String key, String value) {return new TestServiceRunnerJetty(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, this.propertyMap.put(key, value));}
+    public TestServiceRunnerJetty property(String key, String value) {return withPropertyMap(this.propertyMap.put(key, value));}
 
 }

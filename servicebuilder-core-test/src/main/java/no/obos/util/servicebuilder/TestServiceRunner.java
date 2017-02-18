@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
@@ -23,10 +24,15 @@ import static java.util.function.Function.identity;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestServiceRunner {
+    @Wither(AccessLevel.PRIVATE)
     public final ServiceConfig serviceConfig;
+    @Wither
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
+    @Wither
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
+    @Wither
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
+    @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static TestServiceRunner defaults(ServiceConfig serviceConfig) {
@@ -41,7 +47,9 @@ public class TestServiceRunner {
         public final ClientConfig clientConfig;
         public final URI uri;
         public final Client client;
+        @Wither
         public final Function<StubGenerator, StubGenerator> stubConfigurator;
+        @Wither
         public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
@@ -65,10 +73,6 @@ public class TestServiceRunner {
         public ResourceConfig getResourceConfig() {
             return jerseyConfig.getResourceConfig();
         }
-
-        public Runtime stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new Runtime(this.jerseyConfig, this.testContainer, this.clientConfig, this.uri, this.client, stubConfigurator, this.targetConfigurator);}
-
-        public Runtime targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new Runtime(this.jerseyConfig, this.testContainer, this.clientConfig, this.uri, this.client, this.stubConfigurator, targetConfigurator);}
     }
 
 
@@ -91,7 +95,7 @@ public class TestServiceRunner {
         Client client = clientGenerator.generate();
 
         Runtime runtime = new Runtime(jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
-        return new TestServiceRunner(serviceConfigWithContext, this.clientConfigurator, this.stubConfigurator, targetConfigurator, runtime);
+        return withServiceConfig(serviceConfigWithContext).withRuntime(runtime);
     }
 
     public <T> T oneShot(BiFunction<ClientConfig, URI, T> testfun) {
@@ -120,13 +124,6 @@ public class TestServiceRunner {
             runner.stop();
         }
     }
-
-
-    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return this.clientConfigurator == clientConfigurator ? this : new TestServiceRunner(this.serviceConfig, clientConfigurator, this.stubConfigurator, this.targetConfigurator, null);}
-
-    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return this.stubConfigurator == stubConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, stubConfigurator, this.targetConfigurator, null);}
-
-    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return this.targetConfigurator == targetConfigurator ? this : new TestServiceRunner(this.serviceConfig, this.clientConfigurator, this.stubConfigurator, targetConfigurator, null);}
 
 
 }
