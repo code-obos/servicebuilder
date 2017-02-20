@@ -45,7 +45,7 @@ public class MetricsAddonTest {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(MetricsAddon.defaults)
-                .addon(JerseyClientAddon.defaults(TestService.instance));
+                .addon(JerseyClientAddon.defaults(TestService.instance).withApptoken(false));
         Response call = TestServiceRunnerJetty
                 .defaults(serviceConfig)
                 .property("test.service.url", "http://no.way.this.is.a.valid.address.zzz:23456")
@@ -57,5 +57,7 @@ public class MetricsAddonTest {
                 );
         assertThat(call.readEntity(String.class)).isEqualTo("{\"Thread deadlocks\":{\"healthy\":true},\"test\":{\"healthy\":false,\"message\":\"no.way.this.is.a.valid.address.zzz\"}}");
     }
+
 }
+
 

@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder.client;
 
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
-import no.obos.util.servicebuilder.ApplicationTokenIdInjectorAddon;
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.JerseyClientAddon;
 import no.obos.util.servicebuilder.ObosLogFilterAddon;
@@ -12,6 +11,7 @@ import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import no.obos.util.servicebuilder.TokenServiceAddon;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 
@@ -98,15 +98,16 @@ public class JerseyClientAddonTest {
         TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
-                .bind(tokenServiceClient, TokenServiceClient.class)
-                .addon(ApplicationTokenIdInjectorAddon.defaults)
+                .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .withClientConfigBase(nestedRuntime.clientConfig)
                         .withUri(nestedRuntime.uri)
                 );
 
         //when
-        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken(){public String getApplicationTokenId() {return "something";}});
+        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken() {
+            public String getApplicationTokenId() {return "something";}
+        });
         TestServiceRunner.defaults(outerServiceConfig)
                 .oneShot(Api.class, Api::call_with_stub);
 
@@ -126,15 +127,16 @@ public class JerseyClientAddonTest {
         TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
-                .bind(tokenServiceClient, TokenServiceClient.class)
-                .addon(ApplicationTokenIdInjectorAddon.defaults)
+                .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .withClientConfigBase(nestedRuntime.clientConfig)
                         .withUri(nestedRuntime.uri)
                 );
 
         //when
-        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken(){public String getApplicationTokenId() {return "something";}});
+        when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken() {
+            public String getApplicationTokenId() {return "something";}
+        });
         TestServiceRunner.defaults(outerServiceConfig)
                 .oneShot(Api.class, Api::call_with_target);
 

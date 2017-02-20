@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -8,6 +9,8 @@ import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StringProvider;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
+import no.obos.util.servicebuilder.exception.DependenceException;
+import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
 import no.obos.util.servicebuilder.util.Hk2Helper;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
@@ -23,6 +26,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import java.net.URI;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Genererer klienter for en service med jersey klient-api og binder dem til context.
@@ -45,11 +50,13 @@ public class JerseyClientAddon implements Addon {
     public final boolean monitorIntegration;
     @Wither
     public final boolean targetThrowsExceptions;
+    @Wither
+    public final Supplier<String> appTokenIdSupplier;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, true, null, true, true, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, true, null, true, true, null, null);
     }
 
 
@@ -65,10 +72,24 @@ public class JerseyClientAddon implements Addon {
 
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
+        Supplier<String> appTokenIdSupplier = null;
+        if (this.apptoken && this.appTokenIdSupplier == null) {
+            ApplicationTokenIdAddon appTokenIdSource = serviceConfig.getAddon(ApplicationTokenIdAddon.class);
+            if (appTokenIdSource == null) {
+                throw new DependenceException(
+                        this.getClass(),
+                        ApplicationTokenIdAddon.class,
+                        "Missing application id source provider for jerseyclientAddon. "
+                                + "Either disable appliation token id usage (.withApptoken(false)), "
+                                + "provide an appTokenIdSupplier manually (.withApplicationTokenIdSource(<something>) "
+                                + "or use an ApplicationTokenIdAddon (e.g. TokenServiceAddon)");
+            }
+            appTokenIdSupplier = appTokenIdSource.getApptokenIdSupplier();
+        }
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .withClientConfigBase(clientConfigBase)
                 .generate();
-        return withRuntime(new Runtime(client));
+        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client));
     }
 
 
@@ -104,14 +125,12 @@ public class JerseyClientAddon implements Addon {
         final HttpHeaders headers;
         final InstantiationService instantiationService;
         final ServiceLocator serviceLocator;
-        final StringProvider apptokenProvider;
 
         @Inject
-        public StubFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator, @Named(Constants.APPTOKENID_HEADER) @Optional StringProvider apptokenProvider) {
+        public StubFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator) {
             this.headers = headers;
             this.instantiationService = instantiationService;
             this.serviceLocator = serviceLocator;
-            this.apptokenProvider = apptokenProvider;
         }
 
         public Object provide() {
@@ -123,7 +142,7 @@ public class JerseyClientAddon implements Addon {
             StubGenerator generator = StubGenerator.defaults(client, configuration.uri);
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
 
-            String appTokenId = configuration.apptoken ? apptokenProvider.get() : null;
+            String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
             if (appTokenId != null) {
                 generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
@@ -171,7 +190,7 @@ public class JerseyClientAddon implements Addon {
             if (userToken != null) {
                 generator = generator.withHeader(Constants.USERTOKENID_HEADER, userToken);
             }
-            String appTokenId = configuration.apptoken ? apptokenProvider.get() : null;
+            String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
             if (appTokenId != null) {
                 generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
@@ -183,6 +202,8 @@ public class JerseyClientAddon implements Addon {
         public void dispose(WebTarget instance) {
         }
     }
+
+    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(ApplicationTokenIdAddon.class);}
 
 
     @AllArgsConstructor

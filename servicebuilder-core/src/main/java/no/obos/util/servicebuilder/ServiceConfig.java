@@ -46,7 +46,7 @@ public class ServiceConfig {
     @SuppressWarnings("unchecked")
     public <T extends Addon> List<T> getAddons(Class<T> clazz) {
         return (List<T>) this.addons.stream()
-                .filter(addon -> addon.getClass().equals(clazz))
+                .filter(addon -> clazz.isInstance(addon))
                 .collect(toList());
     }
 
