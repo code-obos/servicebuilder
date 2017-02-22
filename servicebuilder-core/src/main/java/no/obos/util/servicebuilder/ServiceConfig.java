@@ -10,7 +10,6 @@ import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -54,7 +53,7 @@ public class ServiceConfig {
 
     public ServiceConfig withProperties(PropertyProvider properties) {
         ServiceConfig ret = this.withHk2ConfigProp(ImmutableList.of());
-        for(Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
+        for (Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
             ret = ret.hk2ConfigModule(i.apply(properties));
         }
         return ret.bind(properties, PropertyProvider.class);
@@ -77,6 +76,23 @@ public class ServiceConfig {
 
     public <T extends Addon> T getAddon(Class<T> clazz) {
         List<T> ret = getAddons(clazz);
+        if (ret.isEmpty()) {
+            return null;
+        }
+        if (ret.size() > 1) {
+            throw new RuntimeException("Found several implementations for addon " + clazz.getCanonicalName());
+        }
+        return ret.get(0);
+    }
+
+    public <T extends NamedAddon> T getNamedAddon(Class<T> clazz, String name) {
+        List<T> ret = getAddons(clazz);
+        if (name != null) {
+            ret = ret.stream().filter(it -> name.equals(it.getName())).collect(toList());
+        } else {
+            ret = ret.stream().filter(it -> it.getName() == null).collect(toList());
+        }
+
         if (ret.isEmpty()) {
             return null;
         }

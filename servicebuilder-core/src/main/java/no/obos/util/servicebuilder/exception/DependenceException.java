@@ -13,4 +13,11 @@ public class DependenceException extends RuntimeException {
         this.independent = independent;
         this.message = message;
     }
+
+    public DependenceException(Class<? extends Addon> dependent, Class<? extends Addon> independent) {
+        super(dependent + "reported dependence on " + independent);
+        this.dependent = dependent;
+        this.independent = independent;
+        this.message = null;
+    }
 }

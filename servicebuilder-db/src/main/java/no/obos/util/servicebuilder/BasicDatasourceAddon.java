@@ -3,13 +3,12 @@ package no.obos.util.servicebuilder;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
-import java.util.Objects;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -18,7 +17,7 @@ import java.util.Objects;
  * navnet (databasenavn).db.url osv.
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class BasicDatasourceAddon implements Addon {
+public class BasicDatasourceAddon implements DataSourceAddon {
 
     public static final String CONFIG_KEY_DB_URL = "db.url";
     public static final String CONFIG_KEY_DB_DRIVER_CLASS_NAME = "db.driverClassName";
@@ -27,6 +26,7 @@ public class BasicDatasourceAddon implements Addon {
     public static final String CONFIG_KEY_DB_VALIDATION_QUERY = "db.validationQuery";
 
     @Wither
+    @Getter
     public final String name;
     @Wither
     public final String url;
@@ -41,13 +41,10 @@ public class BasicDatasourceAddon implements Addon {
     @Wither
     public final boolean monitorIntegration;
     @Wither
-    public final boolean bindQueryRunner;
-    @Wither
-    public final BasicDataSource dataSource;
-    @Wither
-    public final QueryRunner queryRunner;
+    @Getter
+    public final DataSource dataSource;
 
-    public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, true, null, null);
+    public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, null);
 
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
@@ -58,13 +55,7 @@ public class BasicDatasourceAddon implements Addon {
         dataSource.setPassword(password);
         dataSource.setValidationQuery(validationQuery);
 
-
-        QueryRunner queryRunner = null;
-        if (bindQueryRunner) {
-            queryRunner = new QueryRunner(dataSource);
-        }
-
-        return this.withDataSource(dataSource).withQueryRunner(queryRunner);
+        return this.withDataSource(dataSource);
     }
 
     @Override
@@ -88,14 +79,6 @@ public class BasicDatasourceAddon implements Addon {
                         binder.bind(dataSource).named(name).to(DataSource.class);
                     } else {
                         binder.bind(dataSource).to(DataSource.class);
-                    }
-                    if (bindQueryRunner) {
-                        QueryRunner queryRunner = new QueryRunner(dataSource);
-                        if (! Strings.isNullOrEmpty(name)) {
-                            binder.bind(queryRunner).to(QueryRunner.class);
-                        } else {
-                            binder.bind(queryRunner).named(name).to(QueryRunner.class);
-                        }
                     }
                 }
         );
