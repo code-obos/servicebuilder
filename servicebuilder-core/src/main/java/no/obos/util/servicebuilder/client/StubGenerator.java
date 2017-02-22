@@ -30,9 +30,9 @@ public class StubGenerator {
     final String userToken;
     @Wither
     final boolean logging;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Cookie> cookies;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
 
     public static StubGenerator defaults(Client client, URI uri) {
@@ -59,5 +59,7 @@ public class StubGenerator {
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
 
-    public StubGenerator withHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+    public StubGenerator plusHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+
+    public StubGenerator plusCookie(Cookie cookie) {return withCookies(GuavaHelper.plus(cookies, cookie));}
 }

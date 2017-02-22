@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.ImmutableMap;
 import no.obos.util.servicebuilder.exception.HttpProblemException;
 import no.obos.util.servicebuilder.exception.UserMessageException;
 import org.junit.Test;
@@ -17,10 +16,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ExceptionMapperAddonTest {
     TestService.Resource testService = mock(TestService.Resource.class);
-    ImmutableMap<Class<?>, Boolean> disableStackTraceMap = ImmutableMap.<Class<?>, Boolean>builder().put(RuntimeException.class, false).build();
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
             .bind(testService, TestService.Resource.class)
-            .addon(ExceptionMapperAddon.defaults.withStacktraceConfig(disableStackTraceMap));
+            .addon(ExceptionMapperAddon.defaults.plusStacktraceConfig(RuntimeException.class, false));
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
     @Test

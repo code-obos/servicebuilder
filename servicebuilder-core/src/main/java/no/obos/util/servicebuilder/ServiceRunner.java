@@ -17,6 +17,7 @@ public class ServiceRunner {
     JettyServer.Configuration jettyConfig;
 
     public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
+        serviceConfigRaw = serviceConfigRaw.withProperties(properties);
         ServiceConfig serviceConfigWithProps = serviceConfigRaw
                 .withAddons(ImmutableList.copyOf(serviceConfigRaw
                         .addons.stream()

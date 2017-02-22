@@ -1,5 +1,7 @@
 package no.obos.util.servicebuilder.client;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.client.ClientRequestContext;
@@ -11,10 +13,10 @@ import java.util.Map;
 public class WebTargetRequestHeaderFilter implements ClientRequestFilter {
     public final static String MAP_NAME = "headers";
 
-    final Map<String, String> headersToSet;
+    final ImmutableMap<String, String> headersToSet;
 
     @Inject
-    public WebTargetRequestHeaderFilter(@Named(MAP_NAME) Map<String, String> headersToSet) {this.headersToSet = headersToSet;}
+    public WebTargetRequestHeaderFilter(@Named(MAP_NAME) Map<String, String> headersToSet) {this.headersToSet = ImmutableMap.copyOf(headersToSet);}
 
 
     @Override

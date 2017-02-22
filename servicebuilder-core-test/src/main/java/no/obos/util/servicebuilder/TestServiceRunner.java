@@ -6,6 +6,7 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
+import no.obos.util.servicebuilder.config.PropertyMap;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.DeploymentContext;
@@ -34,9 +35,11 @@ public class TestServiceRunner {
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
+    @Wither
+    public final PropertyMap propertyMap;
 
     public static TestServiceRunner defaults(ServiceConfig serviceConfig) {
-        return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null);
+        return new TestServiceRunner(serviceConfig, identity(), identity(), identity(), null, PropertyMap.empty);
     }
 
 
@@ -75,9 +78,10 @@ public class TestServiceRunner {
         }
     }
 
-
     public TestServiceRunner start() {
-        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfig);
+
+        ServiceConfig serviceConfigwithProps = serviceConfig.withProperties(propertyMap);
+        ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.registrators)
                 .addBinders(serviceConfigWithContext.binders);
@@ -125,5 +129,5 @@ public class TestServiceRunner {
         }
     }
 
-
+    public TestServiceRunner property(String key, String value) {return withPropertyMap(this.propertyMap.put(key, value));}
 }

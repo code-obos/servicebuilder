@@ -18,7 +18,7 @@ import java.util.Map;
 public class TargetGenerator {
     final Client client;
     final URI uri;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
     @Wither
     final boolean throwExceptionForErrors;
@@ -58,5 +58,5 @@ public class TargetGenerator {
         return target;
     }
 
-    public TargetGenerator withHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+    public TargetGenerator plusHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
 }

@@ -8,6 +8,7 @@ import lombok.experimental.Wither;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
@@ -26,7 +27,7 @@ import static java.util.stream.Collectors.toList;
 public class ApplicationTokenFilterAddon implements Addon {
     public static final String CONFIG_KEY_ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Integer> acceptedAppIds;
     @Wither
     public final Predicate<ContainerRequestContext> fasttrackFilter;
@@ -74,5 +75,9 @@ public class ApplicationTokenFilterAddon implements Addon {
         public void dispose(ApplicationTokenAccessValidator instance) {
 
         }
+    }
+
+    public ApplicationTokenFilterAddon plusAcceptedAppId(int appId) {
+        return this.withAcceptedAppIds(GuavaHelper.plus(acceptedAppIds, appId));
     }
 }

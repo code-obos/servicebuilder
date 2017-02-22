@@ -9,21 +9,26 @@ import no.obos.util.servicebuilder.JerseyConfig.Registrator;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceConfig {
-    @Wither
+    @Wither(AccessLevel.PACKAGE)
     final ImmutableList<Addon> addons;
     final ServiceDefinition serviceDefinition;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Binder> binders;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Registrator> registrators;
+    @Wither(AccessLevel.PRIVATE)
+    final ImmutableList<Function<PropertyProvider, JerseyConfig.Hk2ConfigModule>> hk2ConfigProp;
+
 
     public static ServiceConfig defaults(ServiceDefinition serviceDefinition) {
-        return new ServiceConfig(ImmutableList.of(), serviceDefinition, ImmutableList.of(), ImmutableList.of());
+        return new ServiceConfig(ImmutableList.of(), serviceDefinition, ImmutableList.of(), ImmutableList.of(), ImmutableList.of());
     }
 
     public <T> ServiceConfig bind(Class<? extends T> toBind, Class<T> bindTo) {
@@ -38,15 +43,27 @@ public class ServiceConfig {
         return withRegistrator(registrator -> registrator.register(toRegister));
     }
 
-    public ServiceConfig addHk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
+    public ServiceConfig hk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
         return withRegistrator(hk2ConfigModule)
                 .withBinder(hk2ConfigModule);
+    }
+
+    public ServiceConfig hk2ConfigModule(Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> prop2Hk2) {
+        return withHk2ConfigProp(GuavaHelper.plus(hk2ConfigProp, prop2Hk2));
+    }
+
+    public ServiceConfig withProperties(PropertyProvider properties) {
+        ServiceConfig ret = this.withHk2ConfigProp(ImmutableList.of());
+        for(Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
+            ret = ret.hk2ConfigModule(i.apply(properties));
+        }
+        return ret.bind(properties, PropertyProvider.class);
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Addon> List<T> getAddons(Class<T> clazz) {
         return (List<T>) this.addons.stream()
-                .filter(addon -> clazz.isInstance(addon))
+                .filter(clazz::isInstance)
                 .collect(toList());
     }
 
@@ -83,6 +100,10 @@ public class ServiceConfig {
                         .filter(existingAddon -> ! existingAddon.getClass().equals(addon.getClass()))
                         .collect(toList()))
                 ).addon(addon);
+    }
+
+    public ServiceConfig clearAddons() {
+        return this.withAddons(ImmutableList.of());
     }
 
 

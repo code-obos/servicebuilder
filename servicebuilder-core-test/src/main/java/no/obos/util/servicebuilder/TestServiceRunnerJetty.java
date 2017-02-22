@@ -74,13 +74,14 @@ public class TestServiceRunnerJetty {
 
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-        ServiceRunner serviceRunner = new ServiceRunner(serviceConfig, propertyMap);
+        ServiceConfig serviceConfigwithProps = serviceConfig.withProperties(propertyMap);
+        ServiceRunner serviceRunner = new ServiceRunner(serviceConfigwithProps, propertyMap);
         serviceRunner.start();
 
         URI uri = serviceRunner.jettyServer.server.getURI();
 
         ClientGenerator clientGenerator = clientConfigurator.apply(
-                ClientGenerator.defaults(serviceConfig.serviceDefinition)
+                ClientGenerator.defaults(serviceConfigwithProps.serviceDefinition)
         );
         Client client = clientGenerator.generate();
         StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));

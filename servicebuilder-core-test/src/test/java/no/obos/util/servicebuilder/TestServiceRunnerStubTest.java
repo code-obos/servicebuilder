@@ -26,7 +26,7 @@ public class TestServiceRunnerStubTest {
 
         //when
         testServiceRunner
-                .withStubConfigurator(cfg -> cfg.withHeader("Banan", "kjakablakken"))
+                .withStubConfigurator(cfg -> cfg.plusHeader("Banan", "kjakablakken"))
                 .oneShot(ResourceFull.class, (ResourceFull::get));
 
         //then
@@ -46,7 +46,7 @@ public class TestServiceRunnerStubTest {
 
         //when
         testServiceRunner
-                .withStubConfigurator(cfg -> cfg.withHeader("Banan", "kjakablakken"))
+                .withStubConfigurator(cfg -> cfg.plusHeader("Banan", "kjakablakken"))
                 .oneShot(ResourceFull.class, it -> it.getExplicitContext("header1", 2, "qp1", 22));
 
         //then
@@ -69,12 +69,12 @@ public class TestServiceRunnerStubTest {
 
         //then
         runtime
-                .withStubConfigurator(cfg -> cfg.withHeader("kul", "umulig"))
+                .withStubConfigurator(cfg -> cfg.plusHeader("kul", "umulig"))
                 .call(ResourceFull.class, (ResourceFull::get));
         verify(controller).isCallValid(eq(expected1));
 
         runtime
-                .withStubConfigurator(cfg -> cfg.withHeader("workbook", "in your face"))
+                .withStubConfigurator(cfg -> cfg.plusHeader("workbook", "in your face"))
                 .call(ResourceFull.class, (ResourceFull::get));
         verify(controller).isCallValid(eq(expected2));
 

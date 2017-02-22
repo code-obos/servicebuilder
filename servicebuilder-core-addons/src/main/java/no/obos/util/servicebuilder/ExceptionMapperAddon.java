@@ -26,7 +26,7 @@ import javax.ws.rs.NotFoundException;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionMapperAddon implements Addon {
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
 
     public static ExceptionMapperAddon defaults = new ExceptionMapperAddon(
@@ -56,5 +56,5 @@ public class ExceptionMapperAddon implements Addon {
         });
     }
 
-    public ExceptionMapperAddon withStacktraceConfig(Class<?> key, boolean value) {return this.withStacktraceConfig(GuavaHelper.plus(stacktraceConfig, key, value));}
+    public ExceptionMapperAddon plusStacktraceConfig(Class<?> key, boolean value) {return this.withStacktraceConfig(GuavaHelper.plus(stacktraceConfig, key, value));}
 }

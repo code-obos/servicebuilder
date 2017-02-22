@@ -20,9 +20,9 @@ public class ObosLogFilterAddon implements Addon {
     public static final ImmutableList<String> DEFAULT_BLACKLIST = ImmutableList.of("/swagger.json");
     public static final ImmutableList<DispatcherType> DEFAULT_DISPATCHES = ImmutableList.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<String> blacklist;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<DispatcherType> dispatches;
 
     @Wither
@@ -49,11 +49,11 @@ public class ObosLogFilterAddon implements Addon {
                 .addFilter(logFilterHolder, pathSpeckToUse, EnumSet.copyOf(dispatches));
     }
 
-    public ObosLogFilterAddon withBlacklisted(String blacklist) {
+    public ObosLogFilterAddon plusBlacklisted(String blacklist) {
         return withBlacklist(GuavaHelper.plus(this.blacklist, blacklist));
     }
 
-    public ObosLogFilterAddon withDispatch(DispatcherType dispatcherType) {
+    public ObosLogFilterAddon plusDispatch(DispatcherType dispatcherType) {
         return withDispatches(GuavaHelper.plus(dispatches, dispatcherType));
     }
 }

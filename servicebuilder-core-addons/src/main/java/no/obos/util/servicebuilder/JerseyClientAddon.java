@@ -144,7 +144,7 @@ public class JerseyClientAddon implements Addon {
 
             String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
             if (appTokenId != null) {
-                generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
+                generator = generator.plusHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
             return generator
                     .withUserToken(userToken)
@@ -188,11 +188,11 @@ public class JerseyClientAddon implements Addon {
                     .withThrowExceptionForErrors(true);
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if (userToken != null) {
-                generator = generator.withHeader(Constants.USERTOKENID_HEADER, userToken);
+                generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
             }
             String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
             if (appTokenId != null) {
-                generator = generator.withHeader(Constants.APPTOKENID_HEADER, appTokenId);
+                generator = generator.plusHeader(Constants.APPTOKENID_HEADER, appTokenId);
             }
 
             return generator.generate();

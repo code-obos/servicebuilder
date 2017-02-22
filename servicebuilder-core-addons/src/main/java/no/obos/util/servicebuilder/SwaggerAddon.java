@@ -8,8 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import java.util.Objects;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SwaggerAddon implements Addon {
     public static final String CONFIG_KEY_API_BASEURL = "api.baseurl";
