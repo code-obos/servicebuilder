@@ -7,11 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
-import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -102,6 +98,7 @@ public class JettyServer {
         final String bindAddress;
         final String contextPath;
         final int bindPort;
+
 
         public static class ConfigurationBuilder {
             String apiPathSpec = DEFAULT_API_PATH_SPEC;

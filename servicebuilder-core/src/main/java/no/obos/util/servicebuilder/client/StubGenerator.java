@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Singular;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
@@ -19,7 +18,6 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
-import java.util.Objects;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StubGenerator {
@@ -52,7 +50,7 @@ public class StubGenerator {
         WebTarget webTarget = clientToUse.target(uri);
         webTarget.register(ClientErrorResponseFilter.class);
         webTarget.register(RequestIdClientFilter.class);
-        if(logging) {
+        if (logging) {
             webTarget.register(ClientLogFilter.class);
         }
 

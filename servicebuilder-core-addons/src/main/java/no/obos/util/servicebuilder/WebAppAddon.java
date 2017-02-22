@@ -11,7 +11,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Objects;
 
 /**
  * Legger serving av statiske filer. Standard path er tjeneste/versjon/webapp/ .

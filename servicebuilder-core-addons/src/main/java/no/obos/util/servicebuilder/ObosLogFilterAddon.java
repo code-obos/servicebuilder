@@ -10,7 +10,6 @@ import org.eclipse.jetty.servlet.FilterHolder;
 
 import javax.servlet.DispatcherType;
 import java.util.EnumSet;
-import java.util.Objects;
 
 /**
  * Legger til filtre for ObosLogFilter

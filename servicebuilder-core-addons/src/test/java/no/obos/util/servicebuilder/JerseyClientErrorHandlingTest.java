@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.ImmutableMap;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;

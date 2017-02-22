@@ -77,6 +77,6 @@ public class ObosLogFilter implements Filter {
     }
 
     public interface Condition {
-        public boolean accept(String path);
+        boolean accept(String path);
     }
 }

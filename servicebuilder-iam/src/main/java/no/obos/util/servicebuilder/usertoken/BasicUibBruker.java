@@ -42,7 +42,7 @@ public class BasicUibBruker implements UibBruker {
 
         tilgangssjekker = new Tilgangssjekker(userToken);
 
-        ImmutableSet.Builder<String> allowedRolesBuilder = ImmutableSet.<String>builder();
+        ImmutableSet.Builder<String> allowedRolesBuilder = ImmutableSet.builder();
         for (UibToJavaxRole mapper : tilganger) {
             for (UserRole role : userToken.getRoles()) {
                 boolean match = mapper.tilgangForUibRolle(role);
