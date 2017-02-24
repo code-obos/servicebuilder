@@ -5,11 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.config.AppConfig;
+import no.obos.util.servicebuilder.mq.ActiveMqSender;
 import no.obos.util.servicebuilder.mq.MessageQueueSender;
-import no.obos.util.servicebuilder.mq.MessageQueueSenderImpl;
 
-@SuppressWarnings("unused")
-public class MessageQueueSenderAddon extends ServiceAddonEmptyDefaults {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class ActiveMqSenderAddon extends ServiceAddonEmptyDefaults {
     public static final int MAX_QUEUE_ENTRIES = 1000;
 
     public static final String CONFIG_KEY_URL = "queue.url";
@@ -22,9 +22,9 @@ public class MessageQueueSenderAddon extends ServiceAddonEmptyDefaults {
     public final Configuration configuration;
     public final MessageQueueSender mqSender;
 
-    public MessageQueueSenderAddon(Configuration configuration) {
+    public ActiveMqSenderAddon(Configuration configuration) {
         this.configuration = configuration;
-        this.mqSender = new MessageQueueSenderImpl(configuration.url, configuration.user, configuration.password, configuration.queue);
+        this.mqSender = new ActiveMqSender(configuration.url, configuration.user, configuration.password, configuration.queue);
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
@@ -95,7 +95,7 @@ public class MessageQueueSenderAddon extends ServiceAddonEmptyDefaults {
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
     @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<MessageQueueSenderAddon> {
+    public static class AddonBuilder implements ServiceAddonConfig<ActiveMqSenderAddon> {
         Configurator options;
         Configuration.ConfigurationBuilder configBuilder;
 
@@ -110,9 +110,9 @@ public class MessageQueueSenderAddon extends ServiceAddonEmptyDefaults {
         }
 
         @Override
-        public MessageQueueSenderAddon init() {
+        public ActiveMqSenderAddon init() {
             configBuilder = options.apply(configBuilder);
-            return new MessageQueueSenderAddon(configBuilder.build());
+            return new ActiveMqSenderAddon(configBuilder.build());
         }
     }
 

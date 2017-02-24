@@ -7,14 +7,14 @@ import org.apache.activemq.ActiveMQConnection;
 import javax.jms.Session;
 
 @Slf4j
-public class MessageQueueSenderImpl implements MessageQueueSender {
+public class ActiveMqSender implements MessageQueueSender {
 
     private final String url;
     private final String user;
     private final String password;
     private final String queue;
 
-    public MessageQueueSenderImpl(String url, String user, String password, String queue) {
+    public ActiveMqSender(String url, String user, String password, String queue) {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -27,14 +27,14 @@ public class MessageQueueSenderImpl implements MessageQueueSender {
 
     private void queueMessage(String message) {
         log.debug("Connecting to {}", url);
-        ActiveMQConnection connection = MessageQueueUtils.openConnection(user, password, url);
-        Session session = MessageQueueUtils.startSession(connection);
+        ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
+        Session session = ActiveMqUtils.startSession(connection);
 
         try {
             log.info("Sending message '{}' to {}", message, queue);
-            MessageQueueUtils.queueMessage(session, message, queue);
+            ActiveMqUtils.queueMessage(session, message, queue);
         } finally {
-            MessageQueueUtils.closeConnection(session, connection);
+            ActiveMqUtils.closeConnection(session, connection);
         }
     }
 

@@ -24,7 +24,7 @@ import java.util.UUID;
 import static no.obos.util.log.ObosLogFilter.X_OBOS_REQUEST_ID;
 
 @Slf4j
-public class MessageQueueListenerImpl implements MessageQueueListener {
+public class ActiveMqListener implements MessageQueueListener {
 
     private static final long REQUEUE_TIMEOUT = 1000;
 
@@ -36,7 +36,7 @@ public class MessageQueueListenerImpl implements MessageQueueListener {
 
     private boolean listenerStarted;
 
-    public MessageQueueListenerImpl(String url, String user, String password, String queueInput, String queueError) {
+    public ActiveMqListener(String url, String user, String password, String queueInput, String queueError) {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -57,7 +57,7 @@ public class MessageQueueListenerImpl implements MessageQueueListener {
     private void startListener(MessageHandler handler) {
         log.debug("Starting listener...");
         try {
-            ActiveMQConnection connection = MessageQueueUtils.openConnection(user, password, url);
+            ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
             connection.setExceptionListener(jmsException -> restartListener(handler, jmsException));
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue queue = session.createQueue(queueInput);
@@ -117,8 +117,8 @@ public class MessageQueueListenerImpl implements MessageQueueListener {
     @Override
     public void requeueFailedMessages() {
         try {
-            ActiveMQConnection connection = MessageQueueUtils.openConnection(user, password, url);
-            Session session = MessageQueueUtils.startSession(connection);
+            ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
+            Session session = ActiveMqUtils.startSession(connection);
 
             int count = getQueueSize(session, queueError);
 
@@ -168,8 +168,8 @@ public class MessageQueueListenerImpl implements MessageQueueListener {
 
     @Override
     public int getErrorQueueSize() {
-        ActiveMQConnection connection = MessageQueueUtils.openConnection(user, password, url);
-        Session session = MessageQueueUtils.startSession(connection);
+        ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
+        Session session = ActiveMqUtils.startSession(connection);
         return getQueueSize(session, queueError);
     }
 

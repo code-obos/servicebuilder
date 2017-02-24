@@ -11,7 +11,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import java.net.URISyntaxException;
 
-class MessageQueueUtils {
+class ActiveMqUtils {
 
     static void queueMessage(Session session, String text, String queueName) {
         try {

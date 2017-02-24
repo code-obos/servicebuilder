@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.config.AppConfig;
+import no.obos.util.servicebuilder.mq.ActiveMqListener;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MessageQueueListener;
-import no.obos.util.servicebuilder.mq.MessageQueueListenerImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -33,8 +33,8 @@ import javax.ws.rs.core.FeatureContext;
  * MessageQueueListenerAddon.defaults("secondExampleName", SecondExampleHandler.class)
  * </pre>
  */
-@SuppressWarnings("unused")
-public class MessageQueueListenerAddon extends ServiceAddonEmptyDefaults {
+@SuppressWarnings({"unused", "WeakerAccess"})
+public class ActiveMqListenerAddon extends ServiceAddonEmptyDefaults {
 
     public static final String CONFIG_KEY_URL = "queue.url";
     public static final String CONFIG_KEY_USER = "queue.user";
@@ -47,9 +47,9 @@ public class MessageQueueListenerAddon extends ServiceAddonEmptyDefaults {
     public final Configuration configuration;
     public final MessageQueueListener mqListener;
 
-    public MessageQueueListenerAddon(Configuration configuration) {
+    public ActiveMqListenerAddon(Configuration configuration) {
         this.configuration = configuration;
-        this.mqListener = new MessageQueueListenerImpl(configuration.url, configuration.user, configuration.password, configuration.queueInput, configuration.queueError);
+        this.mqListener = new ActiveMqListener(configuration.url, configuration.user, configuration.password, configuration.queueInput, configuration.queueError);
     }
 
     public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
@@ -151,7 +151,7 @@ public class MessageQueueListenerAddon extends ServiceAddonEmptyDefaults {
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
     @AllArgsConstructor
-    public static class AddonBuilder implements ServiceAddonConfig<MessageQueueListenerAddon> {
+    public static class AddonBuilder implements ServiceAddonConfig<ActiveMqListenerAddon> {
         Configurator options;
         Configuration.ConfigurationBuilder configBuilder;
 
@@ -166,9 +166,9 @@ public class MessageQueueListenerAddon extends ServiceAddonEmptyDefaults {
         }
 
         @Override
-        public MessageQueueListenerAddon init() {
+        public ActiveMqListenerAddon init() {
             configBuilder = options.apply(configBuilder);
-            return new MessageQueueListenerAddon(configBuilder.build());
+            return new ActiveMqListenerAddon(configBuilder.build());
         }
     }
 
