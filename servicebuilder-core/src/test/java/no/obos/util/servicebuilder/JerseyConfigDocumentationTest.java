@@ -1,12 +1,12 @@
 package no.obos.util.servicebuilder;
 
 import com.google.common.collect.Lists;
-import org.elasticsearch.common.inject.Singleton;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.inject.Singleton;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
