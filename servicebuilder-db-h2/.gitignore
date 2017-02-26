@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-db-h2.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+

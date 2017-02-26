@@ -25,7 +25,12 @@
         <module>servicebuilder-core-addons</module>
         <module>servicebuilder-iam</module>
         <module>servicebuilder-db</module>
+        <module>servicebuilder-db-h2</module>
+        <module>servicebuilder-db-basicdatasource</module>
+        <module>servicebuilder-db-queryrunner</module>
+        <module>servicebuilder-db-jdbi</module>
         <module>servicebuilder-activemq</module>
+        <module>servicebuilder-addons</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -56,12 +61,37 @@
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-h2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-basicdatasource</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-jdbi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-queryrunner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-activemq</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-iam</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-addons</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
