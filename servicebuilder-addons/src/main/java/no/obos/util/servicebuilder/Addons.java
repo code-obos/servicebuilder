@@ -63,7 +63,43 @@ public class Addons {
     }
 
 
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-basicdatasource</artifactId>
+        </dependency>
+     */
+    public static BasicDatasourceAddon basicDatasource() {
+        return BasicDatasourceAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-h2</artifactId>
+        </dependency>
+     */
     public static H2InMemoryDatasourceAddon h2InMemoryDatasource() {
         return H2InMemoryDatasourceAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-jdbi</artifactId>
+        </dependency>
+     */
+    public static JdbiAddon jdbi() {
+        return JdbiAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-queryrunner</artifactId>
+        </dependency>
+     */
+    public static QueryRunnerAddon queryRunner() {
+        return QueryRunnerAddon.defaults;
     }
 }

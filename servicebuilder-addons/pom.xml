@@ -16,20 +16,33 @@
         </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-db</artifactId>
+            <artifactId>servicebuilder-db-basicdatasource</artifactId>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-db-h2</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-queryrunner</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-jdbi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-iam</artifactId>
             <scope>provided</scope>
         </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
