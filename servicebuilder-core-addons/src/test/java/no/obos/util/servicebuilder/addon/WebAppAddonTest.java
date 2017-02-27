@@ -32,7 +32,6 @@ public class WebAppAddonTest {
 
     @Test
     public void serves_from_filesystem() {
-        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(WebAppAddon.defaults);

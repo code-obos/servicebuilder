@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.log;
+package no.obos.util.servicebuilder.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface LogResponseEntity {
+public @interface AppTokenRequired {
     boolean value() default true;
 }
+

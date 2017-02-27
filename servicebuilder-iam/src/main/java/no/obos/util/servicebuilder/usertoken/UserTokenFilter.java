@@ -1,11 +1,14 @@
 package no.obos.util.servicebuilder.usertoken;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.iam.tokenservice.UserToken;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
+import no.obos.util.servicebuilder.model.Constants;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;
@@ -15,6 +18,10 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @PreMatching
 public class UserTokenFilter implements ContainerRequestFilter {
@@ -35,14 +42,6 @@ public class UserTokenFilter implements ContainerRequestFilter {
 
         String usertokenId = requestContext.getHeaderString(Constants.USERTOKENID_HEADER);
 
-        // Vi slipper gjennom CORS OPTIONS, etc...
-        if (allwaysAccept(requestContext)) {
-            return;
-        }
-
-        if (configuration.requireUserToken && Strings.isNullOrEmpty(usertokenId)) {
-            throw new NotAuthorizedException("Usertoken required");
-        }
 
         if (! Strings.isNullOrEmpty(usertokenId)) {
             UserToken userToken;
@@ -54,22 +53,40 @@ public class UserTokenFilter implements ContainerRequestFilter {
             if (configuration.requireUserToken && userToken == null) {
                 throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
             } else if (userToken != null) {
-                UibBruker bruker = configuration.uibBrukerProvider.newUibBruker(userToken);
+                UibBruker bruker = UibBruker.ofUserToken(userToken);
                 if (bruker == null) {
                     throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
                 }
-                requestContext.setSecurityContext(new AutentiseringsContext(bruker));
+                List<String> tilgangerList = Lists.newArrayList();
+                tilgangerList.addAll(configuration.userTokenTilganger.apply(userToken));
+                tilgangerList.addAll(configuration.uibBrukerTilganger.apply(bruker));
+                tilgangerList.addAll(bruker.roller.stream()
+                        .map(rolle ->
+                                configuration.uibRolleTilganger.stream()
+                                        .map(it -> it.apply(rolle))
+                                        .filter(Objects::nonNull)
+                        ).flatMap(Function.identity())
+                        .collect(Collectors.toSet())
+                );
+                configuration.uibBrukerTilganger.apply(bruker);
+                ImmutableSet<String> tilganger = ImmutableSet.copyOf(tilgangerList.stream()
+                        .filter(Objects::nonNull)
+                        .map(String::trim)
+                        .map(String::toUpperCase)
+                        .collect(Collectors.toList())
+                );
+
+                requestContext.setSecurityContext(new AutentiseringsContext(bruker, tilganger));
             }
         }
     }
 
+    @AllArgsConstructor
     public static class AutentiseringsContext implements SecurityContext {
 
         private final UibBruker bruker;
+        private final ImmutableSet<String> tilganger;
 
-        public AutentiseringsContext(UibBruker uibBruker) {
-            this.bruker = uibBruker;
-        }
 
         @Override
         public Principal getUserPrincipal() {
@@ -78,7 +95,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
 
         @Override
         public boolean isUserInRole(String role) {
-            return bruker.isUserInRole(role);
+            return tilganger.contains(role.trim().toUpperCase());
         }
 
         @Override
@@ -92,14 +109,4 @@ public class UserTokenFilter implements ContainerRequestFilter {
         }
 
     }
-
-    public boolean allwaysAccept(ContainerRequestContext requestContext) {
-        String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
-        String requestMethod = requestContext.getMethod();
-
-        return aboslutePath.contains("swagger") ||
-                "OPTIONS".equals(requestMethod) ||
-                configuration.fasttrackFilter.test(requestContext);
-    }
-
 }

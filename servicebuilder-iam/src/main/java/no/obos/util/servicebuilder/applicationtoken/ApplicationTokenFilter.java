@@ -4,15 +4,16 @@ import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
 import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
+import no.obos.util.servicebuilder.annotations.AppTokenRequired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -23,13 +24,14 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
 
     final private ApplicationTokenAccessValidator applicationTokenAccessValidator;
     final ApplicationTokenFilterAddon configuration;
-    final private UriInfo uriInfo;
+
+    final private ResourceInfo resourceInfo;
 
     @Inject
-    public ApplicationTokenFilter(ApplicationTokenAccessValidator applicationTokenAccessValidator, ApplicationTokenFilterAddon configuration, UriInfo uriInfo) {
+    public ApplicationTokenFilter(ApplicationTokenAccessValidator applicationTokenAccessValidator, ApplicationTokenFilterAddon configuration, ResourceInfo resourceInfo) {
         this.applicationTokenAccessValidator = applicationTokenAccessValidator;
         this.configuration = configuration;
-        this.uriInfo = uriInfo;
+        this.resourceInfo = resourceInfo;
     }
 
     @Override
@@ -65,9 +67,23 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
         String requestMethod = requestContext.getMethod();
 
+        AppTokenRequired methodAnnotation = resourceInfo.getResourceMethod() != null
+                ? resourceInfo.getResourceMethod().getAnnotation(AppTokenRequired.class)
+                : null;
+        AppTokenRequired classAnnotation = resourceInfo.getResourceClass() != null
+                ? resourceInfo.getResourceClass().getAnnotation(AppTokenRequired.class)
+                : null;
+        boolean annotationFasttrack = false;
+        if (methodAnnotation != null) {
+            annotationFasttrack = ! methodAnnotation.value();
+        } else if (classAnnotation != null) {
+            annotationFasttrack = ! classAnnotation.value();
+        }
+
         return aboslutePath.contains("swagger") ||
                 "OPTIONS".equals(requestMethod) ||
-                configuration.fasttrackFilter.test(requestContext);
+                configuration.fasttrackFilter.test(requestContext) ||
+                annotationFasttrack;
     }
 }
 

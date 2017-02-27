@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.log;
+package no.obos.util.servicebuilder.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

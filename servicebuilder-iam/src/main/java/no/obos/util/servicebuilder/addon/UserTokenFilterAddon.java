@@ -1,25 +1,30 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
+import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.usertoken.BasicUibBruker;
-import no.obos.util.servicebuilder.usertoken.BasicUibBrukerInjectionFactory;
-import no.obos.util.servicebuilder.usertoken.UibBrukerProvider;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.usertoken.UibBruker;
+import no.obos.util.servicebuilder.usertoken.UibBrukerInjectionFactory;
+import no.obos.util.servicebuilder.usertoken.UibRolle;
+import no.obos.util.servicebuilder.usertoken.UserTokenFasttrackFilter;
 import no.obos.util.servicebuilder.usertoken.UserTokenFilter;
+import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
-import javax.ws.rs.container.ContainerRequestContext;
-import java.util.function.Predicate;
+import java.util.Collection;
+import java.util.function.Function;
 
 /**
  * Konfigurerer UserTokenFilter.
  * Leser UserToken og knytter opp UibBruker med brukerinformasjon.
  * <p>
  * Med default settings kan innlogget bruker hentes med:
- *
+ * <p>
  * BasicUibBruker innloggetBruker
  * <p>
  * Kan også sette opp filtrering på javax-roller.
@@ -29,25 +34,35 @@ import java.util.function.Predicate;
 public class UserTokenFilterAddon implements Addon {
     @Wither
     public final boolean requireUserToken;
-    @Wither
-    public final UibBrukerProvider uibBrukerProvider;
-    @Wither
-    public final Predicate<ContainerRequestContext> fasttrackFilter;
 
-    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, BasicUibBruker.provider(), it -> false);
+    @Wither
+    public final Function<UserToken, Collection<String>> userTokenTilganger;
+
+    @Wither
+    public final Function<UibBruker, Collection<String>> uibBrukerTilganger;
+
+    @Wither
+    public final ImmutableList<Function<UibRolle, String>> uibRolleTilganger;
+
+    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableList.of());
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     binder.bind(this).to(UserTokenFilterAddon.class);
-                    if (uibBrukerProvider instanceof BasicUibBruker.BasicUibBrukerProvider) {
-                        binder.bindFactory(BasicUibBrukerInjectionFactory.class).to(BasicUibBruker.class);
-                    }
+                    binder.bindFactory(UibBrukerInjectionFactory.class).to(UibBruker.class);
                 }
         );
         jerseyConfig.addRegistations(registrator -> registrator
                 .register(RolesAllowedDynamicFeature.class)
                 .register(UserTokenFilter.class)
+                .register(UserTokenFasttrackFilter.class)
         );
     }
+
+    public UserTokenFilterAddon plusUibRolleTilgang(Function<UibRolle, String> tilgang) {
+        return withUibRolleTilganger(GuavaHelper.plus(uibRolleTilganger, tilgang));
+    }
+
+
 }

@@ -1,6 +1,9 @@
 package no.obos.util.servicebuilder.log;
 
 import lombok.extern.slf4j.Slf4j;
+import no.obos.util.servicebuilder.annotations.Log;
+import no.obos.util.servicebuilder.annotations.LogRequestEntity;
+import no.obos.util.servicebuilder.annotations.LogResponseEntity;
 import no.obos.util.servicebuilder.log.model.LogParams;
 import no.obos.util.servicebuilder.log.model.LogRequest;
 import no.obos.util.servicebuilder.log.model.LogResponse;

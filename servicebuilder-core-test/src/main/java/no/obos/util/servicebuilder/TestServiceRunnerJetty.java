@@ -35,7 +35,6 @@ public class TestServiceRunnerJetty {
 
     public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
 
-        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
         return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), PropertyMap.empty
                 .put("server.port", String.valueOf(DEFAULT_PORT))
                 .put("service.version", String.valueOf(DEFAULT_VERSION))
