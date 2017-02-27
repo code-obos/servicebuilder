@@ -25,6 +25,7 @@ public class CorsFilterAddonTest {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(CorsFilterAddon.defaults);
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
         Response call = TestServiceRunnerJetty
                 .defaults(serviceConfig)
                 .oneShot(target -> target
