@@ -27,10 +27,10 @@ public class AppConfigBackedPropertyProvider implements PropertyProvider {
         appConfig.failIfNotPresent(keys);
     }
 
-    public static AppConfigBackedPropertyProvider fromJvmArgs(ServiceDefinition serviceDefinition) {
+    public static AppConfigBackedPropertyProvider fromJvmArgs(Class<?> versionedClass) {
         AppConfig appConfig = new AppConfigLoader().load(Constants.APPCONFIG_KEY);
         if (! appConfig.present(Constants.CONFIG_KEY_SERVICE_VERSION)) {
-            setServiceVersionProgrammatically(serviceDefinition.getClass(), appConfig);
+            setServiceVersionProgrammatically(versionedClass, appConfig);
         }
         return new AppConfigBackedPropertyProvider(appConfig);
     }
