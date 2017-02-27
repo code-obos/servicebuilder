@@ -7,6 +7,7 @@ import no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon;
 import no.obos.util.servicebuilder.addon.JdbiAddon;
 import no.obos.util.servicebuilder.addon.JerseyClientAddon;
 import no.obos.util.servicebuilder.addon.MetricsAddon;
+import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.addon.QueryRunnerAddon;
 import no.obos.util.servicebuilder.addon.SwaggerAddon;
 import no.obos.util.servicebuilder.addon.WebAppAddon;
@@ -113,5 +114,15 @@ public class Addons {
      */
     public static QueryRunnerAddon queryRunner() {
         return QueryRunnerAddon.defaults;
+    }
+
+    public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
+        return ServiceConfig.defaults(serviceDefinition)
+                .addon(SwaggerAddon.defaults)
+                .addon(CorsFilterAddon.defaults)
+                .addon(MetricsAddon.defaults)
+                .addon(ObosLogFilterAddon.defaults)
+                .addon(ExceptionMapperAddon.defaults)
+                ;
     }
 }
