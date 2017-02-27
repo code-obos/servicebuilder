@@ -6,8 +6,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.JsonConfig;
-import no.obos.util.servicebuilder.ServiceDefinition;
+import no.obos.util.servicebuilder.model.JsonConfig;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 

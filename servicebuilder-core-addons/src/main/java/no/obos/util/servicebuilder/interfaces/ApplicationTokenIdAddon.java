@@ -1,6 +1,6 @@
 package no.obos.util.servicebuilder.interfaces;
 
-import no.obos.util.servicebuilder.Addon;
+import no.obos.util.servicebuilder.model.Addon;
 
 import java.util.function.Supplier;
 

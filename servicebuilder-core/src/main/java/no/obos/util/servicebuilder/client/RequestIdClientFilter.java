@@ -1,6 +1,6 @@
 package no.obos.util.servicebuilder.client;
 
-import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.model.Constants;
 import org.slf4j.MDC;
 
 import javax.ws.rs.client.ClientRequestContext;

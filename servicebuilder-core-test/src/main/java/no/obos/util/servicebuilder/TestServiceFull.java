@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Singular;
 import lombok.ToString;
 import no.obos.util.servicebuilder.TestService.Payload;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -78,14 +79,18 @@ public class TestServiceFull implements ServiceDefinition {
 
 
     public static class ImplFull implements ResourceFull {
-        @Context
-        HttpHeaders headers;
+        final HttpHeaders headers;
 
-        @Context
-        UriInfo uriInfo;
+        final UriInfo uriInfo;
+
+        final Controller controller;
 
         @Inject
-        Controller controller;
+        public ImplFull(@Context HttpHeaders headers, @Context UriInfo uriInfo, Controller controller) {
+            this.headers = headers;
+            this.uriInfo = uriInfo;
+            this.controller = controller;
+        }
 
         @Override
         public boolean get() {

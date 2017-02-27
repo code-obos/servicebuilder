@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.LogLevel;
+import no.obos.util.servicebuilder.model.LogLevel;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;

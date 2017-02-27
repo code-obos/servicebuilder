@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 

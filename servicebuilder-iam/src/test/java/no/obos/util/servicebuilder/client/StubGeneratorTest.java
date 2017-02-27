@@ -1,9 +1,9 @@
 package no.obos.util.servicebuilder.client;
 
-import no.obos.util.servicebuilder.Constants;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.EmbeddedJerseyServer;
 import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.ServiceDefinition;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Assert;
 import org.junit.Test;

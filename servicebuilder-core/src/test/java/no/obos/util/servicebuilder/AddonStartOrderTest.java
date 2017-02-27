@@ -2,6 +2,8 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.junit.Test;
 
 import java.util.List;

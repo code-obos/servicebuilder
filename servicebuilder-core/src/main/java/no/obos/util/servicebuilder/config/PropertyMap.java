@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.config;
 
 import com.google.common.collect.ImmutableMap;
-import no.obos.util.servicebuilder.PropertyProvider;
+import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.Map;

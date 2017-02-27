@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
+import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import static java.util.stream.Collectors.toList;

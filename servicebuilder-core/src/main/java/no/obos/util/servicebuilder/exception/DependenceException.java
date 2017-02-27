@@ -1,6 +1,6 @@
 package no.obos.util.servicebuilder.exception;
 
-import no.obos.util.servicebuilder.Addon;
+import no.obos.util.servicebuilder.model.Addon;
 
 public class DependenceException extends RuntimeException {
     public final Class<? extends Addon> dependent;

@@ -1,8 +1,8 @@
 package no.obos.util.servicebuilder.exception;
 
 import lombok.Getter;
-import no.obos.util.servicebuilder.LogLevel;
-import no.obos.util.servicebuilder.ProblemResponse;
+import no.obos.util.servicebuilder.model.LogLevel;
+import no.obos.util.servicebuilder.model.ProblemResponse;
 
 import javax.ws.rs.WebApplicationException;
 

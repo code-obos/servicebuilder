@@ -4,10 +4,10 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.ExceptionDescription;
-import no.obos.util.servicebuilder.ExceptionMapperAddon;
-import no.obos.util.servicebuilder.LogLevel;
-import no.obos.util.servicebuilder.ProblemResponse;
+import no.obos.util.servicebuilder.model.ExceptionDescription;
+import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.model.LogLevel;
+import no.obos.util.servicebuilder.model.ProblemResponse;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;

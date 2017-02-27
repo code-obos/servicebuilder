@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.iam.tokenservice.UserToken;
-import no.obos.util.servicebuilder.Constants;
-import no.obos.util.servicebuilder.UserTokenFilterAddon;
+import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 
 import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;

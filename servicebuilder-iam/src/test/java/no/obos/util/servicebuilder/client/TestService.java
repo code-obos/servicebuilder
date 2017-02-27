@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.client;
 
 import com.google.common.collect.Lists;
-import no.obos.util.servicebuilder.ServiceDefinition;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

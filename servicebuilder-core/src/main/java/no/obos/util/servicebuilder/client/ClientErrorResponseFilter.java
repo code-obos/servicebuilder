@@ -3,8 +3,8 @@ package no.obos.util.servicebuilder.client;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import no.obos.util.servicebuilder.ProblemResponse;
-import no.obos.util.servicebuilder.ServiceDefinition;
+import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 

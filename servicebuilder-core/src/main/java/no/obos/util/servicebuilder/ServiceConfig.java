@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig.Binder;
 import no.obos.util.servicebuilder.JerseyConfig.Registrator;
+import no.obos.util.servicebuilder.addon.NamedAddon;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.PropertyProvider;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.List;

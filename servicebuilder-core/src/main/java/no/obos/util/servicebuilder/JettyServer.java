@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -24,16 +25,16 @@ public class JettyServer {
     private static final String DEFAULT_BIND_ADDRESS = "0.0.0.0";
 
     @Getter
-    final Server server;
+    public final Server server;
     @Getter
-    final ServletContextHandler servletContext;
+    public final ServletContextHandler servletContext;
     @Getter
     @Setter
-    WebAppContext webAppContext = null;
+    public WebAppContext webAppContext = null;
     @Getter
-    final JerseyConfig resourceConfig;
+    public final JerseyConfig resourceConfig;
     @Getter
-    final Configuration configuration;
+    public final Configuration configuration;
 
     public JettyServer(Configuration configuration, JerseyConfig resourceConfig) {
         this.resourceConfig = resourceConfig;
@@ -94,10 +95,10 @@ public class JettyServer {
     @AllArgsConstructor
     @Builder
     public static class Configuration {
-        final String apiPathSpec;
-        final String bindAddress;
-        final String contextPath;
-        final int bindPort;
+        public final String apiPathSpec;
+        public final String bindAddress;
+        public final String contextPath;
+        public final int bindPort;
 
 
         public static class ConfigurationBuilder {

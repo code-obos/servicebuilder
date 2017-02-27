@@ -1,5 +1,17 @@
 package no.obos.util.servicebuilder;
 
+import no.obos.util.servicebuilder.addon.BasicDatasourceAddon;
+import no.obos.util.servicebuilder.addon.CorsFilterAddon;
+import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon;
+import no.obos.util.servicebuilder.addon.JdbiAddon;
+import no.obos.util.servicebuilder.addon.JerseyClientAddon;
+import no.obos.util.servicebuilder.addon.MetricsAddon;
+import no.obos.util.servicebuilder.addon.QueryRunnerAddon;
+import no.obos.util.servicebuilder.addon.SwaggerAddon;
+import no.obos.util.servicebuilder.addon.WebAppAddon;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
+
 public class Addons {
 
     /*

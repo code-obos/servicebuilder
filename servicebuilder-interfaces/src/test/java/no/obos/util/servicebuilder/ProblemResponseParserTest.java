@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.obos.util.servicebuilder.model.ProblemResponse;
 import org.junit.Before;
 import org.junit.Test;
 

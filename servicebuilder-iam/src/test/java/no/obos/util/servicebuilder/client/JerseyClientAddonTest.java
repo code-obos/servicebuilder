@@ -2,16 +2,16 @@ package no.obos.util.servicebuilder.client;
 
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
-import no.obos.util.servicebuilder.Constants;
-import no.obos.util.servicebuilder.JerseyClientAddon;
-import no.obos.util.servicebuilder.ObosLogFilterAddon;
+import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.addon.JerseyClientAddon;
+import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.ServiceDefinition;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.TokenServiceAddon;
+import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 

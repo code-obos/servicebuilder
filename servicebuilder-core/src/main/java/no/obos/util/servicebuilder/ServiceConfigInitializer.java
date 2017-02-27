@@ -2,12 +2,13 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import no.obos.util.servicebuilder.model.Addon;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-public class ServiceConfigInitializer {
+class ServiceConfigInitializer {
     public static ServiceConfig finalize(ServiceConfig serviceConfig) {
         List<Addon> unFinalizedAddons = Lists.newArrayList(serviceConfig.addons);
         unFinalizedAddons.sort(new StartupOrderComparator());

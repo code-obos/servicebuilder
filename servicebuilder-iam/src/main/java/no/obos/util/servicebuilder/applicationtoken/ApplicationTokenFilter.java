@@ -3,7 +3,7 @@ package no.obos.util.servicebuilder.applicationtoken;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
 import no.obos.util.model.ProblemResponse;
-import no.obos.util.servicebuilder.ApplicationTokenFilterAddon;
+import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,6 +1,6 @@
 package no.obos.util.servicebuilder.usertoken;
 
-import no.obos.util.servicebuilder.UserTokenFilterAddon;
+import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import org.glassfish.hk2.api.Factory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
