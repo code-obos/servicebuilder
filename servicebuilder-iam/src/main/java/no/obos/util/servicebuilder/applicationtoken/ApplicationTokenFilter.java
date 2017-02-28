@@ -73,7 +73,7 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         AppTokenRequired classAnnotation = resourceInfo.getResourceClass() != null
                 ? resourceInfo.getResourceClass().getAnnotation(AppTokenRequired.class)
                 : null;
-        boolean annotationFasttrack = false;
+        boolean annotationFasttrack = ! configuration.requireAppTokenByDefault;
         if (methodAnnotation != null) {
             annotationFasttrack = ! methodAnnotation.value();
         } else if (classAnnotation != null) {

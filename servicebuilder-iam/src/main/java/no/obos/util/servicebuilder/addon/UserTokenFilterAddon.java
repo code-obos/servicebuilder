@@ -1,13 +1,18 @@
 package no.obos.util.servicebuilder.addon;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import io.swagger.jaxrs.ext.SwaggerExtensions;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.ServiceConfig;
+import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.usertoken.SwaggerImplicitUserTokenHeader;
 import no.obos.util.servicebuilder.usertoken.UibBruker;
 import no.obos.util.servicebuilder.usertoken.UibBrukerInjectionFactory;
 import no.obos.util.servicebuilder.usertoken.UibRolle;
@@ -17,6 +22,7 @@ import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -33,7 +39,10 @@ import java.util.function.Function;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserTokenFilterAddon implements Addon {
     @Wither
-    public final boolean requireUserToken;
+    public final boolean requireUserTokenByDefault;
+
+    @Wither
+    public final boolean swaggerImplicitHeaders;
 
     @Wither
     public final Function<UserToken, Collection<String>> userTokenTilganger;
@@ -44,7 +53,18 @@ public class UserTokenFilterAddon implements Addon {
     @Wither
     public final ImmutableList<Function<UibRolle, String>> uibRolleTilganger;
 
-    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableList.of());
+    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableList.of());
+
+    @Override
+    public Addon finalize(ServiceConfig serviceConfig) {
+        if (swaggerImplicitHeaders && ! serviceConfig.isAddonPresent(SwaggerAddon.class)) {
+            throw new DependenceException(this.getClass(), SwaggerAddon.class, "swaggerImplicitHeaders specified, SwaggerAddon missing");
+        }
+        if (! serviceConfig.isAddonPresent(TokenServiceAddon.class)) {
+            throw new DependenceException(this.getClass(), TokenServiceAddon.class);
+        }
+        return this;
+    }
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
@@ -58,6 +78,10 @@ public class UserTokenFilterAddon implements Addon {
                 .register(UserTokenFilter.class)
                 .register(UserTokenFasttrackFilter.class)
         );
+
+        if (swaggerImplicitHeaders) {
+            SwaggerExtensions.getExtensions().add(new SwaggerImplicitUserTokenHeader(requireUserTokenByDefault));
+        }
     }
 
     public UserTokenFilterAddon plusUibRolleTilgang(Function<UibRolle, String> tilgang) {
@@ -65,4 +89,6 @@ public class UserTokenFilterAddon implements Addon {
     }
 
 
+    @Override
+    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
 }

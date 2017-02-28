@@ -4,6 +4,7 @@ import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.UserTokenRequired;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
@@ -35,11 +36,13 @@ public class AuthorizationFilterJerseyTest {
     static final String uibRoleNamePrioritized = "superbruker";
     static final String uibRoleNameUnprioritized = "middelmådigbruker";
     ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Resource.class))
-            //                .register(Resource.class)
-            .bind(tokenServiceClient, TokenServiceClient.class)
             .bind(ResourceImpl.class, Resource.class)
             .addon(ExceptionMapperAddon.defaults)
+            .addon(TokenServiceAddon.defaults
+                    .withTokenServiceClient(tokenServiceClient)
+            )
             .addon(UserTokenFilterAddon.defaults
+                    .withSwaggerImplicitHeaders(false)
                     .plusUibRolleTilgang(uibRolle -> uibRoleNamePrioritized.equalsIgnoreCase(uibRolle.navn) ? javaxRole : null)
             );
 

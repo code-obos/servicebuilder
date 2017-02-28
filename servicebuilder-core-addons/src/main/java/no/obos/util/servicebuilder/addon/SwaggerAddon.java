@@ -6,10 +6,10 @@ import io.swagger.jersey.config.JerseyJaxrsConfig;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.eclipse.jetty.servlet.ServletHolder;
 

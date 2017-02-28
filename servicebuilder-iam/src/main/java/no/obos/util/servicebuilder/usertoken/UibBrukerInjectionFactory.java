@@ -25,7 +25,7 @@ public class UibBrukerInjectionFactory implements Factory<UibBruker> {
     public UibBruker provide() {
         Principal userPrincipal = context.getUserPrincipal();
 
-        if (userPrincipal == null && config.requireUserToken) {
+        if (userPrincipal == null && config.requireUserTokenByDefault) {
             return null;
         }
         if (userPrincipal != null && ! (userPrincipal instanceof UibBruker)) {

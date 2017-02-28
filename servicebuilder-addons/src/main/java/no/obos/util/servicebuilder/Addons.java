@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.BasicDatasourceAddon;
 import no.obos.util.servicebuilder.addon.CorsFilterAddon;
 import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
@@ -10,6 +11,8 @@ import no.obos.util.servicebuilder.addon.MetricsAddon;
 import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.addon.QueryRunnerAddon;
 import no.obos.util.servicebuilder.addon.SwaggerAddon;
+import no.obos.util.servicebuilder.addon.TokenServiceAddon;
+import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.WebAppAddon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 
@@ -78,6 +81,36 @@ public class Addons {
      */
     public static QueryRunnerAddon queryRunner() {
         return QueryRunnerAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-iam</artifactId>
+        </dependency>
+     */
+    public static TokenServiceAddon tokenService() {
+        return TokenServiceAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-iam</artifactId>
+        </dependency>
+     */
+    public static UserTokenFilterAddon userTokenFilter() {
+        return UserTokenFilterAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-iam</artifactId>
+        </dependency>
+     */
+    public static ApplicationTokenFilterAddon applicationTokenFilter() {
+        return ApplicationTokenFilterAddon.defaults;
     }
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {

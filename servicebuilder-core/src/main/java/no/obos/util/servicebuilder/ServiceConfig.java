@@ -138,4 +138,8 @@ public class ServiceConfig {
     public ServiceConfig withRegistrator(Registrator registrator) {
         return withRegistrators(GuavaHelper.plus(registrators, registrator));
     }
+
+    public boolean isAddonPresent(Class<? extends Addon> swaggerAddonClass) {
+        return getAddon(swaggerAddonClass) != null;
+    }
 }

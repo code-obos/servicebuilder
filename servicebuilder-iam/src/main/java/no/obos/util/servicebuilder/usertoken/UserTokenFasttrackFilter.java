@@ -36,7 +36,7 @@ public class UserTokenFasttrackFilter implements ContainerRequestFilter {
             return;
         }
 
-        if (configuration.requireUserToken && securityContext.getUserPrincipal() == null) {
+        if (configuration.requireUserTokenByDefault && securityContext.getUserPrincipal() == null) {
             throw new NotAuthorizedException("Usertoken required");
         }
 
