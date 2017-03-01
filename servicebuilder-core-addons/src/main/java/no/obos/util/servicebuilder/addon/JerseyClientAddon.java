@@ -5,19 +5,19 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.servicebuilder.model.Addon;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StringProvider;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.model.PropertyProvider;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.Hk2Helper;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
@@ -96,7 +96,8 @@ public class JerseyClientAddon implements Addon {
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .withClientConfigBase(clientConfigBase)
                 .generate();
-        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client));
+        StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
+        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator));
     }
 
 
@@ -107,9 +108,9 @@ public class JerseyClientAddon implements Addon {
                     binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
                     binder.bind(runtime.client).to(Client.class).named(serviceName);
                     binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
+                    binder.bind(runtime.generator).to(StubGenerator.class).named(serviceName);
                     serviceDefinition.getResources().forEach(clazz -> {
                                 binder.bind(this).to(JerseyClientAddon.class).named(clazz.getCanonicalName());
-                                binder.bind(runtime.client).to(Client.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
                                 binder.bindFactory(StubFactory.class).to(clazz);
                             }
@@ -142,11 +143,10 @@ public class JerseyClientAddon implements Addon {
 
         public Object provide() {
             Class<?> requiredType = getStubClass();
-            Client client = serviceLocator.getService(Client.class, requiredType.getCanonicalName());
-
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
 
-            StubGenerator generator = StubGenerator.defaults(client, configuration.uri);
+            StubGenerator generator = configuration.runtime.generator;
+
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
 
             String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
@@ -216,5 +216,6 @@ public class JerseyClientAddon implements Addon {
     @AllArgsConstructor
     public static class Runtime {
         public final Client client;
+        StubGenerator generator;
     }
 }
