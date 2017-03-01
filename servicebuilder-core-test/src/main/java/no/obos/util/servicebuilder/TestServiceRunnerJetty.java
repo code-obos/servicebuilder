@@ -11,6 +11,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.function.Function;
 
@@ -78,12 +79,13 @@ public class TestServiceRunnerJetty {
         serviceRunner.start();
 
         URI uri = serviceRunner.jettyServer.server.getURI();
+        uri = UriBuilder.fromUri(uri).host("localhost").build();
 
         ClientGenerator clientGenerator = clientConfigurator.apply(
                 ClientGenerator.defaults(serviceConfigwithProps.serviceDefinition)
         );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));
+        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, UriBuilder.fromUri(uri).path("api").build()));
 
         TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
 
