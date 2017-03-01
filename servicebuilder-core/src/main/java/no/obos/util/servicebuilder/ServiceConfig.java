@@ -11,8 +11,11 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.GuavaHelper;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
@@ -44,6 +47,22 @@ public class ServiceConfig {
 
     public <T> ServiceConfig bind(Class<T> toBind) {
         return withBinder(binder -> binder.bindAsContract(toBind));
+    }
+
+    public ServiceConfig bindWithProps(BiConsumer<PropertyProvider, AbstractBinder> propertyBinder) {
+        return hk2ConfigModule(props ->
+                new JerseyConfig.Hk2ConfigModule() {
+                    @Override
+                    public void addBindings(AbstractBinder binder) {
+                        propertyBinder.accept(props, binder);
+
+                    }
+
+                    @Override
+                    public void applyRegistations(ResourceConfig resourceConfig) {
+                    }
+                }
+        );
     }
 
     public ServiceConfig register(Class toRegister) {
