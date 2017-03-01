@@ -42,6 +42,10 @@ public class ServiceConfig {
         return withBinder(binder -> binder.bind(toBind).to(bindTo));
     }
 
+    public <T> ServiceConfig bind(Class<T> toBind) {
+        return withBinder(binder -> binder.bindAsContract(toBind));
+    }
+
     public ServiceConfig register(Class toRegister) {
         return withRegistrator(registrator -> registrator.register(toRegister));
     }
