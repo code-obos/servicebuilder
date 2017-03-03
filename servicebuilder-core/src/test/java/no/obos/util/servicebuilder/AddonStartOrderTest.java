@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -72,50 +73,6 @@ public class AddonStartOrderTest {
         assertThat(startOrder).isEqualTo(Lists.newArrayList(1, 2));
     }
 
-    @Test
-    public void startup_order_is_not_transient_so_dont_mess_up() {
-        //Given
-        final List<Integer> startOrder = Lists.newArrayList();
-
-        class Dependee implements Addon {
-            @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
-                startOrder.add(1);
-                return this;
-            }
-        }
-        class Immediate implements Addon {
-            @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
-                startOrder.add(2);
-                return this;
-            }
-
-            @Override
-            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
-        }
-
-        class Dependent implements Addon {
-            @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
-                startOrder.add(3);
-                return this;
-            }
-
-            @Override
-            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Immediate.class);}
-        }
-
-        ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
-                .addon(new Immediate())
-                .addon(new Dependent())
-                .addon(new Dependee());
-
-        //When
-        ServiceConfigInitializer.finalize(config);
-
-        assertThat(startOrder).isEqualTo(Lists.newArrayList(2, 3, 1));
-    }
 
     @Test
     public void if_dependencies_have_several_layers_use_multiple_dependencies() {

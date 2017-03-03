@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.model.Addon;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 class ServiceConfigInitializer {
     public static ServiceConfig finalize(ServiceConfig serviceConfig) {
-        List<Addon> unFinalizedAddons = Lists.newArrayList(serviceConfig.addons);
-        unFinalizedAddons.sort(new StartupOrderComparator());
+        List<Addon> unFinalizedAddons = sortAddonList(serviceConfig.addons);
         ServiceConfig withFinalizedAddons = serviceConfig.withAddons(ImmutableList.of());
         for (Addon addon : unFinalizedAddons) {
             withFinalizedAddons = withFinalizedAddons.addon(addon.finalize(withFinalizedAddons));
@@ -19,19 +19,25 @@ class ServiceConfigInitializer {
         return withFinalizedAddons;
     }
 
-    static class StartupOrderComparator implements Comparator<Addon> {
-        @Override
-        public int compare(Addon o1, Addon o2) {
-            Set<Class<?>> o1StartAfter = o1.finalizeAfter();
-            Set<Class<?>> o2StartAfter = o2.finalizeAfter();
-            if (o1StartAfter.stream().anyMatch(clazz -> clazz.isInstance(o2))) {
-                return 1;
+    private static List<Addon> sortAddonList(List<Addon> addons) {
+        List<Addon> unSortedList = Lists.newArrayList(addons);
+        List<Addon> sortedList = Lists.newArrayList();
+        while (unSortedList.size() > 0) {
+            List<Addon> addonsWithNoDependencies = unSortedList.stream().filter(possiblyDependent -> {
+                Set<Class<?>> dependentOnSet = possiblyDependent.finalizeAfter();
+                return dependentOnSet.stream().noneMatch(hasDependenciesInList(unSortedList));
+            }).collect(Collectors.toList());
+            sortedList.addAll(addonsWithNoDependencies);
+            unSortedList.removeAll(addonsWithNoDependencies);
+            if (addonsWithNoDependencies.isEmpty()) {
+                throw new RuntimeException("Dependency loop in addons: " + unSortedList);
             }
-            if (o2StartAfter.stream().anyMatch(clazz -> clazz.isInstance(o1))) {
-                return - 1;
-            }
-            return 0;
         }
-
+        return sortedList;
     }
+
+    private static Predicate<Class<?>> hasDependenciesInList(List<Addon> unSortedList) {
+        return dependentOn -> unSortedList.stream().anyMatch(dependentOn::isInstance);
+    }
+
 }
