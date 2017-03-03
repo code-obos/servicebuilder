@@ -131,7 +131,7 @@ public class JerseyClientAddon implements Addon {
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
         if (monitorIntegration) {
-            ObosHealthCheckRegistry.registerPingCheck(serviceDefinition.getName(), uri.toString());
+            ObosHealthCheckRegistry.registerPingCheck(serviceDefinition.getName() + ": " + uri.toString(), uri.toString());
         }
     }
 
