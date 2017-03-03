@@ -18,7 +18,7 @@ public interface ServiceDefinition {
         return JsonConfig.standard;
     }
 
-    static ServiceDefinition simple(final String name, final String version, final Class... resources) {
+    static ServiceDefinition simple(final String name, final String version, final Iterable<Class> resources) {
         return new ServiceDefinition() {
             ImmutableList<Class> classes = ImmutableList.copyOf(resources);
 
@@ -39,24 +39,13 @@ public interface ServiceDefinition {
         };
     }
 
+    static ServiceDefinition simple(final String name, final String version, final Class... resources) {
+        ImmutableList<Class> classes = ImmutableList.copyOf(resources);
+        return simple(name, version, classes);
+    }
+
+
     static ServiceDefinition simple(final Class... resources) {
-        return new ServiceDefinition() {
-            ImmutableList<Class> classes = ImmutableList.copyOf(resources);
-
-            @Override
-            public String getName() {
-                return ANONYMOUS_SERVICE_NAME;
-            }
-
-            @Override
-            public String getVersion() {
-                return "1.0";
-            }
-
-            @Override
-            public List<Class> getResources() {
-                return classes;
-            }
-        };
+        return simple(ANONYMOUS_SERVICE_NAME, "1.0", resources);
     }
 }
