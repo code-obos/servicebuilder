@@ -107,6 +107,10 @@ public class JerseyClientAddon implements Addon {
                 .withClientConfigBase(clientConfigBase)
                 .generate();
         StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
+
+        if (appTokenIdSupplier != null) {
+            stubGenerator = stubGenerator.withAppTokenSupplier(appTokenIdSupplier);
+        }
         return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator));
     }
 
@@ -163,10 +167,6 @@ public class JerseyClientAddon implements Addon {
                 generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
             }
 
-            Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;
-            if (appTokenIdSupplier != null) {
-                generator = generator.withAppTokenSupplier(appTokenIdSupplier);
-            }
 
             return generator
                     .generateClient(requiredType);
