@@ -2,7 +2,9 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
+import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -38,7 +40,8 @@ public class ServiceRunner {
     }
 
     public static ServiceRunner defaults(ServiceConfig serviceConfig, Class<?> versionedClass) {
-        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass);
+        String apiVersion = serviceConfig.serviceDefinition.getVersion();
+        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass, apiVersion);
         return new ServiceRunner(serviceConfig, properties);
     }
 
@@ -50,7 +53,8 @@ public class ServiceRunner {
         } else {
             throw new RuntimeException("Could not find version from class. Please provide a static class in service project (e.g. Servicerunner.defaults(<serviceConfig>, Main.class)");
         }
-        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass);
+        String apiVersion = serviceConfig.serviceDefinition.getVersion();
+        AppConfigBackedPropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass, apiVersion);
         return new ServiceRunner(serviceConfig, properties);
     }
 

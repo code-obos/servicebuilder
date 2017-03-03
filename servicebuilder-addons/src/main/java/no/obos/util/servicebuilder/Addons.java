@@ -113,6 +113,7 @@ public class Addons {
         return ApplicationTokenFilterAddon.defaults;
     }
 
+
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)
                 .addon(SwaggerAddon.defaults)

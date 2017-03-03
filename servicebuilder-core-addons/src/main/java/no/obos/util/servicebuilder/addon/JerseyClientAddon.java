@@ -32,6 +32,7 @@ import javax.inject.Named;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -57,13 +58,15 @@ public class JerseyClientAddon implements Addon {
     public final boolean monitorIntegration;
     @Wither
     public final boolean targetThrowsExceptions;
+    @Wither
+    public final boolean addApiVersionToPath;
     @Wither(AccessLevel.PRIVATE)
     public final Supplier<String> appTokenIdSupplier;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, true, null, true, true, null, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, true, null, true, true, true, null, null);
     }
 
 
@@ -73,8 +76,13 @@ public class JerseyClientAddon implements Addon {
         String name = serviceDefinition.getName();
         String prefix = name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
+
+        URI uri = URI.create(properties.get(prefix + CONFIG_KEY_URL));
+        if(addApiVersionToPath) {
+            uri = UriBuilder.fromUri(uri).path("s" + serviceDefinition.getVersion()).build();
+        }
         return this
-                .withUri(URI.create(properties.get(prefix + CONFIG_KEY_URL)));
+                .withUri(uri);
     }
 
     @Override
