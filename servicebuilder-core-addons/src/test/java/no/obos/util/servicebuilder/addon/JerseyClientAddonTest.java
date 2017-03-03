@@ -50,7 +50,7 @@ public class JerseyClientAddonTest {
                     .bind(nestedResourceMock, Resource.class)
     );
 
-    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinition.simple("outer", OuterResource.class))
+    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinition.simple("outer", "1.0", OuterResource.class))
             .addon(ExceptionMapperAddon.defaults)
             .bind(OuterResourceImpl.class, OuterResource.class);
 

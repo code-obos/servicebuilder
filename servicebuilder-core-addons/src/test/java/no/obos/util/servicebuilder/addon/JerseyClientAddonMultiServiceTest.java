@@ -31,12 +31,12 @@ public class JerseyClientAddonMultiServiceTest {
 
             TestServiceRunner.defaults(
                     outerServiceConfig
-                            .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME1, Nested1.class))
+                            .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME1, "1.0", Nested1.class))
                                     .withClientConfigBase(nestedRuntime1.clientConfig)
                                     .withApptoken(false)
                                     .withUri(nestedRuntime1.uri)
                             )
-                            .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME2, Nested2.class))
+                            .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME2, "1.0", Nested2.class))
                                     .withClientConfigBase(nestedRuntime2.clientConfig)
                                     .withApptoken(false)
                                     .withUri(nestedRuntime2.uri)
@@ -61,17 +61,17 @@ public class JerseyClientAddonMultiServiceTest {
 
 
     TestServiceRunner nestedTestService1 = TestServiceRunner.defaults(
-            ServiceConfig.defaults(ServiceDefinition.simple(NESTED_NAME1, Nested1.class))
+            ServiceConfig.defaults(ServiceDefinition.simple(NESTED_NAME1, "1.0", Nested1.class))
                     .addon(ExceptionMapperAddon.defaults)
                     .bind(nestedMock1, Nested1.class)
     );
     TestServiceRunner nestedTestService2 = TestServiceRunner.defaults(
-            ServiceConfig.defaults(ServiceDefinition.simple(NESTED_NAME2, Nested2.class))
+            ServiceConfig.defaults(ServiceDefinition.simple(NESTED_NAME2, "1.0", Nested2.class))
                     .addon(ExceptionMapperAddon.defaults)
                     .bind(nestedMock2, Nested2.class)
     );
 
-    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinition.simple("outer", Outer.class))
+    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinition.simple("outer", "1.0", Outer.class))
             .addon(ExceptionMapperAddon.defaults)
             .bind(OuterImpl.class, Outer.class);
 

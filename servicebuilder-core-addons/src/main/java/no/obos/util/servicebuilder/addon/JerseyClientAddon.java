@@ -57,7 +57,7 @@ public class JerseyClientAddon implements Addon {
     public final boolean monitorIntegration;
     @Wither
     public final boolean targetThrowsExceptions;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Supplier<String> appTokenIdSupplier;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
@@ -148,13 +148,16 @@ public class JerseyClientAddon implements Addon {
             StubGenerator generator = configuration.runtime.generator;
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-
-            String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
-            if (appTokenId != null) {
-                generator = generator.plusHeader(Constants.APPTOKENID_HEADER, appTokenId);
+            if(userToken != null) {
+                generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
             }
+
+            Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;
+            if (appTokenIdSupplier != null) {
+                generator = generator.withAppTokenSupplier(appTokenIdSupplier);
+            }
+
             return generator
-                    .withUserToken(userToken)
                     .generateClient(requiredType);
         }
 
@@ -193,13 +196,15 @@ public class JerseyClientAddon implements Addon {
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
             TargetGenerator generator = TargetGenerator.defaults(client, configuration.uri)
                     .withThrowExceptionForErrors(true);
+
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            if (userToken != null) {
+            if(userToken != null) {
                 generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
             }
-            String appTokenId = configuration.apptoken ? configuration.appTokenIdSupplier.get() : null;
-            if (appTokenId != null) {
-                generator = generator.plusHeader(Constants.APPTOKENID_HEADER, appTokenId);
+
+            Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;
+            if (appTokenIdSupplier != null) {
+                generator = generator.withAppTokenSupplier(appTokenIdSupplier);
             }
 
             return generator.generate();

@@ -1,9 +1,11 @@
 package no.obos.util.servicebuilder.client;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -13,6 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.net.URI;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TargetGenerator {
@@ -24,9 +27,11 @@ public class TargetGenerator {
     final boolean throwExceptionForErrors;
     @Wither
     final boolean logging;
+    @Wither
+    final Supplier<String> appTokenSupplier;
 
     public static TargetGenerator defaults(Client client, URI uri) {
-        return new TargetGenerator(client, uri, ImmutableMap.of(), false, true);
+        return new TargetGenerator(client, uri, ImmutableMap.of(), false, true, null);
     }
 
     public WebTarget generate() {
@@ -36,11 +41,18 @@ public class TargetGenerator {
 
         WebTarget target = clientToUse.target(uri);
 
-        if (! headers.isEmpty()) {
+        final Map<String, String> headersToUse = Maps.newHashMap(headers);
+
+        if(appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
+            headersToUse.put(Constants.APPTOKENID_HEADER, appTokenSupplier.get());
+        }
+
+
+        if (! headersToUse.isEmpty()) {
             target.register(new AbstractBinder() {
                 @Override
                 protected void configure() {
-                    this.bind(headers).to(new TypeLiteral<Map<String, String>>() {}).named(WebTargetRequestHeaderFilter.MAP_NAME);
+                    this.bind(headersToUse).to(new TypeLiteral<Map<String, String>>() {}).named(WebTargetRequestHeaderFilter.MAP_NAME);
                 }
             });
 

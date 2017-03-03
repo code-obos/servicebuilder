@@ -155,6 +155,11 @@ public class TestServiceFull implements ServiceDefinition {
     }
 
     @Override
+    public String getVersion() {
+        return "1.0";
+    }
+
+    @Override
     public List<Class> getResources() {
         return Lists.newArrayList(ResourceFull.class);
     }

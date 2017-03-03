@@ -18,6 +18,7 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
+import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StubGenerator {
@@ -25,7 +26,7 @@ public class StubGenerator {
     final Client client;
     final URI uri;
     @Wither
-    final String userToken;
+    Supplier<String> appTokenSupplier;
     @Wither
     final boolean logging;
     @Wither(AccessLevel.PRIVATE)
@@ -43,8 +44,9 @@ public class StubGenerator {
                 : ClientBuilder.newClient();
 
         MultivaluedMap<String, Object> headerArg = new MultivaluedHashMap<>(headers);
-        if (! Strings.isNullOrEmpty(userToken)) {
-            headerArg.putSingle(Constants.USERTOKENID_HEADER, userToken);
+
+        if(appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
+            headerArg.putSingle(Constants.APPTOKENID_HEADER, appTokenSupplier.get());
         }
 
         WebTarget webTarget = clientToUse.target(uri);
