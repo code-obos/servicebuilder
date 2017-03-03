@@ -85,7 +85,7 @@ public class TestServiceRunnerJetty {
                 ClientGenerator.defaults(serviceConfigwithProps.serviceDefinition)
         );
         Client client = clientGenerator.generate();
-        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, UriBuilder.fromUri(uri).path("api").build()));
+        StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, UriBuilder.fromUri(uri).build()));
 
         TargetGenerator targetGenerator = targetConfigurator.apply(TargetGenerator.defaults(client, uri));
 

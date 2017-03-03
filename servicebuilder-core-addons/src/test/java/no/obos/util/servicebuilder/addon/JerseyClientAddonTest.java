@@ -37,6 +37,7 @@ public class JerseyClientAddonTest {
                         outerServiceConfig
                                 .addon(JerseyClientAddon.defaults(TestService.instance)
                                         .withClientConfigBase(clientconfig)
+                                        .withApiPrefix(null)
                                         .withApptoken(false)
                                         .withUri(uri)
                                 )

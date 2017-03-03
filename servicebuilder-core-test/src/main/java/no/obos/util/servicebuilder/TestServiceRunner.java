@@ -69,7 +69,7 @@ public class TestServiceRunner {
         }
 
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri));
+            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).withApiPrefix(null));
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
 

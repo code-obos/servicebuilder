@@ -56,6 +56,7 @@ public class StubGeneratorTest {
                     .withClientConfigBase(clientConfig)
                     .generate();
             Api api = StubGenerator.defaults(client, uri)
+                    .withApiPrefix(null)
                     .plusHeader(Constants.USERTOKENID_HEADER, "banan")
                     .generateClient(Api.class);
             return api.call(payloadIn);

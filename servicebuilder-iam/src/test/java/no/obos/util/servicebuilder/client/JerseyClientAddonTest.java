@@ -48,6 +48,7 @@ public class JerseyClientAddonTest {
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .withClientConfigBase(nestedRuntime.clientConfig)
                         .withApptoken(false)
+                        .withApiPrefix(null)
                         .withUri(nestedRuntime.uri)
                 );
 
@@ -73,6 +74,7 @@ public class JerseyClientAddonTest {
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .withClientConfigBase(nestedRuntime.clientConfig)
                         .withApptoken(false)
+                        .withApiPrefix(null)
                         .withForwardUsertoken(true)
                         .withUri(nestedRuntime.uri)
                 );
@@ -101,6 +103,7 @@ public class JerseyClientAddonTest {
                 .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .withClientConfigBase(nestedRuntime.clientConfig)
+                        .withApiPrefix(null)
                         .withUri(nestedRuntime.uri)
                 );
 

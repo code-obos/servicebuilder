@@ -53,6 +53,8 @@ public class JerseyClientAddon implements Addon {
     @Wither
     public final boolean apptoken;
     @Wither
+    public final String apiPrefix;
+    @Wither
     public final ClientConfig clientConfigBase;
     @Wither
     public final boolean monitorIntegration;
@@ -66,7 +68,7 @@ public class JerseyClientAddon implements Addon {
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, true, null, true, true, true, null, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, true, "api", null, true, true, true, null, null);
     }
 
 
@@ -153,7 +155,8 @@ public class JerseyClientAddon implements Addon {
             Class<?> requiredType = getStubClass();
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
 
-            StubGenerator generator = configuration.runtime.generator;
+            StubGenerator generator = configuration.runtime.generator
+                    .withApiPrefix(configuration.apiPrefix);
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if(userToken != null) {

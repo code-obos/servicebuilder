@@ -34,11 +34,13 @@ public class JerseyClientAddonMultiServiceTest {
                             .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME1, "1.0", Nested1.class))
                                     .withClientConfigBase(nestedRuntime1.clientConfig)
                                     .withApptoken(false)
+                                    .withApiPrefix(null)
                                     .withUri(nestedRuntime1.uri)
                             )
                             .addon(JerseyClientAddon.defaults(ServiceDefinition.simple(NESTED_NAME2, "1.0", Nested2.class))
                                     .withClientConfigBase(nestedRuntime2.clientConfig)
                                     .withApptoken(false)
+                                    .withApiPrefix(null)
                                     .withUri(nestedRuntime2.uri)
                             )
             ).oneShot(Outer.class, client -> {

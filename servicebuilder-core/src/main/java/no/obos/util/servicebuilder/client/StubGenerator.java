@@ -29,13 +29,15 @@ public class StubGenerator {
     Supplier<String> appTokenSupplier;
     @Wither
     final boolean logging;
+    @Wither
+    final String apiPrefix;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Cookie> cookies;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
 
     public static StubGenerator defaults(Client client, URI uri) {
-        return new StubGenerator(client, uri, null, true, ImmutableList.of(), ImmutableMap.of());
+        return new StubGenerator(client, uri, null, true, "api", ImmutableList.of(), ImmutableMap.of());
     }
 
     public <T> T generateClient(Class<T> resource) {
@@ -50,6 +52,9 @@ public class StubGenerator {
         }
 
         WebTarget webTarget = clientToUse.target(uri);
+        if(apiPrefix != null) {
+            webTarget = webTarget.path(apiPrefix);
+        }
         webTarget.register(ClientErrorResponseFilter.class);
         webTarget.register(RequestIdClientFilter.class);
         if (logging) {
