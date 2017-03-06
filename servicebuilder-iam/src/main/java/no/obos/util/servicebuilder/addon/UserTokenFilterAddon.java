@@ -85,7 +85,7 @@ public class UserTokenFilterAddon implements Addon {
         }
     }
 
-    public UserTokenFilterAddon plusUibRolleTilgang(String rolle, Predicate<UibRolle> girRolleTilgang) {
+    public UserTokenFilterAddon plusRolleGirTilgang(String rolle, Predicate<UibRolle> girRolleTilgang) {
         return withRolleGirTilgang(GuavaHelper.plus(rolleGirTilgang, rolle, girRolleTilgang));
     }
 
