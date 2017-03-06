@@ -22,7 +22,6 @@
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi</artifactId>
-            <version>2.77</version>
         </dependency>
 
 
