@@ -31,6 +31,7 @@ public class JerseyConfig {
     }
 
     public JerseyConfig(ServiceDefinition serviceDefinition) {
+        resourceConfig.property("jersey.config.server.wadl.disableWadl", "true");
         registerServiceDefintion(serviceDefinition);
         resourceConfig.register(injectionBinder);
     }
