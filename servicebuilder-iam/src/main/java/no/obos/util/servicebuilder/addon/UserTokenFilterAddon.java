@@ -1,6 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
@@ -16,7 +16,7 @@ import no.obos.util.servicebuilder.usertoken.SwaggerImplicitUserTokenHeader;
 import no.obos.util.servicebuilder.usertoken.UibBruker;
 import no.obos.util.servicebuilder.usertoken.UibBrukerInjectionFactory;
 import no.obos.util.servicebuilder.usertoken.UibRolle;
-import no.obos.util.servicebuilder.usertoken.UserTokenFasttrackFilter;
+import no.obos.util.servicebuilder.usertoken.UserTokenBlockingFilter;
 import no.obos.util.servicebuilder.usertoken.UserTokenFilter;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
@@ -24,6 +24,7 @@ import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Konfigurerer UserTokenFilter.
@@ -51,9 +52,9 @@ public class UserTokenFilterAddon implements Addon {
     public final Function<UibBruker, Collection<String>> uibBrukerTilganger;
 
     @Wither
-    public final ImmutableList<Function<UibRolle, String>> uibRolleTilganger;
+    public final ImmutableMap<String, Predicate<UibRolle>> rolleGirTilgang;
 
-    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableList.of());
+    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableMap.of());
 
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
@@ -76,7 +77,7 @@ public class UserTokenFilterAddon implements Addon {
         jerseyConfig.addRegistations(registrator -> registrator
                 .register(RolesAllowedDynamicFeature.class)
                 .register(UserTokenFilter.class)
-                .register(UserTokenFasttrackFilter.class)
+                .register(UserTokenBlockingFilter.class)
         );
 
         if (swaggerImplicitHeaders) {
@@ -84,8 +85,8 @@ public class UserTokenFilterAddon implements Addon {
         }
     }
 
-    public UserTokenFilterAddon plusUibRolleTilgang(Function<UibRolle, String> tilgang) {
-        return withUibRolleTilganger(GuavaHelper.plus(uibRolleTilganger, tilgang));
+    public UserTokenFilterAddon plusUibRolleTilgang(String rolle, Predicate<UibRolle> girRolleTilgang) {
+        return withRolleGirTilgang(GuavaHelper.plus(rolleGirTilgang, rolle, girRolleTilgang));
     }
 
 

@@ -3,6 +3,8 @@ package no.obos.util.servicebuilder.usertoken;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import no.obos.iam.tokenservice.UserRole;
 import no.obos.iam.tokenservice.UserToken;
 
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
  * Representerer en bruker fra User Identity Backend
  */
 @Builder(toBuilder = true)
+@ToString
+@EqualsAndHashCode
 public class UibBruker implements Principal {
     public final String personid;
     public final String fornavn;

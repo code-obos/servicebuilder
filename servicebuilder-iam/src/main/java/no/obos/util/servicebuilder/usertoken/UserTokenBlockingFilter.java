@@ -3,8 +3,10 @@ package no.obos.util.servicebuilder.usertoken;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.UserTokenRequired;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
@@ -12,7 +14,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 
-public class UserTokenFasttrackFilter implements ContainerRequestFilter {
+@Priority(Priorities.AUTHENTICATION + 1)
+public class UserTokenBlockingFilter implements ContainerRequestFilter {
 
     final private ResourceInfo resourceInfo;
 
@@ -21,7 +24,7 @@ public class UserTokenFasttrackFilter implements ContainerRequestFilter {
     final SecurityContext securityContext;
 
     @Inject
-    public UserTokenFasttrackFilter(@Context ResourceInfo resourceInfo, UserTokenFilterAddon configuration, SecurityContext securityContext) {
+    public UserTokenBlockingFilter(@Context ResourceInfo resourceInfo, UserTokenFilterAddon configuration, SecurityContext securityContext) {
         this.resourceInfo = resourceInfo;
         this.configuration = configuration;
         this.securityContext = securityContext;

@@ -2,12 +2,16 @@ package no.obos.util.servicebuilder.usertoken;
 
 import com.google.common.base.Strings;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import no.obos.iam.tokenservice.UserRole;
 
 /**
  * En rolle fra User Identity Backend
  */
 @Builder
+@ToString
+@EqualsAndHashCode
 public class UibRolle {
     public final String orgId;
     public final String appId;

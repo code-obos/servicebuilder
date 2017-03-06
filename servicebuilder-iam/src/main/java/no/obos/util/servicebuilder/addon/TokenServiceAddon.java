@@ -7,12 +7,12 @@ import no.obos.iam.jersey.client.WebClientImpl;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceHttpClient;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.PropertyProvider;
 
 import javax.inject.Inject;
 import java.util.function.Supplier;

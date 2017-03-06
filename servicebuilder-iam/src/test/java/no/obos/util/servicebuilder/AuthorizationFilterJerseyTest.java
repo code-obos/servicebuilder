@@ -44,7 +44,7 @@ public class AuthorizationFilterJerseyTest {
             )
             .addon(UserTokenFilterAddon.defaults
                     .withSwaggerImplicitHeaders(false)
-                    .plusUibRolleTilgang(uibRolle -> uibRoleNamePrioritized.equalsIgnoreCase(uibRolle.navn) ? javaxRole : null)
+                    .plusUibRolleTilgang(javaxRole, uibRolle -> uibRoleNamePrioritized.equalsIgnoreCase(uibRolle.navn))
             );
 
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);

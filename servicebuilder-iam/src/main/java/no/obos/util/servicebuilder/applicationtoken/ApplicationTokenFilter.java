@@ -8,7 +8,9 @@ import no.obos.util.servicebuilder.annotations.AppTokenRequired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
@@ -17,6 +19,7 @@ import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
 import java.util.UUID;
 
+@Priority(Priorities.AUTHENTICATION)
 public class ApplicationTokenFilter implements ContainerRequestFilter {
     Logger log = LoggerFactory.getLogger(ApplicationTokenFilter.class);
 

@@ -10,8 +10,10 @@ import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -20,10 +22,10 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @PreMatching
+@Priority(Priorities.AUTHENTICATION)
 public class UserTokenFilter implements ContainerRequestFilter {
 
     final private TokenServiceClient tokenServiceClient;
@@ -60,13 +62,10 @@ public class UserTokenFilter implements ContainerRequestFilter {
                 List<String> tilgangerList = Lists.newArrayList();
                 tilgangerList.addAll(configuration.userTokenTilganger.apply(userToken));
                 tilgangerList.addAll(configuration.uibBrukerTilganger.apply(bruker));
-                tilgangerList.addAll(bruker.roller.stream()
-                        .map(rolle ->
-                                configuration.uibRolleTilganger.stream()
-                                        .map(it -> it.apply(rolle))
-                                        .filter(Objects::nonNull)
-                        ).flatMap(Function.identity())
-                        .collect(Collectors.toSet())
+                tilgangerList.addAll(configuration.rolleGirTilgang.keySet().stream()
+                        .filter(tilgang ->
+                                bruker.roller.stream().anyMatch(configuration.rolleGirTilgang.get(tilgang))
+                        ).collect(Collectors.toSet())
                 );
                 configuration.uibBrukerTilganger.apply(bruker);
                 ImmutableSet<String> tilganger = ImmutableSet.copyOf(tilgangerList.stream()
