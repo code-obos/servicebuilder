@@ -3,3 +3,4 @@ Før release 3.0:
 -Skal vi ha unntak for with og plus - reglene for serviceconfig og servicerunner?
 -Kallende applikasjon med i headere for klient
 -Rename Addon.finalize til initialize
+-ApplicationTokenFilter: Mulighet for å kunne gi tilgang til hele applikasjonsserier istedenfor bare til en og en applikasjon
