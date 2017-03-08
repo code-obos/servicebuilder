@@ -5,3 +5,6 @@ Før release 3.0:
 -Rename Addon.finalize til initialize
 -ApplicationTokenFilter: Mulighet for å kunne gi tilgang til hele applikasjonsserier istedenfor bare til en og en applikasjon
 -Hente versjon for klient fra MANIFEST-filen (kode for dette ligger i Util/utilWebService - develop branch)
+-Penere utskrift av ExternalResourceException
+-Teste at vi håndterer exceptions fra gamle tjenester
+-Skal vi rename ProblemResponse til HttpProblem for å matche standard?

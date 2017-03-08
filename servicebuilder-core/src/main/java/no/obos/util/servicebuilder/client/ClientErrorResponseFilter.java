@@ -3,13 +3,16 @@ package no.obos.util.servicebuilder.client;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
 import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.client.ClientRequestContext;
 import javax.ws.rs.client.ClientResponseContext;
 import javax.ws.rs.client.ClientResponseFilter;
@@ -19,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.stream.Collectors;
 
+@Priority(Priorities.AUTHENTICATION)
 public class ClientErrorResponseFilter implements ClientResponseFilter {
     final ObjectMapper mapper;
     final ServiceDefinition serviceDefinition;
@@ -59,8 +63,11 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
                 } catch (JsonParseException | JsonMappingException e) {
                     //ignore
                 }
-                throw new ExternalResourceException(metaData.build());
             }
+            if(Response.Status.NOT_FOUND.getStatusCode() == responseContext.getStatus()) {
+                throw new ExternalResourceNotFoundException(metaData.build());
+            }
+            throw new ExternalResourceException(metaData.build());
         }
     }
 }
