@@ -17,11 +17,9 @@ import java.io.IOException;
 @Priority(Priorities.AUTHENTICATION + 1)
 public class UserTokenBlockingFilter implements ContainerRequestFilter {
 
-    final private ResourceInfo resourceInfo;
-
-    final UserTokenFilterAddon configuration;
-
-    final SecurityContext securityContext;
+    private final ResourceInfo resourceInfo;
+    private final UserTokenFilterAddon configuration;
+    private final SecurityContext securityContext;
 
     @Inject
     public UserTokenBlockingFilter(@Context ResourceInfo resourceInfo, UserTokenFilterAddon configuration, SecurityContext securityContext) {
@@ -31,40 +29,34 @@ public class UserTokenBlockingFilter implements ContainerRequestFilter {
     }
 
     @Override
-    @SuppressWarnings("squid:S1166")
     public void filter(ContainerRequestContext requestContext) throws IOException {
+        String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
+        String requestMethod = requestContext.getMethod();
 
-        // Vi slipper gjennom CORS OPTIONS, etc...
-        if (allwaysAccept(requestContext)) {
+        if (aboslutePath.contains("swagger.json") || "OPTIONS".equals(requestMethod)) {
             return;
         }
 
-        if (configuration.requireUserTokenByDefault && securityContext.getUserPrincipal() == null) {
-            throw new NotAuthorizedException("Usertoken required");
+        if (requireUserToken() && securityContext.getUserPrincipal() == null) {
+            throw new NotAuthorizedException("UsertokenId required");
         }
-
     }
 
-
-    public boolean allwaysAccept(ContainerRequestContext requestContext) {
-        String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
-        String requestMethod = requestContext.getMethod();
+    private boolean requireUserToken() {
         UserTokenRequired methodAnnotation = resourceInfo.getResourceMethod() != null
                 ? resourceInfo.getResourceMethod().getAnnotation(UserTokenRequired.class)
                 : null;
         UserTokenRequired classAnnotation = resourceInfo.getResourceClass() != null
                 ? resourceInfo.getResourceClass().getAnnotation(UserTokenRequired.class)
                 : null;
-        boolean annotationFasttrack = false;
+
         if (methodAnnotation != null) {
-            annotationFasttrack = ! methodAnnotation.value();
-        } else if (classAnnotation != null) {
-            annotationFasttrack = ! classAnnotation.value();
+            return methodAnnotation.value();
+        }
+        if (classAnnotation != null) {
+            return classAnnotation.value();
         }
 
-        return aboslutePath.contains("swagger")
-                || "OPTIONS".equals(requestMethod)
-                || annotationFasttrack;
+        return configuration.requireUserTokenByDefault;
     }
-
 }

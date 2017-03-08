@@ -28,9 +28,8 @@ import java.util.stream.Collectors;
 @Priority(Priorities.AUTHENTICATION)
 public class UserTokenFilter implements ContainerRequestFilter {
 
-    final private TokenServiceClient tokenServiceClient;
-
-    final UserTokenFilterAddon configuration;
+    private final TokenServiceClient tokenServiceClient;
+    private final UserTokenFilterAddon configuration;
 
     @Inject
     public UserTokenFilter(TokenServiceClient tokenServiceClient, UserTokenFilterAddon configuration) {
@@ -39,45 +38,44 @@ public class UserTokenFilter implements ContainerRequestFilter {
     }
 
     @Override
-    @SuppressWarnings("squid:S1166")
     public void filter(ContainerRequestContext requestContext) throws IOException {
-
         String usertokenId = requestContext.getHeaderString(Constants.USERTOKENID_HEADER);
 
-
-        if (! Strings.isNullOrEmpty(usertokenId)) {
-            UserToken userToken;
-            try {
-                userToken = tokenServiceClient.getUserTokenById(usertokenId);
-            } catch (TokenServiceClientException e) {
-                throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid", e);
-            }
-            if (configuration.requireUserTokenByDefault && userToken == null) {
-                throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
-            } else if (userToken != null) {
-                UibBruker bruker = UibBruker.ofUserToken(userToken);
-                if (bruker == null) {
-                    throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not authorized");
-                }
-                List<String> tilgangerList = Lists.newArrayList();
-                tilgangerList.addAll(configuration.userTokenTilganger.apply(userToken));
-                tilgangerList.addAll(configuration.uibBrukerTilganger.apply(bruker));
-                tilgangerList.addAll(configuration.rolleGirTilgang.keySet().stream()
-                        .filter(tilgang ->
-                                bruker.roller.stream().anyMatch(configuration.rolleGirTilgang.get(tilgang))
-                        ).collect(Collectors.toSet())
-                );
-                configuration.uibBrukerTilganger.apply(bruker);
-                ImmutableSet<String> tilganger = ImmutableSet.copyOf(tilgangerList.stream()
-                        .filter(Objects::nonNull)
-                        .map(String::trim)
-                        .map(String::toUpperCase)
-                        .collect(Collectors.toList())
-                );
-
-                requestContext.setSecurityContext(new AutentiseringsContext(bruker, tilganger));
-            }
+        if (Strings.isNullOrEmpty(usertokenId)) {
+            return;
         }
+
+        UserToken userToken;
+        try {
+            userToken = tokenServiceClient.getUserTokenById(usertokenId);
+        } catch (TokenServiceClientException e) {
+            throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid", e);
+        }
+
+        UibBruker bruker = UibBruker.ofUserToken(userToken);
+        if (bruker == null) {
+            throw new RuntimeException("Kunne ikke konvertere UserTokenId '"+ usertokenId + "' (UserToken '" + userToken + "') til UibBruker");
+        }
+        ImmutableSet<String> tilganger = extractRolesAllowed(userToken, bruker);
+
+        requestContext.setSecurityContext(new AutentiseringsContext(bruker, tilganger));
+    }
+
+    private ImmutableSet<String> extractRolesAllowed(UserToken userToken, UibBruker bruker) {
+        List<String> tilgangerList = Lists.newArrayList();
+        tilgangerList.addAll(configuration.userTokenTilganger.apply(userToken));
+        tilgangerList.addAll(configuration.uibBrukerTilganger.apply(bruker));
+        tilgangerList.addAll(configuration.rolleGirTilgang.keySet().stream()
+                .filter(tilgang ->
+                        bruker.roller.stream().anyMatch(configuration.rolleGirTilgang.get(tilgang))
+                ).collect(Collectors.toSet())
+        );
+        return ImmutableSet.copyOf(tilgangerList.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .map(String::toUpperCase)
+                .collect(Collectors.toList())
+        );
     }
 
     @AllArgsConstructor
