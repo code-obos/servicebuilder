@@ -4,3 +4,4 @@ Før release 3.0:
 -Kallende applikasjon med i headere for klient
 -Rename Addon.finalize til initialize
 -ApplicationTokenFilter: Mulighet for å kunne gi tilgang til hele applikasjonsserier istedenfor bare til en og en applikasjon
+-Hente versjon for klient fra MANIFEST-filen (kode for dette ligger i Util/utilWebService - develop branch)
