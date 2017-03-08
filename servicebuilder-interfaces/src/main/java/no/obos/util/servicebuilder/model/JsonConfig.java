@@ -18,5 +18,7 @@ public interface JsonConfig extends Supplier<ObjectMapper> {
             .registerModule(new GuavaModule())
             .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
             .enable(SerializationFeature.INDENT_OUTPUT)
-            .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES);
+            .disable(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES)
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            ;
 }
