@@ -23,7 +23,7 @@ public class ExceptionMapperAddonTest {
     TestService.Resource testService = mock(TestService.Resource.class);
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
             .bind(testService, TestService.Resource.class)
-            .addon(ExceptionMapperAddon.defaults.plusStacktraceConfig(RuntimeException.class, false));
+            .addon(ExceptionMapperAddon.defaults.stacktraceConfig(RuntimeException.class, false));
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
     @Test

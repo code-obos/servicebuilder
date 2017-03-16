@@ -46,21 +46,21 @@ public class JerseyClientAddon implements Addon {
     public static final String CONFIG_KEY_URL = "service.url";
 
     public final ServiceDefinition serviceDefinition;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final URI uri;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean forwardUsertoken;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean apptoken;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String apiPrefix;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean monitorIntegration;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean targetThrowsExceptions;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean addApiVersionToPath;
     @Wither(AccessLevel.PRIVATE)
     public final Supplier<String> appTokenIdSupplier;
@@ -84,7 +84,7 @@ public class JerseyClientAddon implements Addon {
             uri = UriBuilder.fromUri(uri).path("s" + serviceDefinition.getVersion()).build();
         }
         return this
-                .withUri(uri);
+                .uri(uri);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class JerseyClientAddon implements Addon {
                         this.getClass(),
                         ApplicationTokenIdAddon.class,
                         "Missing application id source provider for jerseyclientAddon. "
-                                + "Either disable appliation token id usage (.withApptoken(false)), "
+                                + "Either disable appliation token id usage (.apptoken(false)), "
                                 + "provide an appTokenIdSupplier manually (.withApplicationTokenIdSource(<something>) "
                                 + "or use an ApplicationTokenIdAddon (e.g. TokenServiceAddon)");
             }
@@ -234,4 +234,21 @@ public class JerseyClientAddon implements Addon {
         public final Client client;
         StubGenerator generator;
     }
+
+
+    public JerseyClientAddon uri(URI uri) {return withUri(uri);}
+
+    public JerseyClientAddon forwardUsertoken(boolean forwardUsertoken) {return withForwardUsertoken(forwardUsertoken);}
+
+    public JerseyClientAddon apptoken(boolean apptoken) {return withApptoken(apptoken);}
+
+    public JerseyClientAddon apiPrefix(String apiPrefix) {return withApiPrefix(apiPrefix);}
+
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return withClientConfigBase(clientConfigBase);}
+
+    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return withMonitorIntegration(monitorIntegration);}
+
+    public JerseyClientAddon targetThrowsExceptions(boolean targetThrowsExceptions) {return withTargetThrowsExceptions(targetThrowsExceptions);}
+
+    public JerseyClientAddon addApiVersionToPath(boolean addApiVersionToPath) {return withAddApiVersionToPath(addApiVersionToPath);}
 }

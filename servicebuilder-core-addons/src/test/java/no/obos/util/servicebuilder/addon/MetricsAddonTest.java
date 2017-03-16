@@ -3,8 +3,6 @@ package no.obos.util.servicebuilder.addon;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunnerJetty;
-import no.obos.util.servicebuilder.addon.JerseyClientAddon;
-import no.obos.util.servicebuilder.addon.MetricsAddon;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
@@ -50,7 +48,7 @@ public class MetricsAddonTest {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(MetricsAddon.defaults)
-                .addon(JerseyClientAddon.defaults(TestService.instance).withApptoken(false));
+                .addon(JerseyClientAddon.defaults(TestService.instance).apptoken(false));
         Response call = TestServiceRunnerJetty
                 .defaults(serviceConfig)
                 .property("test.service.url", "http://no.way.this.is.a.valid.address.zzz:23456")

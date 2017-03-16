@@ -46,10 +46,10 @@ public class JerseyClientAddonTest {
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withApptoken(false)
-                        .withApiPrefix(null)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
+                        .apiPrefix(null)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when
@@ -72,11 +72,11 @@ public class JerseyClientAddonTest {
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withApptoken(false)
-                        .withApiPrefix(null)
-                        .withForwardUsertoken(true)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
+                        .apiPrefix(null)
+                        .forwardUsertoken(true)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when
@@ -102,9 +102,9 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withApiPrefix(null)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .apiPrefix(null)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when
@@ -132,8 +132,8 @@ public class JerseyClientAddonTest {
                 .bind(ApiImpl.class, Api.class)
                 .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when
@@ -157,9 +157,9 @@ public class JerseyClientAddonTest {
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withApptoken(false)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when
@@ -184,9 +184,9 @@ public class JerseyClientAddonTest {
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .withClientConfigBase(nestedRuntime.clientConfig)
-                        .withApptoken(false)
-                        .withUri(nestedRuntime.uri)
+                        .clientConfigBase(nestedRuntime.clientConfig)
+                        .apptoken(false)
+                        .uri(nestedRuntime.uri)
                 );
 
         //when

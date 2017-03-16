@@ -27,7 +27,7 @@ public class JerseyClientAddonErrorHandlingTest {
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
             ServiceConfig.defaults(TestService.instance)
                     .addon(ExceptionMapperAddon.defaults
-                            .plusStacktraceConfig(RuntimeException.class, false)
+                            .stacktraceConfig(RuntimeException.class, false)
                     )
                     .bind(resource, Resource.class)
     );

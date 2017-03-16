@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.log.ObosLogFilter;
+import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.eclipse.jetty.servlet.FilterHolder;
 
@@ -26,7 +26,7 @@ public class ObosLogFilterAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<DispatcherType> dispatches;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String pathSpec;
 
     public static ObosLogFilterAddon defaults = new ObosLogFilterAddon(ImmutableList.of("/swagger.json"), ImmutableList.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC), null);
@@ -50,11 +50,13 @@ public class ObosLogFilterAddon implements Addon {
                 .addFilter(logFilterHolder, pathSpeckToUse, EnumSet.copyOf(dispatches));
     }
 
-    public ObosLogFilterAddon plusBlacklisted(String blacklist) {
+    public ObosLogFilterAddon blacklist(String blacklist) {
         return withBlacklist(GuavaHelper.plus(this.blacklist, blacklist));
     }
 
-    public ObosLogFilterAddon plusDispatch(DispatcherType dispatcherType) {
+    public ObosLogFilterAddon dispatch(DispatcherType dispatcherType) {
         return withDispatches(GuavaHelper.plus(dispatches, dispatcherType));
     }
+
+    public ObosLogFilterAddon pathSpec(String pathSpec) {return withPathSpec(pathSpec);}
 }

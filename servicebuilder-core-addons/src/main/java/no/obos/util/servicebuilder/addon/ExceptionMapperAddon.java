@@ -58,5 +58,5 @@ public class ExceptionMapperAddon implements Addon {
         });
     }
 
-    public ExceptionMapperAddon plusStacktraceConfig(Class<?> key, boolean value) {return this.withStacktraceConfig(GuavaHelper.plus(stacktraceConfig, key, value));}
+    public ExceptionMapperAddon stacktraceConfig(Class<?> key, boolean value) {return this.withStacktraceConfig(GuavaHelper.plus(stacktraceConfig, key, value));}
 }

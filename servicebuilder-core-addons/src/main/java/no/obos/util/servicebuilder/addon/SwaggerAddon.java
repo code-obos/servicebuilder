@@ -18,9 +18,9 @@ public class SwaggerAddon implements Addon {
     public static final String CONFIG_KEY_API_BASEURL = "api.baseurl";
     public final String pathSpec = "/swagger";
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String apiBasePath;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String apiVersion;
 
     public static SwaggerAddon defaults = new SwaggerAddon(null, null);
@@ -29,8 +29,8 @@ public class SwaggerAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_API_BASEURL);
         return this
-                .withApiBasePath(properties.get(CONFIG_KEY_API_BASEURL))
-                .withApiVersion(properties.get(Constants.CONFIG_KEY_SERVICE_VERSION));
+                .apiBasePath(properties.get(CONFIG_KEY_API_BASEURL))
+                .apiVersion(properties.get(Constants.CONFIG_KEY_SERVICE_VERSION));
     }
 
     @Override
@@ -54,4 +54,8 @@ public class SwaggerAddon implements Addon {
         apiDocServletHolder.setInitOrder(2); //NOSONAR
         jettyServer.getServletContext().addServlet(apiDocServletHolder, pathSpec);
     }
+
+    public SwaggerAddon apiBasePath(String apiBasePath) {return withApiBasePath(apiBasePath);}
+
+    public SwaggerAddon apiVersion(String apiVersion) {return withApiVersion(apiVersion);}
 }
