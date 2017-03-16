@@ -14,7 +14,7 @@ class ServiceConfigInitializer {
         List<Addon> unFinalizedAddons = sortAddonList(serviceConfig.addons);
         ServiceConfig withFinalizedAddons = serviceConfig.withAddons(ImmutableList.of());
         for (Addon addon : unFinalizedAddons) {
-            withFinalizedAddons = withFinalizedAddons.addon(addon.finalize(withFinalizedAddons));
+            withFinalizedAddons = withFinalizedAddons.addon(addon.initialize(withFinalizedAddons));
         }
         return withFinalizedAddons;
     }
@@ -24,7 +24,7 @@ class ServiceConfigInitializer {
         List<Addon> sortedList = Lists.newArrayList();
         while (unSortedList.size() > 0) {
             List<Addon> addonsWithNoDependencies = unSortedList.stream().filter(possiblyDependent -> {
-                Set<Class<?>> dependentOnSet = possiblyDependent.finalizeAfter();
+                Set<Class<?>> dependentOnSet = possiblyDependent.initializeAfter();
                 return dependentOnSet.stream().noneMatch(hasDependenciesInList(unSortedList));
             }).collect(Collectors.toList());
             sortedList.addAll(addonsWithNoDependencies);

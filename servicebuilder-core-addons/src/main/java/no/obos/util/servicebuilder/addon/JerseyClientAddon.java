@@ -88,7 +88,7 @@ public class JerseyClientAddon implements Addon {
     }
 
     @Override
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         Supplier<String> appTokenIdSupplier = null;
         if (this.apptoken && this.appTokenIdSupplier == null) {
             ApplicationTokenIdAddon appTokenIdSource = serviceConfig.addonInstance(ApplicationTokenIdAddon.class);
@@ -226,7 +226,7 @@ public class JerseyClientAddon implements Addon {
         }
     }
 
-    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(ApplicationTokenIdAddon.class);}
+    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(ApplicationTokenIdAddon.class);}
 
 
     @AllArgsConstructor

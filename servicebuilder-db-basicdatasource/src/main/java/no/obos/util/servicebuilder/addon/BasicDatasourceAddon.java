@@ -52,7 +52,7 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, null);
 
     @Override
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setUrl(url);
         dataSource.setDriverClassName(driverClassName);

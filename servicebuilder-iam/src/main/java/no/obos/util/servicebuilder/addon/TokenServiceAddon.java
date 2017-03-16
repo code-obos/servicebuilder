@@ -41,7 +41,7 @@ public class TokenServiceAddon implements ApplicationTokenIdAddon, Addon {
     public static TokenServiceAddon defaults = new TokenServiceAddon(null, null, null, null, null);
 
     @Inject
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         TokenServiceClient tokenServiceClient =
                 this.tokenServiceClient == null
                         ? new TokenServiceHttpClient(new WebClientImpl(url), appId, appSecret)

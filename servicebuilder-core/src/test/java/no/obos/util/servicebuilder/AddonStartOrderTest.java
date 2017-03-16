@@ -21,14 +21,14 @@ public class AddonStartOrderTest {
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
                 .addon(new Addon() {
                     @Override
-                    public Addon finalize(ServiceConfig serviceConfig) {
+                    public Addon initialize(ServiceConfig serviceConfig) {
                         startOrder.add(1);
                         return this;
                     }
                 })
                 .addon(new Addon() {
                     @Override
-                    public Addon finalize(ServiceConfig serviceConfig) {
+                    public Addon initialize(ServiceConfig serviceConfig) {
                         startOrder.add(2);
                         return this;
                     }
@@ -47,20 +47,20 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig serviceConfig) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Dependent implements Addon {
             @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig serviceConfig) {
                 startOrder.add(2);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
@@ -81,31 +81,31 @@ public class AddonStartOrderTest {
 
         class Dependee implements Addon {
             @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig serviceConfig) {
                 startOrder.add(1);
                 return this;
             }
         }
         class Immediate implements Addon {
             @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig serviceConfig) {
                 startOrder.add(2);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
         class Dependent implements Addon {
             @Override
-            public Addon finalize(ServiceConfig serviceConfig) {
+            public Addon initialize(ServiceConfig serviceConfig) {
                 startOrder.add(3);
                 return this;
             }
 
             @Override
-            public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
+            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
         }
 
         ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())

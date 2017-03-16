@@ -51,7 +51,7 @@ public class ApplicationTokenFilterAddon implements Addon {
 
 
     @Override
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         if (swaggerImplicitHeaders && ! serviceConfig.isAddonPresent(SwaggerAddon.class)) {
             throw new DependenceException(this.getClass(), SwaggerAddon.class, "swaggerImplicitHeaders specified, SwaggerAddon missing");
         }
@@ -119,5 +119,5 @@ public class ApplicationTokenFilterAddon implements Addon {
     public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return withFasttrackFilter(fasttrackFilter);}
 
     @Override
-    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
+    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
 }

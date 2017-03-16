@@ -57,7 +57,7 @@ public class UserTokenFilterAddon implements Addon {
     public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableMap.of());
 
     @Override
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         if (swaggerImplicitHeaders && ! serviceConfig.isAddonPresent(SwaggerAddon.class)) {
             throw new DependenceException(this.getClass(), SwaggerAddon.class, "swaggerImplicitHeaders specified, SwaggerAddon missing");
         }
@@ -91,7 +91,7 @@ public class UserTokenFilterAddon implements Addon {
 
 
     @Override
-    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
+    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
 
     public UserTokenFilterAddon requireUserTokenByDefault(boolean requireUserTokenByDefault) {return withRequireUserTokenByDefault(requireUserTokenByDefault);}
 

@@ -36,7 +36,7 @@ public class JdbiAddon implements Addon {
             new JdbiAddon(null, null, ImmutableList.of());
 
     @Override
-    public Addon finalize(ServiceConfig serviceConfig) {
+    public Addon initialize(ServiceConfig serviceConfig) {
         DataSourceAddon dataSourceAddon = serviceConfig.addonInstanceNamed(DataSourceAddon.class, name);
         if (dataSourceAddon == null) {
             if (name == null) {
@@ -100,7 +100,7 @@ public class JdbiAddon implements Addon {
 
 
     @Override
-    public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
+    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
 
     public JdbiAddon dao(Class<?> dao) {
         return withDaos(GuavaHelper.plus(daos, dao));
