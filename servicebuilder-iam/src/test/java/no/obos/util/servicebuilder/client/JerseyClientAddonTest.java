@@ -2,16 +2,17 @@ package no.obos.util.servicebuilder.client;
 
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
-import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.addon.JerseyClientAddon;
-import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceFull;
 import no.obos.util.servicebuilder.TestServiceFull.Controller;
 import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import no.obos.util.servicebuilder.addon.JerseyClientAddon;
+import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.addon.TokenServiceAddon;
+import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.jboss.logging.MDC;
 import org.junit.Test;
 
@@ -234,7 +235,7 @@ public class JerseyClientAddonTest {
     }
 
 
-    final ServiceDefinition serviceDefinition = ServiceDefinition.simple(Api.class);
+    final ServiceDefinition serviceDefinition = ServiceDefinitionUtil.simple(Api.class);
 
     TestServiceFull.Call getCall() {
         return TestServiceFull.Call.builder()

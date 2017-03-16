@@ -38,21 +38,19 @@ public class ServiceRunner {
     }
 
     public static ServiceRunner defaults(ServiceConfig serviceConfig, Class<?> versionedClass) {
-        String apiVersion = serviceConfig.serviceDefinition.getVersion();
-        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass, apiVersion);
+        PropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass);
         return new ServiceRunner(serviceConfig, properties);
     }
 
     public static ServiceRunner defaults(ServiceConfig serviceConfig) {
 
         Class<?> versionedClass;
-        if(serviceConfig.serviceDefinition.getClass().getCanonicalName() != null) {
+        if (serviceConfig.serviceDefinition.getClass().getCanonicalName() != null) {
             versionedClass = serviceConfig.serviceDefinition.getClass();
         } else {
             throw new RuntimeException("Could not find version from class. Please provide a static class in service project (e.g. Servicerunner.defaults(<serviceConfig>, Main.class)");
         }
-        String apiVersion = serviceConfig.serviceDefinition.getVersion();
-        AppConfigBackedPropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass, apiVersion);
+        AppConfigBackedPropertyProvider properties = AppConfigBackedPropertyProvider.fromJvmArgs(versionedClass);
         return new ServiceRunner(serviceConfig, properties);
     }
 

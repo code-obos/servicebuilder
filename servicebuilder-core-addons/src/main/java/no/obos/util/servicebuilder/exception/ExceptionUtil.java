@@ -4,8 +4,8 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.model.ExceptionDescription;
 import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.model.ExceptionDescription;
 import no.obos.util.servicebuilder.model.LogLevel;
 import no.obos.util.servicebuilder.model.ProblemResponse;
 import org.slf4j.Logger;
@@ -110,7 +110,7 @@ public class ExceptionUtil {
                 .type(problem.type)
                 .incidentReferenceId(problem.reference)
                 .build();
-        if(problem.context != null) {
+        if (problem.context != null) {
             problemResponse = problemResponse.toBuilder().context(problem.context).build();
         }
         String mediaType = getMediaType();
@@ -133,7 +133,7 @@ public class ExceptionUtil {
         if (! Strings.isNullOrEmpty(problem.internalMessage)) {
             sb.append(String.format("Additional info: %s\n", problem.internalMessage));
         }
-        sb.append("Context:\n");
+        sb.append("Incoming server headers:\n");
         sb.append(getContextDescription());
         if (problem.logStackTrace) {
             doLog(sb.toString(), problem.exception, problem.logLevel, problem.logger);

@@ -2,7 +2,7 @@ package no.obos.util.servicebuilder.addon;
 
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import org.junit.Test;
 import org.skife.jdbi.v2.sqlobject.Bind;
@@ -21,7 +21,7 @@ public class JdbiAddonTest {
     @Test
     public void runsWithJdbi() {
         List<Integer> expected = Lists.newArrayList(101, 202);
-        ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Api.class))
+        ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
                         .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")

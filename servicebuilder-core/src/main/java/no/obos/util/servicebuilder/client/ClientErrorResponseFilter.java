@@ -3,11 +3,13 @@ package no.obos.util.servicebuilder.client;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.obos.util.servicebuilder.exception.ExternalResourceException;
+import no.obos.util.servicebuilder.exception.ExternalResourceException.HttpResponseMetaData;
+import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
 import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.exception.ExternalResourceException;
-import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
+import no.obos.util.servicebuilder.util.FormatUtil;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -20,6 +22,7 @@ import javax.ws.rs.core.Response;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Priority(Priorities.AUTHENTICATION)
@@ -44,30 +47,54 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
     {
         // for non-200 response, deal with the custom error messages
         if (! Response.Status.Family.SUCCESSFUL.equals(responseContext.getStatusInfo().getFamily())) {
-            MetaData.MetaDataBuilder metaData = MetaData.builder()
-                    .httpStatus(responseContext.getStatus())
+            MetaData metaData = MetaData.builder()
+                    .httpRequestMetaData(getRequestMetaData(requestContext))
+                    .httpResponseMetaData(getResponseMetaData(responseContext))
                     .gotAnswer(true)
-                    .targetUrl(requestContext.getUri().toString())
                     .targetName(serviceDefinition.getName())
-                    .context("response_headers", responseContext.getHeaders().toString());
-            if (responseContext.hasEntity()) {
-                // setUp the "real" error message
-                String entity;
-                try (BufferedReader buffer = new BufferedReader(new InputStreamReader(responseContext.getEntityStream()))) {
-                    entity = buffer.lines().collect(Collectors.joining("\n"));
-                }
-                try {
-                    ProblemResponse error = mapper.readValue(entity, ProblemResponse.class);
-                    metaData.nestedProblemResponce(error)
-                            .incidentReferenceId(error.incidentReferenceId);
-                } catch (JsonParseException | JsonMappingException e) {
-                    //ignore
-                }
+                    .build();
+            if (Response.Status.NOT_FOUND.getStatusCode() == responseContext.getStatus()) {
+                throw new ExternalResourceNotFoundException(metaData);
             }
-            if(Response.Status.NOT_FOUND.getStatusCode() == responseContext.getStatus()) {
-                throw new ExternalResourceNotFoundException(metaData.build());
-            }
-            throw new ExternalResourceException(metaData.build());
+            throw new ExternalResourceException(metaData);
         }
+    }
+
+    private HttpResponseMetaData getResponseMetaData(ClientResponseContext responseContext) throws IOException {
+        Map<String, String> headers = FormatUtil.MultiMapAsStringMap(responseContext.getHeaders());
+        HttpResponseMetaData.HttpResponseMetaDataBuilder builder = HttpResponseMetaData.builder()
+                .status(responseContext.getStatus())
+                .headers(headers);
+
+        if (responseContext.hasEntity()) {
+            String body;
+            // setUp the "real" error message
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(responseContext.getEntityStream()))) {
+                body = buffer.lines().collect(Collectors.joining("\n"));
+            }
+            try {
+                ProblemResponse problem = mapper.readValue(body, ProblemResponse.class);
+                if (problem != null) {
+                    builder.problemResponse(problem)
+                            .incidentReferenceId(problem.incidentReferenceId);
+                }
+            } catch (JsonParseException | JsonMappingException e) {
+                //ignore
+            }
+
+            if (builder.build().problemResponse == null) {
+                builder.response(body);
+            }
+        }
+
+        return builder.build();
+    }
+
+    private ExternalResourceException.HttpRequestMetaData getRequestMetaData(ClientRequestContext requestContext) {
+        Map<String, String> headers = FormatUtil.MultiMapAsStringMap(requestContext.getStringHeaders());
+        return ExternalResourceException.HttpRequestMetaData.builder()
+                .url(requestContext.getUri().toString())
+                .headers(headers)
+                .build();
     }
 }

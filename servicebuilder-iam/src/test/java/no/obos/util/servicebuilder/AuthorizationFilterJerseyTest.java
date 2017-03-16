@@ -9,7 +9,6 @@ import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.UserTokenRequired;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.usertoken.UibBruker;
 import org.junit.Assert;
 import org.junit.Test;
@@ -36,7 +35,7 @@ public class AuthorizationFilterJerseyTest {
     static final String javaxRole = "Mr. Tilgang";
     static final String uibRoleNamePrioritized = "superbruker";
     static final String uibRoleNameUnprioritized = "middelmådigbruker";
-    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Resource.class))
+    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Resource.class))
             .bind(ResourceImpl.class, Resource.class)
             .addon(ExceptionMapperAddon.defaults)
             .addon(TokenServiceAddon.defaults
@@ -89,7 +88,7 @@ public class AuthorizationFilterJerseyTest {
                     .oneShot(Resource.class, Resource::getProtectedWithRoleResource);
             Assert.fail();
         } catch (ExternalResourceException ex) {
-            assertEquals(Integer.valueOf(403), ex.getMetaData().httpStatus);
+            assertEquals(403, ex.getMetaData().httpResponseMetaData.status);
         }
     }
 
@@ -100,7 +99,7 @@ public class AuthorizationFilterJerseyTest {
                     .oneShot(Resource.class, Resource::getProtectedResource);
             Assert.fail();
         } catch (ExternalResourceException ex) {
-            assertEquals(Integer.valueOf(401), ex.getMetaData().httpStatus);
+            assertEquals(401, ex.getMetaData().httpResponseMetaData.status);
         }
     }
 

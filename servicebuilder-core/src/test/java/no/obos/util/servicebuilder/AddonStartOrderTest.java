@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -14,11 +13,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AddonStartOrderTest {
 
+    public static class MyServiceDefinition implements ServiceDefinition {
+        @Override
+        public String getName() {
+            return "testService";
+        }
+
+        @Override
+        public List<Class> getResources() {
+            return Lists.newArrayList();
+        }
+    }
+
+
+    static final MyServiceDefinition serviceDefinition = new MyServiceDefinition();
+
     @Test
     public void addons_are_started_in_config_order_when_no_order_specified() {
         //Given
         final List<Integer> startOrder = Lists.newArrayList();
-        ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
+        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
                 .addon(new Addon() {
                     @Override
                     public Addon initialize(ServiceConfig serviceConfig) {
@@ -63,7 +77,7 @@ public class AddonStartOrderTest {
             public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Dependee.class);}
         }
 
-        ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
+        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
                 .addon(new Dependent())
                 .addon(new Dependee());
 
@@ -108,7 +122,7 @@ public class AddonStartOrderTest {
             public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
         }
 
-        ServiceConfig config = ServiceConfig.defaults(ServiceDefinition.simple())
+        ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
                 .addon(new Dependent())
                 .addon(new Dependee())
                 .addon(new Immediate());

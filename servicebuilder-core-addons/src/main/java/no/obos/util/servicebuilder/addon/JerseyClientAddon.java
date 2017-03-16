@@ -18,6 +18,7 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.util.ApiVersionUtil;
 import no.obos.util.servicebuilder.util.Hk2Helper;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
@@ -65,10 +66,13 @@ public class JerseyClientAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final Supplier<String> appTokenIdSupplier;
     @Wither(AccessLevel.PRIVATE)
+    public final String apiVersion;
+    @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
-        return new JerseyClientAddon(serviceDefinition, null, false, true, "api", null, true, true, true, null, null);
+        String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
+        return new JerseyClientAddon(serviceDefinition, null, false, true, "api", null, true, true, true, null, apiVersion, null);
     }
 
 
@@ -80,8 +84,8 @@ public class JerseyClientAddon implements Addon {
         properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
 
         URI uri = URI.create(properties.get(prefix + CONFIG_KEY_URL));
-        if(addApiVersionToPath) {
-            uri = UriBuilder.fromUri(uri).path("s" + serviceDefinition.getVersion()).build();
+        if (addApiVersionToPath) {
+            uri = UriBuilder.fromUri(uri).path("s" + apiVersion).build();
         }
         return this
                 .uri(uri);
@@ -163,7 +167,7 @@ public class JerseyClientAddon implements Addon {
                     .apiPath(configuration.apiPrefix);
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            if(userToken != null) {
+            if (userToken != null) {
                 generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
             }
 
@@ -209,7 +213,7 @@ public class JerseyClientAddon implements Addon {
                     .throwExceptionForErrors(true);
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            if(userToken != null) {
+            if (userToken != null) {
                 generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
             }
 

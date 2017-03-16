@@ -1,8 +1,9 @@
 package no.obos.util.servicebuilder.client;
 
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.EmbeddedJerseyServer;
 import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.ServiceDefinitionUtil;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.Assert;
@@ -67,7 +68,7 @@ public class StubGeneratorTest {
     }
 
 
-    final ServiceDefinition serviceDefinition = ServiceDefinition.simple(Api.class);
+    final ServiceDefinition serviceDefinition = ServiceDefinitionUtil.simple(Api.class);
 
     final ResourceConfig resourceConfig = new JerseyConfig(serviceDefinition)
             .addBinder(binder -> binder.bind(ApiImpl.class).to(Api.class))

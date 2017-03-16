@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.addon;
 
-import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
@@ -9,6 +8,7 @@ import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
+import no.obos.util.servicebuilder.model.ProblemResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,25 +43,34 @@ public class JerseyClientAddonErrorHandlingTest {
                     .oneShot(Resource.class, Resource::get);
             Assert.fail();
         } catch (ExternalResourceException actual) {
-            assertThat(actual.getMetaData().incidentReferenceId).isNotEmpty();
-            assertThat(actual.getMetaData().incidentReferenceId).isEqualTo(actual.getMetaData().nestedProblemResponce.incidentReferenceId);
+            String incidentReferenceId = actual.getMetaData().httpResponseMetaData.problemResponse.incidentReferenceId;
+            assertThat(incidentReferenceId).isNotEmpty();
             assertThat(actual.getMetaData()).isEqualToComparingFieldByFieldRecursively(
                     MetaData.builder()
                             .gotAnswer(true)
-                            .incidentReferenceId(actual.getMetaData().incidentReferenceId)
-                            .targetName("test")
-                            .targetUrl("http://localhost:0/path")
-                            .httpStatus(500)
-                            .nestedProblemResponce(ProblemResponse.builder()
-                                    .title("Internal Server Error")
-                                    .detail("Det har oppstått en intern feil")
-                                    .incidentReferenceId(actual.getMetaData().incidentReferenceId)
-                                    .status(500)
-                                    .suggestedUserMessageInDetail(false)
+                            .httpRequestMetaData(ExternalResourceException.HttpRequestMetaData.builder()
+                                    .url("http://localhost:0/path")
+                                    .header("Accept", "application/json")
+                                    .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
                                     .build()
                             )
-                            .context("response_headers", "{Content-Type=[application/problem+json], Content-Length=[250]}")
-                            .build());
+                            .httpResponseMetaData(ExternalResourceException.HttpResponseMetaData.builder()
+                                    .problemResponse(ProblemResponse.builder()
+                                            .title("Internal Server Error")
+                                            .detail("Det har oppstått en intern feil")
+                                            .incidentReferenceId(incidentReferenceId)
+                                            .status(500)
+                                            .suggestedUserMessageInDetail(false)
+                                            .build()
+                                    )
+                                    .incidentReferenceId(incidentReferenceId)
+                                    .status(500)
+                                    .header("Content-Length", "250")
+                                    .header("Content-Type", "application/problem+json")
+                                    .build()
+                            )
+                            .targetName("test")
+            );
         }
     }
 

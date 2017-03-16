@@ -2,7 +2,7 @@ package no.obos.util.servicebuilder.addon;
 
 import io.swagger.annotations.Api;
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.TestServiceRunner;
@@ -51,7 +51,7 @@ public class JerseyClientAddonTest {
                     .bind(nestedResourceMock, Resource.class)
     );
 
-    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinition.simple("outer", "1.0", OuterResource.class))
+    ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", OuterResource.class))
             .addon(ExceptionMapperAddon.defaults)
             .bind(OuterResourceImpl.class, OuterResource.class);
 

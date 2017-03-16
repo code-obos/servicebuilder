@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.ServiceConfig;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import org.apache.commons.dbutils.QueryRunner;
 import org.junit.Test;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class QueryRunnerAddonTest {
     @Test
     public void runsWithQueryRunner() {
-        ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Api.class))
+        ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(H2InMemoryDatasourceAddon.defaults
                         .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
