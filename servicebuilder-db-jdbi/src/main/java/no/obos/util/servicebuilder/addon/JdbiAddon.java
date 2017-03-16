@@ -5,10 +5,10 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.exception.DependenceException;
+import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
@@ -25,9 +25,9 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class JdbiAddon implements Addon {
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String name;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final DBI dbi;
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Class<?>> daos;
@@ -47,7 +47,7 @@ public class JdbiAddon implements Addon {
         }
         DataSource dataSource = dataSourceAddon.getDataSource();
         DBI dbi = new DBI(dataSource);
-        return this.withDbi(dbi);
+        return this.dbi(dbi);
     }
 
     @Override
@@ -102,7 +102,11 @@ public class JdbiAddon implements Addon {
     @Override
     public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
 
-    public JdbiAddon plusDao(Class<?> dao) {
+    public JdbiAddon dao(Class<?> dao) {
         return withDaos(GuavaHelper.plus(daos, dao));
     }
+
+    public JdbiAddon name(String name) {return withName(name);}
+
+    public JdbiAddon dbi(DBI dbi) {return withDbi(dbi);}
 }

@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.ServiceConfig;
+import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;
@@ -30,23 +30,23 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     public static final String CONFIG_KEY_DB_PASSWORD = "db.password";
     public static final String CONFIG_KEY_DB_VALIDATION_QUERY = "db.validationQuery";
 
-    @Wither
     @Getter
+    @Wither(AccessLevel.PRIVATE)
     public final String name;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String url;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String driverClassName;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String username;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String password;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String validationQuery;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean monitorIntegration;
-    @Wither
     @Getter
+    @Wither(AccessLevel.PRIVATE)
     public final DataSource dataSource;
 
     public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, null, true, null);
@@ -68,11 +68,11 @@ public class BasicDatasourceAddon implements DataSourceAddon {
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
         properties.failIfNotPresent(prefix + CONFIG_KEY_DB_URL, prefix + CONFIG_KEY_DB_USERNAME, prefix + CONFIG_KEY_DB_PASSWORD, prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME, prefix + CONFIG_KEY_DB_VALIDATION_QUERY);
         return this
-                .withUrl(properties.get(prefix + CONFIG_KEY_DB_URL))
-                .withUsername(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
-                .withPassword(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
-                .withDriverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
-                .withValidationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
+                .url(properties.get(prefix + CONFIG_KEY_DB_URL))
+                .username(properties.get(prefix + CONFIG_KEY_DB_USERNAME))
+                .password(properties.get(prefix + CONFIG_KEY_DB_PASSWORD))
+                .driverClassName(properties.get(prefix + CONFIG_KEY_DB_DRIVER_CLASS_NAME))
+                .validationQuery(properties.get(prefix + CONFIG_KEY_DB_VALIDATION_QUERY));
     }
 
 
@@ -98,4 +98,18 @@ public class BasicDatasourceAddon implements DataSourceAddon {
             ObosHealthCheckRegistry.registerDataSourceCheck("Database" + dataSourceName + ": " + url, dataSource, validationQuery);
         }
     }
+
+    public BasicDatasourceAddon name(String name) {return withName(name);}
+
+    public BasicDatasourceAddon url(String url) {return withUrl(url);}
+
+    public BasicDatasourceAddon driverClassName(String driverClassName) {return withDriverClassName(driverClassName);}
+
+    public BasicDatasourceAddon username(String username) {return withUsername(username);}
+
+    public BasicDatasourceAddon password(String password) {return withPassword(password);}
+
+    public BasicDatasourceAddon validationQuery(String validationQuery) {return withValidationQuery(validationQuery);}
+
+    public BasicDatasourceAddon monitorIntegration(boolean monitorIntegration) {return withMonitorIntegration(monitorIntegration);}
 }

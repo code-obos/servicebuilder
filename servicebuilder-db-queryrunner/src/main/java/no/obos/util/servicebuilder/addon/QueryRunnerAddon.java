@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.exception.DependenceException;
+import no.obos.util.servicebuilder.model.Addon;
 import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
@@ -15,7 +15,7 @@ import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class QueryRunnerAddon implements Addon {
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String name;
     @Wither(AccessLevel.PRIVATE)
     QueryRunner queryRunner;
@@ -45,4 +45,6 @@ public class QueryRunnerAddon implements Addon {
 
     @Override
     public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
+
+    public QueryRunnerAddon name(String name) {return withName(name);}
 }

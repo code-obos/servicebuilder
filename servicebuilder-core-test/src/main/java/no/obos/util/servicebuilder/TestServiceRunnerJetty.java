@@ -25,13 +25,13 @@ public class TestServiceRunnerJetty {
     public static final String DEFAULT_CONTEXTPATH = "/test/v" + DEFAULT_VERSION;
 
     public final ServiceConfig serviceConfig;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final PropertyMap propertyMap;
 
     public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
@@ -111,6 +111,14 @@ public class TestServiceRunnerJetty {
     }
 
 
-    public TestServiceRunnerJetty property(String key, String value) {return withPropertyMap(this.propertyMap.put(key, value));}
+    public TestServiceRunnerJetty property(String key, String value) {return propertyMap(this.propertyMap.put(key, value));}
 
+
+    public TestServiceRunnerJetty clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return withClientConfigurator(clientConfigurator);}
+
+    public TestServiceRunnerJetty stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+
+    public TestServiceRunnerJetty targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
+
+    public TestServiceRunnerJetty propertyMap(PropertyMap propertyMap) {return withPropertyMap(propertyMap);}
 }

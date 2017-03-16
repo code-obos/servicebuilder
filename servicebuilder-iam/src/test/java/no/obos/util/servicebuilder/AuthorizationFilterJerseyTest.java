@@ -40,11 +40,11 @@ public class AuthorizationFilterJerseyTest {
             .bind(ResourceImpl.class, Resource.class)
             .addon(ExceptionMapperAddon.defaults)
             .addon(TokenServiceAddon.defaults
-                    .withTokenServiceClient(tokenServiceClient)
+                    .tokenServiceClient(tokenServiceClient)
             )
             .addon(UserTokenFilterAddon.defaults
-                    .withSwaggerImplicitHeaders(false)
-                    .plusRolleGirTilgang(javaxRole, uibRolle -> uibRoleNamePrioritized.equalsIgnoreCase(uibRolle.navn))
+                    .swaggerImplicitHeaders(false)
+                    .rolleGirTilgang(javaxRole, uibRolle -> uibRoleNamePrioritized.equalsIgnoreCase(uibRolle.navn))
             );
 
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
@@ -57,7 +57,7 @@ public class AuthorizationFilterJerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameUnprioritized));
 
         String actual = testServiceRunner
-                .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
+                .stubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                 .oneShot(Resource.class, Resource::getProtectedResource);
 
         Assert.assertEquals("adolf", actual);
@@ -70,7 +70,7 @@ public class AuthorizationFilterJerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNamePrioritized));
 
         String actual = testServiceRunner
-                .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
+                .stubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                 .oneShot(Resource.class, Resource::getProtectedWithRoleResource);
 
         Assert.assertEquals("adolf", actual);
@@ -85,7 +85,7 @@ public class AuthorizationFilterJerseyTest {
 
         try {
             testServiceRunner
-                    .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
+                    .stubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                     .oneShot(Resource.class, Resource::getProtectedWithRoleResource);
             Assert.fail();
         } catch (ExternalResourceException ex) {

@@ -39,19 +39,19 @@ import java.util.function.Predicate;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserTokenFilterAddon implements Addon {
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean requireUserTokenByDefault;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean swaggerImplicitHeaders;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<UserToken, Collection<String>> userTokenTilganger;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<UibBruker, Collection<String>> uibBrukerTilganger;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ImmutableMap<String, Predicate<UibRolle>> rolleGirTilgang;
 
     public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableMap.of());
@@ -85,11 +85,19 @@ public class UserTokenFilterAddon implements Addon {
         }
     }
 
-    public UserTokenFilterAddon plusRolleGirTilgang(String rolle, Predicate<UibRolle> girRolleTilgang) {
+    public UserTokenFilterAddon rolleGirTilgang(String rolle, Predicate<UibRolle> girRolleTilgang) {
         return withRolleGirTilgang(GuavaHelper.plus(rolleGirTilgang, rolle, girRolleTilgang));
     }
 
 
     @Override
     public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
+
+    public UserTokenFilterAddon requireUserTokenByDefault(boolean requireUserTokenByDefault) {return withRequireUserTokenByDefault(requireUserTokenByDefault);}
+
+    public UserTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {return withSwaggerImplicitHeaders(swaggerImplicitHeaders);}
+
+    public UserTokenFilterAddon userTokenTilganger(Function<UserToken, Collection<String>> userTokenTilganger) {return withUserTokenTilganger(userTokenTilganger);}
+
+    public UserTokenFilterAddon uibBrukerTilganger(Function<UibBruker, Collection<String>> uibBrukerTilganger) {return withUibBrukerTilganger(uibBrukerTilganger);}
 }

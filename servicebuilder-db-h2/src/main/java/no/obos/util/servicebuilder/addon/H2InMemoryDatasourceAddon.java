@@ -7,9 +7,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
+import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.h2.jdbcx.JdbcConnectionPool;
 
@@ -26,11 +26,11 @@ import java.sql.SQLException;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class H2InMemoryDatasourceAddon implements DataSourceAddon {
 
-    @Wither
     @Getter
-    public final String name;
     @Wither(AccessLevel.PRIVATE)
+    public final String name;
     @Getter
+    @Wither(AccessLevel.PRIVATE)
     public final DataSource dataSource;
 
     @Wither(AccessLevel.PRIVATE)
@@ -70,7 +70,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
         );
     }
 
-    public H2InMemoryDatasourceAddon plusScript(String script) {
+    public H2InMemoryDatasourceAddon script(String script) {
         return withScripts(GuavaHelper.plus(scripts, script));
     }
 
@@ -78,5 +78,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
         String attributes = Joiner.on(", ").join(toInsert);
         return withScripts(GuavaHelper.plus(scripts, "INSERT INTO " + table + " VALUES (" + attributes + ");"));
     }
+
+    public H2InMemoryDatasourceAddon name(String name) {return withName(name);}
 
 }

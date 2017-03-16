@@ -21,10 +21,10 @@ public class QueryRunnerAddonTest {
         ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Api.class))
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(H2InMemoryDatasourceAddon.defaults
-                        .plusScript("CREATE TABLE testable (id INTEGER, name VARCHAR);")
+                        .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
                         .insert("testable", 101, "'Per'")
                         .insert("testable", 303, "'Espen'")
-                        .plusScript("INSERT INTO testable VALUES (202, 'Per');")
+                        .script("INSERT INTO testable VALUES (202, 'Per');")
                 )
                 .addon(QueryRunnerAddon.defaults)
                 .bind(ApiImpl.class, Api.class);

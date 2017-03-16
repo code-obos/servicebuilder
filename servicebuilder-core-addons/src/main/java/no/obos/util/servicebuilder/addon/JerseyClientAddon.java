@@ -210,7 +210,7 @@ public class JerseyClientAddon implements Addon {
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if(userToken != null) {
-                generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
+                generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
             }
 
             Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;

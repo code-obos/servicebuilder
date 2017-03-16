@@ -23,13 +23,13 @@ public class JdbiAddonTest {
         List<Integer> expected = Lists.newArrayList(101, 202);
         ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinition.simple(Api.class))
                 .addon(ExceptionMapperAddon.defaults)
-                .addon(H2InMemoryDatasourceAddon.defaults.withName("Banan")
-                        .plusScript("CREATE TABLE testable (id INTEGER, name VARCHAR);")
+                .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
+                        .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
                         .insert("testable", 101, "'Per'")
                         .insert("testable", 303, "'Espen'")
-                        .plusScript("INSERT INTO testable VALUES (202, 'Per');")
+                        .script("INSERT INTO testable VALUES (202, 'Per');")
                 )
-                .addon(JdbiAddon.defaults.plusDao(JdbiDto.class).withName("Banan"))
+                .addon(JdbiAddon.defaults.dao(JdbiDto.class).name("Banan"))
                 .bind(ApiImpl.class, Api.class);
         List<Integer> actual = TestServiceRunner.defaults(serviceConfig).oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(expected);

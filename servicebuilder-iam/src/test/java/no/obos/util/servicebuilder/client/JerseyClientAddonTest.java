@@ -81,7 +81,7 @@ public class JerseyClientAddonTest {
 
         //when
         TestServiceRunner.defaults(outerServiceConfig)
-                .withStubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
+                .stubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
                 .oneShot(Api.class, Api::call_with_stub);
 
         //then
@@ -100,7 +100,7 @@ public class JerseyClientAddonTest {
         TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
-                .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
+                .addon(TokenServiceAddon.defaults.tokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
                         .apiPrefix(null)
@@ -130,7 +130,7 @@ public class JerseyClientAddonTest {
         TokenServiceClient tokenServiceClient = mock(TokenServiceClient.class);
         ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
                 .bind(ApiImpl.class, Api.class)
-                .addon(TokenServiceAddon.defaults.withTokenServiceClient(tokenServiceClient))
+                .addon(TokenServiceAddon.defaults.tokenServiceClient(tokenServiceClient))
                 .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
                         .clientConfigBase(nestedRuntime.clientConfig)
                         .uri(nestedRuntime.uri)

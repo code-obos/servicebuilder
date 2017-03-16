@@ -27,15 +27,15 @@ import static java.util.function.Function.identity;
 public class TestServiceRunner {
     @Wither(AccessLevel.PRIVATE)
     public final ServiceConfig serviceConfig;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<ClientGenerator, ClientGenerator> clientConfigurator;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<StubGenerator, StubGenerator> stubConfigurator;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final PropertyMap propertyMap;
 
     public static TestServiceRunner defaults(ServiceConfig serviceConfig) {
@@ -50,9 +50,9 @@ public class TestServiceRunner {
         public final ClientConfig clientConfig;
         public final URI uri;
         public final Client client;
-        @Wither
+        @Wither(AccessLevel.PRIVATE)
         public final Function<StubGenerator, StubGenerator> stubConfigurator;
-        @Wither
+        @Wither(AccessLevel.PRIVATE)
         public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
@@ -76,6 +76,10 @@ public class TestServiceRunner {
         public ResourceConfig getResourceConfig() {
             return jerseyConfig.getResourceConfig();
         }
+
+        public Runtime stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+
+        public Runtime targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
     }
 
     public TestServiceRunner start() {
@@ -129,5 +133,14 @@ public class TestServiceRunner {
         }
     }
 
-    public TestServiceRunner property(String key, String value) {return withPropertyMap(this.propertyMap.put(key, value));}
+    public TestServiceRunner property(String key, String value) {return propertyMap(this.propertyMap.put(key, value));}
+
+
+    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return withClientConfigurator(clientConfigurator);}
+
+    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+
+    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
+
+    public TestServiceRunner propertyMap(PropertyMap propertyMap) {return withPropertyMap(propertyMap);}
 }

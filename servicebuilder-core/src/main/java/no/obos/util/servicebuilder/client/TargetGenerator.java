@@ -70,7 +70,7 @@ public class TargetGenerator {
         return target;
     }
 
-    public TargetGenerator plusHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+    public TargetGenerator header(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
 
     public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return withThrowExceptionForErrors(throwExceptionForErrors);}
 

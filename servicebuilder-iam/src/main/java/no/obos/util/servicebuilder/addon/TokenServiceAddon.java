@@ -27,13 +27,13 @@ public class TokenServiceAddon implements ApplicationTokenIdAddon, Addon {
     public static final String CONFIG_KEY_APP_ID = "tokenservice.app.id";
     public static final String CONFIG_KEY_APP_SECRET = "tokenservice.app.secret";
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String url;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String appId;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final String appSecret;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final TokenServiceClient tokenServiceClient;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
@@ -55,9 +55,9 @@ public class TokenServiceAddon implements ApplicationTokenIdAddon, Addon {
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_TOKENSERVICE_URL, CONFIG_KEY_APP_ID, CONFIG_KEY_APP_SECRET);
         return this
-                .withUrl(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
-                .withAppId(properties.get(CONFIG_KEY_APP_ID))
-                .withAppSecret(properties.get(CONFIG_KEY_APP_SECRET));
+                .url(properties.get(CONFIG_KEY_TOKENSERVICE_URL))
+                .appId(properties.get(CONFIG_KEY_APP_ID))
+                .appSecret(properties.get(CONFIG_KEY_APP_SECRET));
     }
 
     @Override
@@ -74,6 +74,14 @@ public class TokenServiceAddon implements ApplicationTokenIdAddon, Addon {
     public Supplier<String> getApptokenIdSupplier() {
         return () -> runtime.tokenServiceClient.getApplicationToken().getApplicationTokenId();
     }
+
+    public TokenServiceAddon url(String url) {return withUrl(url);}
+
+    public TokenServiceAddon appId(String appId) {return withAppId(appId);}
+
+    public TokenServiceAddon appSecret(String appSecret) {return withAppSecret(appSecret);}
+
+    public TokenServiceAddon tokenServiceClient(TokenServiceClient tokenServiceClient) {return withTokenServiceClient(tokenServiceClient);}
 
     @AllArgsConstructor
     public static class Runtime {

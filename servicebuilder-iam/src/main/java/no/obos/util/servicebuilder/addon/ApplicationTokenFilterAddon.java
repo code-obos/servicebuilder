@@ -36,15 +36,15 @@ import static java.util.stream.Collectors.toList;
 public class ApplicationTokenFilterAddon implements Addon {
     public static final String CONFIG_KEY_ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean requireAppTokenByDefault;
 
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final boolean swaggerImplicitHeaders;
 
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Integer> acceptedAppIds;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
     public static ApplicationTokenFilterAddon defaults = new ApplicationTokenFilterAddon(true, true, ImmutableList.of(), it -> false);
@@ -108,9 +108,15 @@ public class ApplicationTokenFilterAddon implements Addon {
         }
     }
 
-    public ApplicationTokenFilterAddon plusAcceptedAppId(int appId) {
+    public ApplicationTokenFilterAddon acceptedAppId(int appId) {
         return this.withAcceptedAppIds(GuavaHelper.plus(acceptedAppIds, appId));
     }
+
+    public ApplicationTokenFilterAddon requireAppTokenByDefault(boolean requireAppTokenByDefault) {return withRequireAppTokenByDefault(requireAppTokenByDefault);}
+
+    public ApplicationTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {return withSwaggerImplicitHeaders(swaggerImplicitHeaders);}
+
+    public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return withFasttrackFilter(fasttrackFilter);}
 
     @Override
     public Set<Class<?>> finalizeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
