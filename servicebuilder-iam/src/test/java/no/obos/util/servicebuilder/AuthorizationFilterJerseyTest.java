@@ -57,7 +57,7 @@ public class AuthorizationFilterJerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNameUnprioritized));
 
         String actual = testServiceRunner
-                .withStubConfigurator(cfg -> cfg.plusHeader(Constants.USERTOKENID_HEADER, usertoken))
+                .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                 .oneShot(Resource.class, Resource::getProtectedResource);
 
         Assert.assertEquals("adolf", actual);
@@ -70,7 +70,7 @@ public class AuthorizationFilterJerseyTest {
         Mockito.when(tokenServiceClient.getUserTokenById(usertoken)).thenReturn(getUserToken(uibRoleNamePrioritized));
 
         String actual = testServiceRunner
-                .withStubConfigurator(cfg -> cfg.plusHeader(Constants.USERTOKENID_HEADER, usertoken))
+                .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                 .oneShot(Resource.class, Resource::getProtectedWithRoleResource);
 
         Assert.assertEquals("adolf", actual);
@@ -85,7 +85,7 @@ public class AuthorizationFilterJerseyTest {
 
         try {
             testServiceRunner
-                    .withStubConfigurator(cfg -> cfg.plusHeader(Constants.USERTOKENID_HEADER, usertoken))
+                    .withStubConfigurator(cfg -> cfg.header(Constants.USERTOKENID_HEADER, usertoken))
                     .oneShot(Resource.class, Resource::getProtectedWithRoleResource);
             Assert.fail();
         } catch (ExternalResourceException ex) {

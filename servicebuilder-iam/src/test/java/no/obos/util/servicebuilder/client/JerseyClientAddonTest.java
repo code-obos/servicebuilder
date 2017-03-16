@@ -81,7 +81,7 @@ public class JerseyClientAddonTest {
 
         //when
         TestServiceRunner.defaults(outerServiceConfig)
-                .withStubConfigurator(it -> it.plusHeader(Constants.USERTOKENID_HEADER, "something"))
+                .withStubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
                 .oneShot(Api.class, Api::call_with_stub);
 
         //then

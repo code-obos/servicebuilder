@@ -69,7 +69,7 @@ public class TestServiceRunner {
         }
 
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
-            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).withApiPrefix(null));
+            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).apiPath(null));
             return testfun.apply(stubGenerator.generateClient(clazz));
         }
 
@@ -80,7 +80,7 @@ public class TestServiceRunner {
 
     public TestServiceRunner start() {
 
-        ServiceConfig serviceConfigwithProps = serviceConfig.withProperties(propertyMap);
+        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(propertyMap);
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.registrators)
@@ -94,7 +94,7 @@ public class TestServiceRunner {
         ClientConfig clientConfig = testContainer.getClientConfig();
         ClientGenerator clientGenerator = clientConfigurator.apply(
                 ClientGenerator.defaults(serviceConfigWithContext.serviceDefinition)
-                        .withClientConfigBase(clientConfig)
+                        .clientConfigBase(clientConfig)
         );
         Client client = clientGenerator.generate();
 

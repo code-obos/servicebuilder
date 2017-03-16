@@ -53,11 +53,11 @@ public class StubGeneratorTest {
 
             //when
             Client client = ClientGenerator.defaults(serviceDefinition)
-                    .withClientConfigBase(clientConfig)
+                    .clientConfigBase(clientConfig)
                     .generate();
             Api api = StubGenerator.defaults(client, uri)
-                    .withApiPrefix(null)
-                    .plusHeader(Constants.USERTOKENID_HEADER, "banan")
+                    .apiPath(null)
+                    .header(Constants.USERTOKENID_HEADER, "banan")
                     .generateClient(Api.class);
             return api.call(payloadIn);
 

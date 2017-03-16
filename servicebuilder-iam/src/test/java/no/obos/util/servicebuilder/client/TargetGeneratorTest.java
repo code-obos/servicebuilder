@@ -57,7 +57,7 @@ public class TargetGeneratorTest {
 
             //when
             Client client = ClientGenerator.defaults(serviceDefinition)
-                    .withClientConfigBase(clientConfig)
+                    .clientConfigBase(clientConfig)
                     .generate();
 
             WebTarget targetShouldUpdate = TargetGenerator.defaults(client, uri)

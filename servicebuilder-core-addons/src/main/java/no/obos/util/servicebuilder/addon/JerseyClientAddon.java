@@ -91,7 +91,7 @@ public class JerseyClientAddon implements Addon {
     public Addon finalize(ServiceConfig serviceConfig) {
         Supplier<String> appTokenIdSupplier = null;
         if (this.apptoken && this.appTokenIdSupplier == null) {
-            ApplicationTokenIdAddon appTokenIdSource = serviceConfig.getAddon(ApplicationTokenIdAddon.class);
+            ApplicationTokenIdAddon appTokenIdSource = serviceConfig.addonInstance(ApplicationTokenIdAddon.class);
             if (appTokenIdSource == null) {
                 throw new DependenceException(
                         this.getClass(),
@@ -104,12 +104,12 @@ public class JerseyClientAddon implements Addon {
             appTokenIdSupplier = appTokenIdSource.getApptokenIdSupplier();
         }
         Client client = ClientGenerator.defaults(serviceDefinition)
-                .withClientConfigBase(clientConfigBase)
+                .clientConfigBase(clientConfigBase)
                 .generate();
         StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
 
         if (appTokenIdSupplier != null) {
-            stubGenerator = stubGenerator.withAppTokenSupplier(appTokenIdSupplier);
+            stubGenerator = stubGenerator.appTokenSupplier(appTokenIdSupplier);
         }
         return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator));
     }
@@ -160,11 +160,11 @@ public class JerseyClientAddon implements Addon {
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
 
             StubGenerator generator = configuration.runtime.generator
-                    .withApiPrefix(configuration.apiPrefix);
+                    .apiPath(configuration.apiPrefix);
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if(userToken != null) {
-                generator = generator.plusHeader(Constants.USERTOKENID_HEADER, userToken);
+                generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
             }
 
 
@@ -206,7 +206,7 @@ public class JerseyClientAddon implements Addon {
 
             JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
             TargetGenerator generator = TargetGenerator.defaults(client, configuration.uri)
-                    .withThrowExceptionForErrors(true);
+                    .throwExceptionForErrors(true);
 
             String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
             if(userToken != null) {
@@ -215,7 +215,7 @@ public class JerseyClientAddon implements Addon {
 
             Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;
             if (appTokenIdSupplier != null) {
-                generator = generator.withAppTokenSupplier(appTokenIdSupplier);
+                generator = generator.appTokenSupplier(appTokenIdSupplier);
             }
 
             return generator.generate();

@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientGenerator {
     public static final String SERVICE_DEFINITION_INJECTION = "servicedefinition";
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
     public final ServiceDefinition serviceDefinition;
 
@@ -50,4 +50,6 @@ public class ClientGenerator {
 
         return ClientBuilder.newClient(clientConfig);
     }
+
+    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return withClientConfigBase(clientConfigBase);}
 }

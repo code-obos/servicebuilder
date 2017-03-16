@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.client;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
@@ -25,12 +24,12 @@ public class StubGenerator {
     //    final String appToken;
     final Client client;
     final URI uri;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     Supplier<String> appTokenSupplier;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final boolean logging;
-    @Wither
-    final String apiPrefix;
+    @Wither(AccessLevel.PRIVATE)
+    final String apiPath;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Cookie> cookies;
     @Wither(AccessLevel.PRIVATE)
@@ -52,8 +51,8 @@ public class StubGenerator {
         }
 
         WebTarget webTarget = clientToUse.target(uri);
-        if(apiPrefix != null) {
-            webTarget = webTarget.path(apiPrefix);
+        if(apiPath != null) {
+            webTarget = webTarget.path(apiPath);
         }
         webTarget.register(ClientErrorResponseFilter.class);
         webTarget.register(RequestIdClientFilter.class);
@@ -64,7 +63,13 @@ public class StubGenerator {
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
 
-    public StubGenerator plusHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+    public StubGenerator header(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
 
-    public StubGenerator plusCookie(Cookie cookie) {return withCookies(GuavaHelper.plus(cookies, cookie));}
+    public StubGenerator cookie(Cookie cookie) {return withCookies(GuavaHelper.plus(cookies, cookie));}
+
+    public StubGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {return withAppTokenSupplier(appTokenSupplier);}
+
+    public StubGenerator logging(boolean logging) {return withLogging(logging);}
+
+    public StubGenerator apiPath(String apiPrefix) {return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.appTokenSupplier, this.logging, apiPrefix, this.cookies, this.headers);}
 }
