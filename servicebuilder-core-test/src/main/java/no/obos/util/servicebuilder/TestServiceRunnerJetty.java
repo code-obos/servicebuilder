@@ -74,7 +74,7 @@ public class TestServiceRunnerJetty {
 
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
-        ServiceConfig serviceConfigwithProps = serviceConfig.withProperties(propertyMap);
+        ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(propertyMap);
         ServiceRunner serviceRunner = new ServiceRunner(serviceConfigwithProps, propertyMap);
         serviceRunner.start();
 

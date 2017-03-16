@@ -38,15 +38,19 @@ public class ServiceConfig {
     }
 
     public <T> ServiceConfig bind(Class<? extends T> toBind, Class<T> bindTo) {
-        return withBinder(binder -> binder.bind(toBind).to(bindTo));
+        return bind(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public <T> ServiceConfig bind(T toBind, Class<? super T> bindTo) {
-        return withBinder(binder -> binder.bind(toBind).to(bindTo));
+        return bind(binder -> binder.bind(toBind).to(bindTo));
     }
 
     public <T> ServiceConfig bind(Class<T> toBind) {
-        return withBinder(binder -> binder.bindAsContract(toBind));
+        return bind(binder -> binder.bindAsContract(toBind));
+    }
+
+    public ServiceConfig bind(Binder binder) {
+        return withBinders(GuavaHelper.plus(binders, binder));
     }
 
     public ServiceConfig bindWithProps(BiConsumer<PropertyProvider, AbstractBinder> propertyBinder) {
@@ -66,19 +70,24 @@ public class ServiceConfig {
     }
 
     public ServiceConfig register(Class toRegister) {
-        return withRegistrator(registrator -> registrator.register(toRegister));
+        return register(registrator -> registrator.register(toRegister));
+    }
+
+
+    public ServiceConfig register(Registrator registrator) {
+        return withRegistrators(GuavaHelper.plus(registrators, registrator));
     }
 
     public ServiceConfig hk2ConfigModule(JerseyConfig.Hk2ConfigModule hk2ConfigModule) {
-        return withRegistrator(hk2ConfigModule)
-                .withBinder(hk2ConfigModule);
+        return register(hk2ConfigModule)
+                .bind(hk2ConfigModule);
     }
 
     public ServiceConfig hk2ConfigModule(Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> prop2Hk2) {
         return withHk2ConfigProp(GuavaHelper.plus(hk2ConfigProp, prop2Hk2));
     }
 
-    public ServiceConfig withProperties(PropertyProvider properties) {
+    ServiceConfig addPropertiesAndApplyToBindings(PropertyProvider properties) {
         ServiceConfig ret = this.withHk2ConfigProp(ImmutableList.of());
         for (Function<PropertyProvider, JerseyConfig.Hk2ConfigModule> i : hk2ConfigProp) {
             ret = ret.hk2ConfigModule(i.apply(properties));
@@ -87,22 +96,22 @@ public class ServiceConfig {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Addon> List<T> getAddons(Class<T> clazz) {
+    public <T extends Addon> List<T> addonInstances(Class<T> clazz) {
         return (List<T>) this.addons.stream()
                 .filter(clazz::isInstance)
                 .collect(toList());
     }
 
-    public <T extends Addon> List<T> requireAddons(Class<T> clazz) {
-        List<T> addons = getAddons(clazz);
+    public <T extends Addon> List<T> requireAddonInstanceAtLeastOne(Class<T> clazz) {
+        List<T> addons = addonInstances(clazz);
         if (addons.isEmpty()) {
             throw new RuntimeException("Required addon not found. Check config or priorities. " + clazz.getCanonicalName());
         }
         return addons;
     }
 
-    public <T extends Addon> T getAddon(Class<T> clazz) {
-        List<T> ret = getAddons(clazz);
+    public <T extends Addon> T addonInstance(Class<T> clazz) {
+        List<T> ret = addonInstances(clazz);
         if (ret.isEmpty()) {
             return null;
         }
@@ -112,8 +121,8 @@ public class ServiceConfig {
         return ret.get(0);
     }
 
-    public <T extends NamedAddon> T getNamedAddon(Class<T> clazz, String name) {
-        List<T> ret = getAddons(clazz);
+    public <T extends NamedAddon> T addonInstanceNamed(Class<T> clazz, String name) {
+        List<T> ret = addonInstances(clazz);
         if (name != null) {
             ret = ret.stream().filter(it -> name.equals(it.getName())).collect(toList());
         } else {
@@ -129,8 +138,8 @@ public class ServiceConfig {
         return ret.get(0);
     }
 
-    public <T extends Addon> T requireAddon(Class<T> clazz) {
-        List<T> ret = requireAddons(clazz);
+    public <T extends Addon> T requireAddonInstance(Class<T> clazz) {
+        List<T> ret = requireAddonInstanceAtLeastOne(clazz);
         if (ret.size() > 1) {
             throw new RuntimeException("Found several implementations for addon " + clazz.getCanonicalName());
         }
@@ -149,20 +158,11 @@ public class ServiceConfig {
         return this.withAddons(ImmutableList.of());
     }
 
-
-    public ServiceConfig withBinder(Binder binder) {
-        return withBinders(GuavaHelper.plus(binders, binder));
-    }
-
     public ServiceConfig addon(Addon addon) {
         return withAddons(GuavaHelper.plus(addons, addon));
     }
 
-    public ServiceConfig withRegistrator(Registrator registrator) {
-        return withRegistrators(GuavaHelper.plus(registrators, registrator));
-    }
-
     public boolean isAddonPresent(Class<? extends Addon> swaggerAddonClass) {
-        return getAddon(swaggerAddonClass) != null;
+        return addonInstance(swaggerAddonClass) != null;
     }
 }

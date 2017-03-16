@@ -23,11 +23,11 @@ public class TargetGenerator {
     final URI uri;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final boolean throwExceptionForErrors;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final boolean logging;
-    @Wither
+    @Wither(AccessLevel.PRIVATE)
     final Supplier<String> appTokenSupplier;
 
     public static TargetGenerator defaults(Client client, URI uri) {
@@ -71,4 +71,10 @@ public class TargetGenerator {
     }
 
     public TargetGenerator plusHeader(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+
+    public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return withThrowExceptionForErrors(throwExceptionForErrors);}
+
+    public TargetGenerator logging(boolean logging) {return withLogging(logging);}
+
+    public TargetGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {return withAppTokenSupplier(appTokenSupplier);}
 }

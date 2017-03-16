@@ -37,7 +37,7 @@ public class JdbiAddon implements Addon {
 
     @Override
     public Addon finalize(ServiceConfig serviceConfig) {
-        DataSourceAddon dataSourceAddon = serviceConfig.getNamedAddon(DataSourceAddon.class, name);
+        DataSourceAddon dataSourceAddon = serviceConfig.addonInstanceNamed(DataSourceAddon.class, name);
         if (dataSourceAddon == null) {
             if (name == null) {
                 throw new DependenceException(this.getClass(), DataSourceAddon.class);

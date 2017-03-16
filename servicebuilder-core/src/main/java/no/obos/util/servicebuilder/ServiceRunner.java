@@ -2,9 +2,7 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
@@ -20,7 +18,7 @@ public class ServiceRunner {
     JettyServer.Configuration jettyConfig;
 
     public ServiceRunner(ServiceConfig serviceConfigRaw, PropertyProvider properties) {
-        serviceConfigRaw = serviceConfigRaw.withProperties(properties);
+        serviceConfigRaw = serviceConfigRaw.addPropertiesAndApplyToBindings(properties);
         ServiceConfig serviceConfigWithProps = serviceConfigRaw
                 .withAddons(ImmutableList.copyOf(serviceConfigRaw
                         .addons.stream()
