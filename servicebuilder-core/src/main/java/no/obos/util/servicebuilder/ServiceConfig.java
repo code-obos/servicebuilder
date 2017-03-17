@@ -24,7 +24,7 @@ import static java.util.stream.Collectors.toList;
 public class ServiceConfig {
     @Wither(AccessLevel.PACKAGE)
     final ImmutableList<Addon> addons;
-    final ServiceDefinition serviceDefinition;
+    public final ServiceDefinition serviceDefinition;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Binder> binders;
     @Wither(AccessLevel.PRIVATE)

@@ -107,8 +107,12 @@ public class JerseyClientAddon implements Addon {
             }
             appTokenIdSupplier = appTokenIdSource.getApptokenIdSupplier();
         }
+        String clientAppName = serviceConfig.serviceDefinition.getName()
+                + ":"
+                + ApiVersionUtil.getApiVersion(serviceConfig.serviceDefinition.getClass());
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
+                .clientAppName(clientAppName)
                 .generate();
         StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
 

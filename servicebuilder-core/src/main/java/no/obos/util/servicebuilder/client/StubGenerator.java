@@ -56,6 +56,7 @@ public class StubGenerator {
         }
         webTarget.register(ClientErrorResponseFilter.class);
         webTarget.register(RequestIdClientFilter.class);
+        webTarget.register(ClientNameFilter.class);
         if (logging) {
             webTarget.register(ClientLogFilter.class);
         }

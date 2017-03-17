@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -22,9 +23,11 @@ public class ClientGenerator {
     @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
     public final ServiceDefinition serviceDefinition;
+    @Wither(AccessLevel.PRIVATE)
+    public final String clientAppName;
 
     public static ClientGenerator defaults(ServiceDefinition serviceDefinition) {
-        return new ClientGenerator(null, serviceDefinition);
+        return new ClientGenerator(null, serviceDefinition, null);
     }
 
     public Client generate() {
@@ -40,6 +43,9 @@ public class ClientGenerator {
         provider.setMapper(mapper);
         clientConfig.register(provider);
         binders.add(binder -> binder.bind(mapper).to(ObjectMapper.class));
+        if (!Strings.isNullOrEmpty(clientAppName)) {
+            binders.add(binder -> binder.bind(clientAppName).to(String.class).named(ClientNameFilter.CLIENT_APPNAME));
+        }
 
         clientConfig.register(new AbstractBinder() {
             @Override
@@ -52,4 +58,6 @@ public class ClientGenerator {
     }
 
     public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return withClientConfigBase(clientConfigBase);}
+
+    public ClientGenerator clientAppName(String clientAppName) {return withClientAppName(clientAppName);}
 }
