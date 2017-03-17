@@ -98,6 +98,10 @@ public class JdbiAddon implements Addon {
         }
     }
 
+    public <T> T createDao(Class<T> requiredType) {
+        return dbi.onDemand(requiredType);
+    }
+
 
     @Override
     public Set<Class<?>> initializeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
