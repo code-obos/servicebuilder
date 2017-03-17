@@ -1,12 +1,9 @@
 
 Før release 3.0:
-- Når kall mot ekstern ressurs feiler logges ikke apptoken
 - Kallende applikasjon med i headere for klient
 o   X-OBOS-APPLICATION: tips v1.5
 o   Godtar ikke kall uten header
 -ApplicationTokenFilter: Mulighet for å kunne gi tilgang til hele applikasjonsserier istedenfor bare til en og en applikasjon
--Teste at vi håndterer exceptions fra gamle tjenester
--Skal vi rename ProblemResponse til HttpProblem for å matche standard?
 -ActiveMQ inn i servicebuilder
 
 Nye jirasaker

@@ -13,8 +13,8 @@ import java.util.Map;
 
 @XmlRootElement
 @ToString
-@EqualsAndHashCode(of="incidentReferenceId")
-@ApiModel(value="ProblemResponse", description="Returneres ved feil. Ment for programmerere. Bør ikke eksponeres til brukere")
+@EqualsAndHashCode(of = "incidentReferenceId")
+@ApiModel(value = "ProblemResponse", description = "Returneres ved feil. Ment for programmerere. Bør ikke eksponeres til brukere")
 public class ProblemResponse {
     public String type;
     public String title;
@@ -39,7 +39,8 @@ public class ProblemResponse {
             @JsonProperty("incidentReferenceId") String incidentReferenceId,
             @JsonProperty("suggestedUserMessageInDetail") boolean suggestedUserMessageInDetail,
             @JsonProperty("type") String type,
-            @Singular("context") @JsonProperty("context") Map<String, String> context) {
+            @Singular("context") @JsonProperty("context") Map<String, String> context)
+    {
         this.title = title;
         this.detail = detail;
         this.status = status;

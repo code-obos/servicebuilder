@@ -42,7 +42,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
                 && Strings.isNullOrEmpty(meta.httpResponseMetaData.incidentReferenceId))
                 ? meta.httpResponseMetaData.incidentReferenceId
                 : null;
-        List<String> metaLines = metaDataToLogLines(meta);
+        List<String> metaLines = FormatUtil.indentLines(metaDataToLogLines(meta), INDENTATION);
         return exceptionUtil.handle(exception, cfg -> cfg
                 .status(INTERNAL_SERVER_ERROR.getStatusCode())
                 .logLevel(LogLevel.ERROR)

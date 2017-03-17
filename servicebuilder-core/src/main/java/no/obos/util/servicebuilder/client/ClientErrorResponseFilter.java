@@ -74,7 +74,7 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
             }
             try {
                 ProblemResponse problem = mapper.readValue(body, ProblemResponse.class);
-                if (problem != null) {
+                if (problemWasParsed(problem)) {
                     builder.problemResponse(problem)
                             .incidentReferenceId(problem.incidentReferenceId);
                 }
@@ -88,6 +88,11 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
         }
 
         return builder.build();
+    }
+
+    private boolean problemWasParsed(ProblemResponse problem) {
+        return problem != null
+                && problem.incidentReferenceId != null;
     }
 
     private ExternalResourceException.HttpRequestMetaData getRequestMetaData(ClientRequestContext requestContext) {
