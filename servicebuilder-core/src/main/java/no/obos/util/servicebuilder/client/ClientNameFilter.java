@@ -1,6 +1,7 @@
 package no.obos.util.servicebuilder.client;
 
 import no.obos.util.servicebuilder.model.Constants;
+import org.jvnet.hk2.annotations.Optional;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ public class ClientNameFilter implements ClientRequestFilter {
     private final String clientAppName;
 
     @Inject
-    public ClientNameFilter(@Named(CLIENT_APPNAME) String clientAppName) {
+    public ClientNameFilter(@Named(CLIENT_APPNAME) @Optional String clientAppName) {
         this.clientAppName = clientAppName;
     }
 
