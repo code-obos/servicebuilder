@@ -10,6 +10,7 @@ import no.obos.util.servicebuilder.addon.JerseyClientAddon;
 import no.obos.util.servicebuilder.addon.MetricsAddon;
 import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.addon.QueryRunnerAddon;
+import no.obos.util.servicebuilder.addon.ServerLogAddon;
 import no.obos.util.servicebuilder.addon.SwaggerAddon;
 import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
@@ -40,6 +41,10 @@ public class Addons {
 
     public static WebAppAddon webAppAddon() {
         return WebAppAddon.defaults;
+    }
+
+    public static ServerLogAddon serverLog() {
+        return ServerLogAddon.defaults;
     }
 
 

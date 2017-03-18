@@ -9,7 +9,7 @@ import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.UserTokenRequired;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.usertoken.UibBruker;
+import no.obos.util.servicebuilder.model.UibBruker;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

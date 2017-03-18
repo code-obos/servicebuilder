@@ -8,7 +8,7 @@ import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
 import no.obos.util.servicebuilder.model.ExceptionDescription;
 import no.obos.util.servicebuilder.model.LogLevel;
 import no.obos.util.servicebuilder.model.ProblemResponse;
-import org.slf4j.Logger;
+import no.obos.util.servicebuilder.util.LogUtil;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -136,9 +136,9 @@ public class ExceptionUtil {
         sb.append("Incoming server headers:\n");
         sb.append(getContextDescription());
         if (problem.logStackTrace) {
-            doLog(sb.toString(), problem.exception, problem.logLevel, problem.logger);
+            LogUtil.doLog(sb.toString(), problem.exception, problem.logLevel, problem.logger);
         } else {
-            doLog(sb.toString(), problem.logLevel, problem.logger);
+            LogUtil.doLog(sb.toString(), problem.logLevel, problem.logger);
         }
     }
 
@@ -170,74 +170,6 @@ public class ExceptionUtil {
         }
         return sb.toString();
 
-    }
-
-    public static void doLog(String s, LogLevel logLevel, Logger logger) {
-        switch (logLevel) {
-            case ERROR: {
-                logger.error(s);
-                break;
-            }
-
-            case WARN: {
-                logger.warn(s);
-                break;
-            }
-
-            case INFO: {
-                logger.info(s);
-                break;
-            }
-
-            case DEBUG: {
-                logger.debug(s);
-                break;
-            }
-
-            case TRACE: {
-                logger.trace(s);
-                break;
-            }
-
-            default: {
-                logger.error(s);
-                break;
-            }
-        }
-    }
-
-    public static void doLog(String s, Throwable exception, LogLevel logLevel, Logger logger) {
-        switch (logLevel) {
-            case ERROR: {
-                logger.error(s, exception);
-                break;
-            }
-
-            case WARN: {
-                logger.warn(s, exception);
-                break;
-            }
-
-            case INFO: {
-                logger.info(s, exception);
-                break;
-            }
-
-            case DEBUG: {
-                logger.debug(s, exception);
-                break;
-            }
-
-            case TRACE: {
-                logger.trace(s, exception);
-                break;
-            }
-
-            default: {
-                logger.error(s, exception);
-                break;
-            }
-        }
     }
 
 

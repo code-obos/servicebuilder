@@ -1,10 +1,9 @@
 package no.obos.util.servicebuilder.log.model;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
-import lombok.Singular;
 import lombok.ToString;
 
 @Builder
@@ -12,9 +11,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class LogResponse {
-    @Singular
-    public final ImmutableSet<LogHeader> headers;
+    public final String uri;
+    public final ImmutableMap<String, String> headers;
     public final Integer status;
     public final Object entity;
-    public final Class entityClass;
+    public final Long totalMillis;
 }

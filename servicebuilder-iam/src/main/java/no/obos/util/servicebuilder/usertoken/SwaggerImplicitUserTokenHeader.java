@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.annotations.UserTokenRequired;
 import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.util.AnnotationUtil;
 
 import java.lang.reflect.Method;
 import java.util.Iterator;
@@ -20,12 +21,9 @@ public class SwaggerImplicitUserTokenHeader extends AbstractSwaggerExtension {
 
     public void decorateOperation(Operation operation, Method method, Iterator<SwaggerExtension> chain) {
         boolean requireUserToken = isUserTokenDefaultRequired;
-        UserTokenRequired methodAnnotation = method.getAnnotation(UserTokenRequired.class);
-        UserTokenRequired classAnnotation = method.getDeclaringClass().getAnnotation(UserTokenRequired.class);
-        if (methodAnnotation != null) {
-            requireUserToken = methodAnnotation.value();
-        } else if (classAnnotation != null) {
-            requireUserToken = classAnnotation.value();
+        UserTokenRequired annotation = AnnotationUtil.getAnnotation(UserTokenRequired.class, method);
+        if (annotation != null) {
+            requireUserToken = annotation.value();
         }
         if (requireUserToken) {
             HeaderParameter headerParameter = new HeaderParameter();

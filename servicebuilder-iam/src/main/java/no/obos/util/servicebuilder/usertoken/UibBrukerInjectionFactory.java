@@ -1,21 +1,23 @@
 package no.obos.util.servicebuilder.usertoken;
 
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
+import no.obos.util.servicebuilder.model.UibBruker;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
 
 
 public class UibBrukerInjectionFactory implements Factory<UibBruker> {
 
-    final SecurityContext context;
+    final Provider<SecurityContext> context;
 
     final UserTokenFilterAddon config;
 
     @Inject
-    public UibBrukerInjectionFactory(SecurityContext context, UserTokenFilterAddon config) {
+    public UibBrukerInjectionFactory(Provider<SecurityContext> context, UserTokenFilterAddon config) {
         this.context = context;
         this.config = config;
     }
@@ -23,16 +25,16 @@ public class UibBrukerInjectionFactory implements Factory<UibBruker> {
 
     @Override
     public UibBruker provide() {
-        Principal userPrincipal = context.getUserPrincipal();
+        Principal userPrincipal = context.get().getUserPrincipal();
 
         if (userPrincipal == null && config.requireUserTokenByDefault) {
             return null;
         }
-        if (userPrincipal != null && ! (userPrincipal instanceof UibBruker)) {
+        if (userPrincipal != null && ! (userPrincipal instanceof UibBrukerPrincipal)) {
             throw new IllegalArgumentException("Userprincipal not of type UibBruker, was of type ");
         }
 
-        return (UibBruker) userPrincipal;
+        return userPrincipal == null ? null : ((UibBrukerPrincipal) userPrincipal).uibBruker;
 
     }
 

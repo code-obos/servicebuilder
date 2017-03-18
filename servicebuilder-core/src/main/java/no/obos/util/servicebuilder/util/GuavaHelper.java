@@ -2,12 +2,20 @@ package no.obos.util.servicebuilder.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import java.util.stream.Collector;
 
 public class GuavaHelper {
     public static <T> ImmutableList<T> plus(ImmutableList<T> list, T element) {
         return ImmutableList.<T>builder()
+                .addAll(list)
+                .add(element)
+                .build();
+    }
+
+    public static <T> ImmutableSet<T> plus(ImmutableSet<T> list, T element) {
+        return ImmutableSet.<T>builder()
                 .addAll(list)
                 .add(element)
                 .build();

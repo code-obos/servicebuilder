@@ -9,6 +9,7 @@ import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.model.UibBruker;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -52,13 +53,13 @@ public class UserTokenFilter implements ContainerRequestFilter {
             throw new NotAuthorizedException("UsertokenId: '" + usertokenId + "' not valid", e);
         }
 
-        UibBruker bruker = UibBruker.ofUserToken(userToken);
-        if (bruker == null) {
-            throw new RuntimeException("Kunne ikke konvertere UserTokenId '"+ usertokenId + "' (UserToken '" + userToken + "') til UibBruker");
+        UibBrukerPrincipal brukerPrincipal = UibBrukerPrincipal.ofUserToken(userToken);
+        if (brukerPrincipal == null) {
+            throw new RuntimeException("Kunne ikke konvertere UserTokenId '" + usertokenId + "' (UserToken '" + userToken + "') til UibBruker");
         }
-        ImmutableSet<String> tilganger = extractRolesAllowed(userToken, bruker);
+        ImmutableSet<String> tilganger = extractRolesAllowed(userToken, brukerPrincipal.uibBruker);
 
-        requestContext.setSecurityContext(new AutentiseringsContext(bruker, tilganger));
+        requestContext.setSecurityContext(new AutentiseringsContext(brukerPrincipal, tilganger));
     }
 
     private ImmutableSet<String> extractRolesAllowed(UserToken userToken, UibBruker bruker) {
@@ -81,7 +82,7 @@ public class UserTokenFilter implements ContainerRequestFilter {
     @AllArgsConstructor
     public static class AutentiseringsContext implements SecurityContext {
 
-        private final UibBruker bruker;
+        private final UibBrukerPrincipal bruker;
         private final ImmutableSet<String> tilganger;
 
 
