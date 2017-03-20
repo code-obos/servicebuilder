@@ -3,38 +3,44 @@ package no.obos.util.servicebuilder.applicationtoken;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
 import no.obos.util.model.ProblemResponse;
-import no.obos.util.servicebuilder.ApplicationTokenFilterAddon;
+import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
+import no.obos.util.servicebuilder.annotations.AppTokenRequired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Priority;
 import javax.inject.Inject;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.Context;
+import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.util.UUID;
 
+@Priority(Priorities.AUTHENTICATION)
 public class ApplicationTokenFilter implements ContainerRequestFilter {
     Logger log = LoggerFactory.getLogger(ApplicationTokenFilter.class);
 
     public static final String APPTOKENID_HEADER = "X-OBOS-APPTOKENID";
 
-    @Inject
-    private ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    final private ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    final ApplicationTokenFilterAddon configuration;
+
+    final private ResourceInfo resourceInfo;
 
     @Inject
-    ApplicationTokenFilterAddon.Configuration configuration;
-    
-    @Context
-    private UriInfo uriInfo;
+    public ApplicationTokenFilter(ApplicationTokenAccessValidator applicationTokenAccessValidator, ApplicationTokenFilterAddon configuration, ResourceInfo resourceInfo) {
+        this.applicationTokenAccessValidator = applicationTokenAccessValidator;
+        this.configuration = configuration;
+        this.resourceInfo = resourceInfo;
+    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         log.debug("Request headers: {}", requestContext.getHeaders());
-        
+
         if (allwaysAccept(requestContext)) {
             return;
         }
@@ -64,9 +70,23 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
         String requestMethod = requestContext.getMethod();
 
+        AppTokenRequired methodAnnotation = resourceInfo.getResourceMethod() != null
+                ? resourceInfo.getResourceMethod().getAnnotation(AppTokenRequired.class)
+                : null;
+        AppTokenRequired classAnnotation = resourceInfo.getResourceClass() != null
+                ? resourceInfo.getResourceClass().getAnnotation(AppTokenRequired.class)
+                : null;
+        boolean annotationFasttrack = ! configuration.requireAppTokenByDefault;
+        if (methodAnnotation != null) {
+            annotationFasttrack = ! methodAnnotation.value();
+        } else if (classAnnotation != null) {
+            annotationFasttrack = ! classAnnotation.value();
+        }
+
         return aboslutePath.contains("swagger") ||
                 "OPTIONS".equals(requestMethod) ||
-                configuration.fasttrackFilter.test(requestContext);
+                configuration.fasttrackFilter.test(requestContext) ||
+                annotationFasttrack;
     }
 }
 

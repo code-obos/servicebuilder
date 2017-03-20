@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>2.0.4</version>
+    <version>3.0.0</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>3.1.0</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <prerequisites>
@@ -19,12 +19,26 @@
     <name>servicebuilder</name>
 
     <modules>
+        <module>servicebuilder-interfaces</module>
         <module>servicebuilder-core</module>
+        <module>servicebuilder-core-test</module>
+        <module>servicebuilder-core-addons</module>
         <module>servicebuilder-iam</module>
-        <module>servicebuilder-dbcp</module>
+        <module>servicebuilder-db</module>
+        <module>servicebuilder-db-h2</module>
+        <module>servicebuilder-db-basicdatasource</module>
+        <module>servicebuilder-db-queryrunner</module>
+        <module>servicebuilder-db-jdbi</module>
+        <module>servicebuilder-activemq</module>
+        <module>servicebuilder-addons</module>
     </modules>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-interfaces</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-core</artifactId>
@@ -32,12 +46,52 @@
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
-                <artifactId>servicebuilder-dbcp</artifactId>
+                <artifactId>servicebuilder-core-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-core-addons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-h2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-basicdatasource</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-jdbi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-db-queryrunner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-activemq</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-iam</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-addons</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

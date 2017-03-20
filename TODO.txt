@@ -1,0 +1,10 @@
+
+Før release 3.0:
+- Kallende applikasjon med i headere for klient
+o   X-OBOS-APPLICATION: tips v1.5
+o   Godtar ikke kall uten header
+-ApplicationTokenFilter: Mulighet for å kunne gi tilgang til hele applikasjonsserier istedenfor bare til en og en applikasjon
+-ActiveMQ inn i servicebuilder
+
+Nye jirasaker
+-Tokenserviceklient cacher ugyldige tokens

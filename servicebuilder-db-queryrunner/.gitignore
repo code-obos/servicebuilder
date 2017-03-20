@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-db-queryrunner.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+
