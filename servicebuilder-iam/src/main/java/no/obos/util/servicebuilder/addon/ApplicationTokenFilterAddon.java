@@ -43,11 +43,11 @@ public class ApplicationTokenFilterAddon implements Addon {
     public final boolean swaggerImplicitHeaders;
 
     @Wither(AccessLevel.PRIVATE)
-    public final ImmutableList<Integer> acceptedAppIds;
+    public final String acceptedAppIds;
     @Wither(AccessLevel.PRIVATE)
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
-    public static ApplicationTokenFilterAddon defaults = new ApplicationTokenFilterAddon(true, true, ImmutableList.of(), it -> false);
+    public static ApplicationTokenFilterAddon defaults = new ApplicationTokenFilterAddon(true, true, "", it -> false);
 
 
     @Override
@@ -64,11 +64,8 @@ public class ApplicationTokenFilterAddon implements Addon {
     @Override
     public Addon withProperties(PropertyProvider properties) {
         properties.failIfNotPresent(CONFIG_KEY_ACCEPTED_APP_IDS);
-        ArrayList<String> acceptedIdStrings = Lists.newArrayList(properties.get(CONFIG_KEY_ACCEPTED_APP_IDS).split(","));
-        List<Integer> acceptedIds = acceptedIdStrings.stream()
-                .map(Integer::valueOf)
-                .collect(toList());
-        return this.withAcceptedAppIds(ImmutableList.copyOf(acceptedIds));
+        String acceptedIds = properties.get(CONFIG_KEY_ACCEPTED_APP_IDS);
+        return this.withAcceptedAppIds(acceptedIds);
     }
 
     @Override
@@ -98,7 +95,7 @@ public class ApplicationTokenFilterAddon implements Addon {
         public ApplicationTokenAccessValidator provide() {
             ApplicationTokenAccessValidator applicationTokenAccessValidator = new ApplicationTokenAccessValidator();
             applicationTokenAccessValidator.setTokenServiceClient(tokenServiceClient);
-            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds.stream().map(Object::toString).collect(Collectors.toList()));
+            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds);
             return applicationTokenAccessValidator;
         }
 
@@ -108,8 +105,8 @@ public class ApplicationTokenFilterAddon implements Addon {
         }
     }
 
-    public ApplicationTokenFilterAddon acceptedAppId(int appId) {
-        return this.withAcceptedAppIds(GuavaHelper.plus(acceptedAppIds, appId));
+    public ApplicationTokenFilterAddon acceptedAppIds(String acceptedAppIds) {
+        return this.withAcceptedAppIds(acceptedAppIds);
     }
 
     public ApplicationTokenFilterAddon requireAppTokenByDefault(boolean requireAppTokenByDefault) {return withRequireAppTokenByDefault(requireAppTokenByDefault);}
