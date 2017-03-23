@@ -69,7 +69,7 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
         if (responseContext.hasEntity()) {
             String body;
             // setUp the "real" error message
-            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(responseContext.getEntityStream()))) {
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(responseContext.getEntityStream(), "UTF-8"))) {
                 body = buffer.lines().collect(Collectors.joining("\n"));
             }
             try {
