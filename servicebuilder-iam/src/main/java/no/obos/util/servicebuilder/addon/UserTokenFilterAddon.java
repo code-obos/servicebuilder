@@ -21,8 +21,10 @@ import no.obos.util.servicebuilder.usertoken.UserTokenFilter;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
+import javax.ws.rs.container.ContainerRequestContext;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -54,7 +56,10 @@ public class UserTokenFilterAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableMap<String, Predicate<UibRolle>> rolleGirTilgang;
 
-    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableMap.of());
+    @Wither(AccessLevel.PRIVATE)
+    public final Consumer<ContainerRequestContext> postVerificationCallback;
+
+    public static UserTokenFilterAddon defaults = new UserTokenFilterAddon(true, true, it -> Lists.newArrayList(), it -> Lists.newArrayList(), ImmutableMap.of(), it -> {});
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
@@ -91,13 +96,28 @@ public class UserTokenFilterAddon implements Addon {
 
 
     @Override
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);
+    }
 
-    public UserTokenFilterAddon requireUserTokenByDefault(boolean requireUserTokenByDefault) {return withRequireUserTokenByDefault(requireUserTokenByDefault);}
+    public UserTokenFilterAddon requireUserTokenByDefault(boolean requireUserTokenByDefault) {
+        return withRequireUserTokenByDefault(requireUserTokenByDefault);
+    }
 
-    public UserTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {return withSwaggerImplicitHeaders(swaggerImplicitHeaders);}
+    public UserTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {
+        return withSwaggerImplicitHeaders(swaggerImplicitHeaders);
+    }
 
-    public UserTokenFilterAddon userTokenTilganger(Function<UserToken, Collection<String>> userTokenTilganger) {return withUserTokenTilganger(userTokenTilganger);}
+    public UserTokenFilterAddon userTokenTilganger(Function<UserToken, Collection<String>> userTokenTilganger) {
+        return withUserTokenTilganger(userTokenTilganger);
+    }
 
-    public UserTokenFilterAddon uibBrukerTilganger(Function<UibBruker, Collection<String>> uibBrukerTilganger) {return withUibBrukerTilganger(uibBrukerTilganger);}
+    public UserTokenFilterAddon uibBrukerTilganger(Function<UibBruker, Collection<String>> uibBrukerTilganger) {
+        return withUibBrukerTilganger(uibBrukerTilganger);
+    }
+
+    public UserTokenFilterAddon postVerificationCallback(Consumer<ContainerRequestContext> callback) {
+        return withPostVerificationCallback(callback);
+    }
+
 }
