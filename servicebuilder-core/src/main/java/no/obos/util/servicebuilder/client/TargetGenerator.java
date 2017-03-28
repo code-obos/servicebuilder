@@ -49,14 +49,7 @@ public class TargetGenerator {
 
 
         if (! headersToUse.isEmpty()) {
-            target.register(new AbstractBinder() {
-                @Override
-                protected void configure() {
-                    this.bind(headersToUse).to(new TypeLiteral<Map<String, String>>() {}).named(WebTargetRequestHeaderFilter.MAP_NAME);
-                }
-            });
-
-            target.register(WebTargetRequestHeaderFilter.class);
+            target.register(new WebTargetRequestHeaderFilter(ImmutableMap.copyOf(headersToUse)));
         }
 
         if (throwExceptionForErrors) {
