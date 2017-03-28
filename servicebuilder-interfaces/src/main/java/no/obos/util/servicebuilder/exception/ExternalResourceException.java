@@ -34,7 +34,7 @@ public class ExternalResourceException extends WebApplicationException {
             ret += ", Status: " + metaData.httpResponseMetaData.status;
             if (metaData.httpResponseMetaData.problemResponse != null) {
                 ret += ", Detail: " + metaData.httpResponseMetaData.problemResponse.detail;
-            } else {
+            } else if (metaData.httpResponseMetaData.response != null) {
                 ret += ", Response: " + responseAsSingleLine(metaData.httpResponseMetaData.response);
             }
         }
