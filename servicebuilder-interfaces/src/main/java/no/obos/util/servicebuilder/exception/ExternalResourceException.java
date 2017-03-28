@@ -1,6 +1,9 @@
 package no.obos.util.servicebuilder.exception;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
@@ -8,21 +11,41 @@ import lombok.ToString;
 import no.obos.util.servicebuilder.model.ProblemResponse;
 
 import javax.ws.rs.WebApplicationException;
+import java.util.List;
 
 @Getter
 public class ExternalResourceException extends WebApplicationException {
     private final MetaData metaData;
 
     public ExternalResourceException(MetaData metaData, Exception ex) {
-        super("Feil ved kall til ekstern ressurs.", ex);
+        super(getMetaDataSummary(metaData), ex);
         this.metaData = metaData;
     }
 
     public ExternalResourceException(MetaData metaData) {
-        super("Feil ved kall til ekstern ressurs. ");
+        super(getMetaDataSummary(metaData));
         this.metaData = metaData;
     }
 
+    private static String getMetaDataSummary(MetaData metaData) {
+        String ret = "";
+        ret = ret + "Target: " + metaData.targetName;
+        if(metaData.httpResponseMetaData != null) {
+            ret += ", Status: " + metaData.httpResponseMetaData.status;
+            if (metaData.httpResponseMetaData.problemResponse != null) {
+                ret += ", Detail: " + metaData.httpResponseMetaData.problemResponse.detail;
+            } else {
+                ret += ", Response: " + responseAsSingleLine(metaData.httpResponseMetaData.response);
+            }
+        }
+        return ret;
+    }
+
+
+    private static String responseAsSingleLine(String response) {
+        List<String> lines = Splitter.on('\n').splitToList(response);
+        return Joiner.on(' ').join(lines);
+    }
 
 
     @Builder(toBuilder = true)

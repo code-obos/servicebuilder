@@ -7,8 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -43,7 +41,7 @@ public class TargetGenerator {
 
         final Map<String, String> headersToUse = Maps.newHashMap(headers);
 
-        if(appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
+        if (appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
             headersToUse.put(Constants.APPTOKENID_HEADER, appTokenSupplier.get());
         }
 
@@ -57,7 +55,7 @@ public class TargetGenerator {
         }
         target.register(RequestIdClientFilter.class);
         target.register(ClientNameFilter.class);
-        if(logging) {
+        if (logging) {
             target.register(ClientLogFilter.class);
         }
 
