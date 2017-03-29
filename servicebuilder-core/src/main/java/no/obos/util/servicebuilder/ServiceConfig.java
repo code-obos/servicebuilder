@@ -146,12 +146,12 @@ public class ServiceConfig {
         return ret.get(0);
     }
 
-    public ServiceConfig replaceAddon(Addon addon) {
+    public ServiceConfig removeAddon(Class<? extends Addon> addon) {
         return this
                 .withAddons(ImmutableList.copyOf(addons.stream()
-                        .filter(existingAddon -> ! existingAddon.getClass().equals(addon.getClass()))
+                        .filter(existingAddon -> ! addon.isInstance(existingAddon))
                         .collect(toList()))
-                ).addon(addon);
+                );
     }
 
     public ServiceConfig clearAddons() {
