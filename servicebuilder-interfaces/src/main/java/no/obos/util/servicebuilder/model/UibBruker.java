@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder.model;
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Singular;
 import lombok.ToString;
 
 /*
@@ -17,5 +18,6 @@ public class UibBruker {
     public final String etternavn;
     public final String adBrukernavn;
     public final String userTokenId;
+    @Singular("rolle")
     public final ImmutableList<UibRolle> roller;
 }

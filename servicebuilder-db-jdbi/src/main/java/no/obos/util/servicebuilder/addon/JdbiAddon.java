@@ -40,7 +40,7 @@ public class JdbiAddon implements Addon {
         DataSourceAddon dataSourceAddon = serviceConfig.addonInstanceNamed(DataSourceAddon.class, name);
         if (dataSourceAddon == null) {
             if (name == null) {
-                throw new DependenceException(this.getClass(), DataSourceAddon.class);
+                throw new DependenceException(this.getClass(), DataSourceAddon.class, " no unnamed datasourceaddon found");
             } else {
                 throw new DependenceException(this.getClass(), DataSourceAddon.class, " no datasourceaddon for name " + name);
             }

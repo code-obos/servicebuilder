@@ -60,6 +60,8 @@ public class UserTokenFilter implements ContainerRequestFilter {
         ImmutableSet<String> tilganger = extractRolesAllowed(userToken, brukerPrincipal.uibBruker);
 
         requestContext.setSecurityContext(new AutentiseringsContext(brukerPrincipal, tilganger));
+
+        configuration.postVerificationCallback.accept(requestContext);
     }
 
     private ImmutableSet<String> extractRolesAllowed(UserToken userToken, UibBruker bruker) {
