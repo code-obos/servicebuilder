@@ -63,34 +63,6 @@ public class JerseyClientAddonTest {
     }
 
     @Test
-    public void can_call_with_injected_stub_transferred_usertoken() {
-        //Given
-        TestServiceFull.Call expected = getCall().toBuilder()
-                .header(Constants.USERTOKENID_HEADER, "something")
-                .build();
-        TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
-
-        ServiceConfig outerServiceConfig = ServiceConfig.defaults(serviceDefinition)
-                .bind(ApiImpl.class, Api.class)
-                .addon(JerseyClientAddon.defaults(TestServiceFull.instance)
-                        .clientConfigBase(nestedRuntime.clientConfig)
-                        .apptoken(false)
-                        .apiPrefix(null)
-                        .forwardUsertoken(true)
-                        .uri(nestedRuntime.uri)
-                );
-
-        //when
-        TestServiceRunner.defaults(outerServiceConfig)
-                .stubConfigurator(it -> it.header(Constants.USERTOKENID_HEADER, "something"))
-                .oneShot(Api.class, Api::call_with_stub);
-
-        //then
-        verify(nestedController).isCallValid(eq(expected));
-        nestedRuntime.stop();
-    }
-
-    @Test
     public void can_call_with_injected_stub_gets_apptoken() {
         //Given
         TestServiceFull.Call expected = getCall().toBuilder()
@@ -241,6 +213,7 @@ public class JerseyClientAddonTest {
         return TestServiceFull.Call.builder()
                 .header("Accept", "application/json")
                 .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
+                .header(Constants.CLIENT_APPNAME_HEADER, "anonymous_service:3.0")
                 .build();
     }
 }

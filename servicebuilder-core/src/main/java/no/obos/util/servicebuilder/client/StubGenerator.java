@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
@@ -17,15 +16,12 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.net.URI;
-import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class StubGenerator {
     //    final String appToken;
     final Client client;
     final URI uri;
-    @Wither(AccessLevel.PRIVATE)
-    Supplier<String> appTokenSupplier;
     @Wither(AccessLevel.PRIVATE)
     final boolean logging;
     @Wither(AccessLevel.PRIVATE)
@@ -36,7 +32,7 @@ public class StubGenerator {
     final ImmutableMap<String, String> headers;
 
     public static StubGenerator defaults(Client client, URI uri) {
-        return new StubGenerator(client, uri, null, true, "api", ImmutableList.of(), ImmutableMap.of());
+        return new StubGenerator(client, uri, true, "api", ImmutableList.of(), ImmutableMap.of());
     }
 
     public <T> T generateClient(Class<T> resource) {
@@ -46,12 +42,8 @@ public class StubGenerator {
 
         MultivaluedMap<String, Object> headerArg = new MultivaluedHashMap<>(headers);
 
-        if(appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
-            headerArg.putSingle(Constants.APPTOKENID_HEADER, appTokenSupplier.get());
-        }
-
         WebTarget webTarget = clientToUse.target(uri);
-        if(apiPath != null) {
+        if (apiPath != null) {
             webTarget = webTarget.path(apiPath);
         }
         webTarget.register(ClientErrorResponseFilter.class);
@@ -68,9 +60,7 @@ public class StubGenerator {
 
     public StubGenerator cookie(Cookie cookie) {return withCookies(GuavaHelper.plus(cookies, cookie));}
 
-    public StubGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {return withAppTokenSupplier(appTokenSupplier);}
-
     public StubGenerator logging(boolean logging) {return withLogging(logging);}
 
-    public StubGenerator apiPath(String apiPrefix) {return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.appTokenSupplier, this.logging, apiPrefix, this.cookies, this.headers);}
+    public StubGenerator apiPath(String apiPrefix) {return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.logging, apiPrefix, this.cookies, this.headers);}
 }

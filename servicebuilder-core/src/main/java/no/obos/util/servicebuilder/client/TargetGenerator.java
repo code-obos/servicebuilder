@@ -5,7 +5,6 @@ import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import javax.ws.rs.client.Client;
@@ -13,7 +12,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import java.net.URI;
 import java.util.Map;
-import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TargetGenerator {
@@ -25,11 +23,9 @@ public class TargetGenerator {
     final boolean throwExceptionForErrors;
     @Wither(AccessLevel.PRIVATE)
     final boolean logging;
-    @Wither(AccessLevel.PRIVATE)
-    final Supplier<String> appTokenSupplier;
 
     public static TargetGenerator defaults(Client client, URI uri) {
-        return new TargetGenerator(client, uri, ImmutableMap.of(), false, true, null);
+        return new TargetGenerator(client, uri, ImmutableMap.of(), false, true);
     }
 
     public WebTarget generate() {
@@ -40,10 +36,6 @@ public class TargetGenerator {
         WebTarget target = clientToUse.target(uri);
 
         final Map<String, String> headersToUse = Maps.newHashMap(headers);
-
-        if (appTokenSupplier != null && ! headers.containsKey(Constants.APPTOKENID_HEADER)) {
-            headersToUse.put(Constants.APPTOKENID_HEADER, appTokenSupplier.get());
-        }
 
 
         if (! headersToUse.isEmpty()) {
@@ -67,6 +59,4 @@ public class TargetGenerator {
     public TargetGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {return withThrowExceptionForErrors(throwExceptionForErrors);}
 
     public TargetGenerator logging(boolean logging) {return withLogging(logging);}
-
-    public TargetGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {return withAppTokenSupplier(appTokenSupplier);}
 }

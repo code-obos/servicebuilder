@@ -30,6 +30,7 @@ import org.jvnet.hk2.annotations.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -49,8 +50,6 @@ public class JerseyClientAddon implements Addon {
     public final ServiceDefinition serviceDefinition;
     @Wither(AccessLevel.PRIVATE)
     public final URI uri;
-    @Wither(AccessLevel.PRIVATE)
-    public final boolean forwardUsertoken;
     @Wither(AccessLevel.PRIVATE)
     public final boolean apptoken;
     @Wither(AccessLevel.PRIVATE)
@@ -72,7 +71,7 @@ public class JerseyClientAddon implements Addon {
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
         String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
-        return new JerseyClientAddon(serviceDefinition, null, false, true, "api", null, true, true, true, null, apiVersion, null);
+        return new JerseyClientAddon(serviceDefinition, null, true, "api", null, true, true, true, null, apiVersion, null);
     }
 
 
@@ -113,12 +112,10 @@ public class JerseyClientAddon implements Addon {
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
                 .clientAppName(clientAppName)
+                .appTokenSupplier(appTokenIdSupplier)
                 .generate();
         StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
 
-        if (appTokenIdSupplier != null) {
-            stubGenerator = stubGenerator.appTokenSupplier(appTokenIdSupplier);
-        }
         return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator));
     }
 
@@ -134,7 +131,7 @@ public class JerseyClientAddon implements Addon {
                     serviceDefinition.getResources().forEach(clazz -> {
                                 binder.bind(this).to(JerseyClientAddon.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
-                                binder.bindFactory(StubFactory.class).to(clazz);
+                                binder.bindFactory(StubFactory.class).to(clazz).in(Singleton.class);
                             }
 
                     );
@@ -169,11 +166,6 @@ public class JerseyClientAddon implements Addon {
 
             StubGenerator generator = configuration.runtime.generator
                     .apiPath(configuration.apiPrefix);
-
-            String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            if (userToken != null) {
-                generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
-            }
 
 
             return generator
@@ -216,16 +208,6 @@ public class JerseyClientAddon implements Addon {
             TargetGenerator generator = TargetGenerator.defaults(client, configuration.uri)
                     .throwExceptionForErrors(true);
 
-            String userToken = configuration.forwardUsertoken ? headers.getHeaderString(Constants.USERTOKENID_HEADER) : null;
-            if (userToken != null) {
-                generator = generator.header(Constants.USERTOKENID_HEADER, userToken);
-            }
-
-            Supplier<String> appTokenIdSupplier = configuration.apptoken ? configuration.appTokenIdSupplier : null;
-            if (appTokenIdSupplier != null) {
-                generator = generator.appTokenSupplier(appTokenIdSupplier);
-            }
-
             return generator.generate();
         }
 
@@ -245,8 +227,6 @@ public class JerseyClientAddon implements Addon {
 
 
     public JerseyClientAddon uri(URI uri) {return withUri(uri);}
-
-    public JerseyClientAddon forwardUsertoken(boolean forwardUsertoken) {return withForwardUsertoken(forwardUsertoken);}
 
     public JerseyClientAddon apptoken(boolean apptoken) {return withApptoken(apptoken);}
 
