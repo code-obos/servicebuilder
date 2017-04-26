@@ -41,7 +41,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
-        DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "user", "password");
+        DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:;DB_CLOSE_DELAY=-1", "user", "password");
         scripts.forEach(script -> {
 
             try {
