@@ -213,7 +213,7 @@ public class JerseyClientAddonTest {
         return TestServiceFull.Call.builder()
                 .header("Accept", "application/json")
                 .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
-                .header(Constants.CLIENT_APPNAME_HEADER, "anonymous_service:3.1")
+                .header(Constants.CLIENT_APPNAME_HEADER, "anonymous_service:3.0")
                 .build();
     }
 }

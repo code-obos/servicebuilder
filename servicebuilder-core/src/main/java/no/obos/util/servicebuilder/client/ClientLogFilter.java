@@ -18,7 +18,7 @@ public class ClientLogFilter implements ClientRequestFilter, ClientResponseFilte
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
         requestContext.setProperty(PROPERTYNAME, System.nanoTime());
-        log.debug(getCallSignature(requestContext));
+        log.info(getCallSignature(requestContext));
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ClientLogFilter implements ClientRequestFilter, ClientResponseFilte
             long totalNanos = System.nanoTime() - startNanos;
             totalMillis = totalNanos / 1_000_000;
         }
-        log.debug(getCallSignature(requestContext) + " response: " + responseContext.getStatus() + ", millis: " + totalMillis);
+        log.info(getCallSignature(requestContext) + " response: " + responseContext.getStatus() + ", millis: " + totalMillis);
     }
 
     private static String getCallSignature(ClientRequestContext requestContext) {
