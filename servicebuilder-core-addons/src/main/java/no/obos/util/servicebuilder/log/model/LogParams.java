@@ -50,7 +50,7 @@ public class LogParams {
     @Wither(AccessLevel.PRIVATE)
     public final boolean logRequestPayload;
 
-    public final static LogParams defaults = new LogParams(true, LogLevel.DEBUG, false, ImmutableSet.of(), true, true);
+    public final static LogParams defaults = new LogParams(true, LogLevel.INFO, false, ImmutableSet.of(), true, true);
 
     public LogParams enableLogging(boolean enableLogging) {return withEnableLogging(enableLogging);}
 

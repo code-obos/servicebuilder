@@ -39,8 +39,6 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        log.debug("Request headers: {}", requestContext.getHeaders());
-
         if (allwaysAccept(requestContext)) {
             return;
         }
