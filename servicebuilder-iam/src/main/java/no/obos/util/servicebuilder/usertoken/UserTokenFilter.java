@@ -10,6 +10,7 @@ import no.obos.iam.tokenservice.UserToken;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.UibBruker;
+import org.jvnet.hk2.annotations.Optional;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -31,11 +32,17 @@ public class UserTokenFilter implements ContainerRequestFilter {
 
     private final TokenServiceClient tokenServiceClient;
     private final UserTokenFilterAddon configuration;
+    private final UserTokenAuthenticatedHandler authenticatedHandler;
 
     @Inject
-    public UserTokenFilter(TokenServiceClient tokenServiceClient, UserTokenFilterAddon configuration) {
+    public UserTokenFilter(
+            TokenServiceClient tokenServiceClient,
+            UserTokenFilterAddon configuration,
+            @Optional UserTokenAuthenticatedHandler authenticatedHandler)
+    {
         this.tokenServiceClient = tokenServiceClient;
         this.configuration = configuration;
+        this.authenticatedHandler = authenticatedHandler;
     }
 
     @Override
@@ -61,7 +68,9 @@ public class UserTokenFilter implements ContainerRequestFilter {
 
         requestContext.setSecurityContext(new AutentiseringsContext(brukerPrincipal, tilganger));
 
-        configuration.postVerificationCallback.accept(requestContext);
+        if (authenticatedHandler != null) {
+            authenticatedHandler.handle(requestContext);
+        }
     }
 
     private ImmutableSet<String> extractRolesAllowed(UserToken userToken, UibBruker bruker) {
