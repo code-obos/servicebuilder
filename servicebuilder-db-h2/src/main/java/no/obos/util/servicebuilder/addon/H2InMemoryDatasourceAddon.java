@@ -1,7 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +15,8 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 /**
  * Knytter opp en datakilde og binder BasicDatasource og QueryRunner til hk2.
@@ -32,16 +33,20 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
     @Getter
     @Wither(AccessLevel.PRIVATE)
     public final DataSource dataSource;
+    @Getter
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean unitTest;
 
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<String> scripts;
 
-    public static H2InMemoryDatasourceAddon defaults = new H2InMemoryDatasourceAddon(null, null, ImmutableList.of());
-
+    public static H2InMemoryDatasourceAddon defaults = new H2InMemoryDatasourceAddon(null, null, true, ImmutableList.of());
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
-        DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:;DB_CLOSE_DELAY=-1", "user", "password");
+        String databaseName = unitTest ? "" : ! isNullOrEmpty(name) ? name : "test";
+
+        DataSource dataSource = JdbcConnectionPool.create("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1", "user", "password");
         scripts.forEach(script -> {
 
             try {
@@ -56,12 +61,10 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
         return this.withDataSource(dataSource);
     }
 
-
-
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
-                    if (! Strings.isNullOrEmpty(name)) {
+                    if (! isNullOrEmpty(name)) {
                         binder.bind(dataSource).named(name).to(DataSource.class);
                     } else {
                         binder.bind(dataSource).to(DataSource.class);
@@ -79,6 +82,15 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
         return withScripts(GuavaHelper.plus(scripts, "INSERT INTO " + table + " VALUES (" + attributes + ");"));
     }
 
-    public H2InMemoryDatasourceAddon name(String name) {return withName(name);}
+    public H2InMemoryDatasourceAddon name(String name) {
+        return withName(name);
+    }
+
+    /**
+     * Configures H2 to construct a new database for each connection.
+     */
+    public H2InMemoryDatasourceAddon unitTest(boolean unitTest) {
+        return withUnitTest(unitTest);
+    }
 
 }
