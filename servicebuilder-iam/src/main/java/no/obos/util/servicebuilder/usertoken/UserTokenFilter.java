@@ -4,6 +4,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Singular;
+import lombok.Value;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.iam.tokenservice.UserToken;
@@ -61,9 +64,6 @@ public class UserTokenFilter implements ContainerRequestFilter {
         }
 
         UibBrukerPrincipal brukerPrincipal = UibBrukerPrincipal.ofUserToken(userToken);
-        if (brukerPrincipal == null) {
-            throw new RuntimeException("Kunne ikke konvertere UserTokenId '" + usertokenId + "' (UserToken '" + userToken + "') til UibBruker");
-        }
         ImmutableSet<String> tilganger = extractRolesAllowed(userToken, brukerPrincipal.uibBruker);
 
         requestContext.setSecurityContext(new AutentiseringsContext(brukerPrincipal, tilganger));
@@ -90,12 +90,15 @@ public class UserTokenFilter implements ContainerRequestFilter {
         );
     }
 
+    @Value
+    @Builder(toBuilder = true)
     @AllArgsConstructor
     public static class AutentiseringsContext implements SecurityContext {
 
-        private final UibBrukerPrincipal bruker;
-        private final ImmutableSet<String> tilganger;
+        UibBrukerPrincipal bruker;
 
+        @Singular("tilgang")
+        ImmutableSet<String> tilganger;
 
         @Override
         public Principal getUserPrincipal() {
