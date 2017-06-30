@@ -15,7 +15,9 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstantiationData;
 import org.glassfish.hk2.api.InstantiationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.jersey.process.internal.RequestScoped;
 import org.skife.jdbi.v2.DBI;
+import org.skife.jdbi.v2.Handle;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
@@ -52,14 +54,19 @@ public class JdbiAddon implements Addon {
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
+        jerseyConfig.addRegistations(registrator -> registrator.register(JdbiAddonTransactionFilter.class));
         if (name != null) {
             jerseyConfig.addBinder(binder -> binder.bind(dbi).to(DBI.class).named(name));
+            jerseyConfig.addBinder(binder -> binder.bindFactory(HandleFactory.class).to(Handle.class).named(name).in(RequestScoped.class));
         } else {
             jerseyConfig.addBinder(binder -> binder.bind(dbi).to(DBI.class));
+            jerseyConfig.addBinder(binder -> binder.bindFactory(HandleFactory.class).to(Handle.class).in(RequestScoped.class));
         }
         jerseyConfig.addBinder(binder ->
                 daos.forEach(clazz -> {
-                            binder.bind(dbi).to(DBI.class).named(clazz.getCanonicalName());
+                            if (name != null) {
+                                binder.bind(name).to(String.class).named(clazz.getCanonicalName());
+                            }
                             //noinspection unchecked
                             binder.bindFactory(DaoFactory.class).to(clazz);
                         }
@@ -81,9 +88,16 @@ public class JdbiAddon implements Addon {
 
         public Object provide() {
             Class<?> requiredType = getDaoClass();
-            DBI dbi = serviceLocator.getService(DBI.class, requiredType.getCanonicalName());
+            String name = serviceLocator.getService(String.class, requiredType.getCanonicalName());
 
-            return dbi.onDemand(requiredType);
+            Handle handle;
+            if(name != null) {
+                handle = serviceLocator.getService(Handle.class, name);
+            } else {
+                handle = serviceLocator.getService(Handle.class);
+            }
+
+            return handle.attach(requiredType);
         }
 
         @Override
@@ -97,6 +111,26 @@ public class JdbiAddon implements Addon {
             return (Class) parentInjectee.getRequiredType();
         }
     }
+
+
+    public static class HandleFactory implements Factory<Handle> {
+        @Inject
+        DBI dbi;
+
+        @Override
+        public Handle provide() {
+            return dbi.open();
+        }
+
+        @Override
+        public void dispose(Handle instance) {
+            if (instance.isInTransaction()) {
+                instance.rollback();
+            }
+            instance.close();
+        }
+    }
+
 
     public <T> T createDao(Class<T> requiredType) {
         return dbi.onDemand(requiredType);
