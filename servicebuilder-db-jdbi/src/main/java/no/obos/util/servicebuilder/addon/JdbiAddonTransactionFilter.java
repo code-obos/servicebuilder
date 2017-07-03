@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.annotations.Transactional;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.skife.jdbi.v2.Handle;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Arrays;
 
+@Slf4j
 public class JdbiAddonTransactionFilter implements ContainerRequestFilter, ContainerResponseFilter {
     private final ResourceInfo requestInfo;
     private final ServiceLocator serviceLocator;
@@ -53,6 +55,7 @@ public class JdbiAddonTransactionFilter implements ContainerRequestFilter, Conta
                         if (responseContext.getStatusInfo().getFamily() == Response.Status.Family.SUCCESSFUL) {
                             handle.commit();
                         } else {
+                            log.debug("Rolling back transaction");
                             handle.rollback();
                         }
 

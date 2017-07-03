@@ -33,9 +33,11 @@ public class JdbiAddon implements Addon {
     public final DBI dbi;
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Class<?>> daos;
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean automaticTransactions;
 
     public static final JdbiAddon defaults =
-            new JdbiAddon(null, null, ImmutableList.of());
+            new JdbiAddon(null, null, ImmutableList.of(), true);
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
@@ -56,9 +58,11 @@ public class JdbiAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> registrator.register(JdbiAddonTransactionFilter.class));
         if (name != null) {
+            jerseyConfig.addBinder(binder -> binder.bindAsContract(TransactJdbi.class).named(name));
             jerseyConfig.addBinder(binder -> binder.bind(dbi).to(DBI.class).named(name));
             jerseyConfig.addBinder(binder -> binder.bindFactory(HandleFactory.class).to(Handle.class).named(name).in(RequestScoped.class));
         } else {
+            jerseyConfig.addBinder(binder -> binder.bindAsContract(TransactJdbi.class));
             jerseyConfig.addBinder(binder -> binder.bind(dbi).to(DBI.class));
             jerseyConfig.addBinder(binder -> binder.bindFactory(HandleFactory.class).to(Handle.class).in(RequestScoped.class));
         }
@@ -91,7 +95,7 @@ public class JdbiAddon implements Addon {
             String name = serviceLocator.getService(String.class, requiredType.getCanonicalName());
 
             Handle handle;
-            if(name != null) {
+            if (name != null) {
                 handle = serviceLocator.getService(Handle.class, name);
             } else {
                 handle = serviceLocator.getService(Handle.class);
@@ -140,6 +144,7 @@ public class JdbiAddon implements Addon {
     @Override
     public Set<Class<?>> initializeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
 
+
     public JdbiAddon dao(Class<?> dao) {
         return withDaos(GuavaHelper.plus(daos, dao));
     }
@@ -147,4 +152,7 @@ public class JdbiAddon implements Addon {
     public JdbiAddon name(String name) {return withName(name);}
 
     public JdbiAddon dbi(DBI dbi) {return withDbi(dbi);}
+
+    public JdbiAddon automaticTransactions(boolean toSet) {return withAutomaticTransactions(toSet);}
+
 }
