@@ -42,6 +42,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-activemq</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
