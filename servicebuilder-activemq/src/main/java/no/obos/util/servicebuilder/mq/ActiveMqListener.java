@@ -21,7 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static no.obos.util.log.ObosLogFilter.X_OBOS_REQUEST_ID;
+import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
+
 
 @Slf4j
 public class ActiveMqListener implements MessageQueueListener {

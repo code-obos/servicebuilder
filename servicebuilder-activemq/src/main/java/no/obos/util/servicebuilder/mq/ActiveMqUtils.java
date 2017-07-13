@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.mq;
 
-import no.obos.util.log.ObosLogFilter;
 import org.apache.activemq.ActiveMQConnection;
 import org.slf4j.MDC;
 
@@ -11,6 +10,8 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import java.net.URISyntaxException;
 
+import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
+
 class ActiveMqUtils {
 
     static void queueMessage(Session session, String text, String queueName) {
@@ -19,7 +20,7 @@ class ActiveMqUtils {
             MessageProducer producer = session.createProducer(queue);
 
             TextMessage message = session.createTextMessage(text);
-            message.setJMSCorrelationID(MDC.get(ObosLogFilter.X_OBOS_REQUEST_ID));
+            message.setJMSCorrelationID(MDC.get(X_OBOS_REQUEST_ID));
 
             producer.send(message);
             session.commit();
