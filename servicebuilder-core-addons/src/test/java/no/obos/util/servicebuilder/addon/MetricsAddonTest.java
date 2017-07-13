@@ -58,7 +58,7 @@ public class MetricsAddonTest {
                         .request()
                         .get()
                 );
-        assertThat(call.readEntity(String.class)).isEqualTo("{\"Thread deadlocks\":{\"healthy\":true},\"test: http://no.way.this.is.a.valid.address.zzz:23456/s4.0\":{\"healthy\":false,\"message\":\"no.way.this.is.a.valid.address.zzz\"}}");
+        assertThat(call.readEntity(String.class)).isEqualTo("{\"Thread deadlocks\":{\"healthy\":true},\"test: http://no.way.this.is.a.valid.address.zzz:23456/s4.1\":{\"healthy\":false,\"message\":\"no.way.this.is.a.valid.address.zzz\"}}");
     }
 
 }
