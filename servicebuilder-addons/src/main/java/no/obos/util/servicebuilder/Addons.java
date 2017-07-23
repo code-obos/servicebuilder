@@ -8,6 +8,7 @@ import no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon;
 import no.obos.util.servicebuilder.addon.JdbiAddon;
 import no.obos.util.servicebuilder.addon.JerseyClientAddon;
 import no.obos.util.servicebuilder.addon.MetricsAddon;
+import no.obos.util.servicebuilder.addon.MqAddon;
 import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.addon.QueryRunnerAddon;
 import no.obos.util.servicebuilder.addon.RequireAppNameHeaderAddon;
@@ -17,6 +18,7 @@ import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.WebAppAddon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.mq.ActiveMqAddon;
 
 public class Addons {
 
@@ -126,21 +128,22 @@ public class Addons {
     /*
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-activemq</artifactId>
+            <artifactId>servicebuilder-mq</artifactId>
         </dependency>
-    */
-    public static ActiveMqListenerAddon activeMqListener() {
-        return ActiveMqListenerAddon.defaults;
+     */
+    public static MqAddon mq() {
+        return MqAddon.defaults;
     }
+
 
     /*
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-activemq</artifactId>
+            <artifactId>servicebuilder-mq-activemq</artifactId>
         </dependency>
-    */
-    public static ActiveMqSenderAddon activeMqSender() {
-        return ActiveMqSenderAddon.defaults;
+     */
+    public static ActiveMqAddon activeMq() {
+        return ActiveMqAddon.defaults;
     }
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
