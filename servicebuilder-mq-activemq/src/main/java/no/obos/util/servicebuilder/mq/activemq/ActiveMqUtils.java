@@ -1,5 +1,7 @@
-package no.obos.util.servicebuilder.mq;
+package no.obos.util.servicebuilder.mq.activemq;
 
+import lombok.extern.slf4j.Slf4j;
+import no.obos.util.servicebuilder.mq.MessageQueueException;
 import org.apache.activemq.ActiveMQConnection;
 import org.slf4j.MDC;
 
@@ -12,7 +14,10 @@ import java.net.URISyntaxException;
 
 import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 
-class ActiveMqUtils {
+/**
+ * Various helper functions for activemq
+ */
+@Slf4j class ActiveMqUtils {
 
     static void queueMessage(Session session, String text, String queueName) {
         try {
@@ -23,7 +28,6 @@ class ActiveMqUtils {
             message.setJMSCorrelationID(MDC.get(X_OBOS_REQUEST_ID));
 
             producer.send(message);
-            session.commit();
         } catch (JMSException ex) {
             throw new MessageQueueException("Could not queue message '" + text + "'", ex);
         }
@@ -43,16 +47,24 @@ class ActiveMqUtils {
         try {
             return connection.createSession(true, Session.CLIENT_ACKNOWLEDGE);
         } catch (JMSException ex) {
+            closeConnection(connection);
             throw new MessageQueueException("Could not start ActiveMQ session ", ex);
         }
     }
 
-    static void closeConnection(Session session, ActiveMQConnection connection) {
+    static void closeConnection(ActiveMQConnection connection) {
         try {
-            session.close();
             connection.close();
         } catch (JMSException ex) {
             throw new MessageQueueException("Could not close session connection", ex);
+        }
+    }
+
+    static void closeConnectionNoException(ActiveMQConnection connection) {
+        try {
+            connection.close();
+        } catch (JMSException ex) {
+            log.error("Could not close session connection", ex);
         }
     }
 

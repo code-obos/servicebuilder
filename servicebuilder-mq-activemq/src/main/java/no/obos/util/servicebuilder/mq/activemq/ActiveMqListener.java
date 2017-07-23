@@ -1,0 +1,68 @@
+package no.obos.util.servicebuilder.mq.activemq;
+
+import com.google.common.collect.ImmutableSet;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import no.obos.util.servicebuilder.mq.HandlerDescription;
+import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
+import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+
+import javax.jms.JMSException;
+
+/**
+ * Handles connecting several listeners to activemq in single session, reconnection and status for monitoring.
+ */
+@Slf4j
+@Builder
+public class ActiveMqListener {
+    private final ActiveMqConnectionProvider activeMqConnectionProvider;
+
+    private final ImmutableSet<HandlerDescription<?>> handlerDescriptions;
+    private final MqHandlerForwarder mqHandlerForwarder;
+
+    @Getter
+    private boolean listenerActive = false;
+
+    public void startListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
+        log.debug("Starting listener...");
+        if (listenerActive) {
+            throw new RuntimeException("Multiple active sessions in same listener. Check if starting connection threw exception and ActiveMQ ActiveMQConnection.setExceptionListener() failed at the same time.");
+        }
+        try {
+            activeMqConnectionProvider.startListenerSession(session -> {
+                for (MqHandlerImpl<?> handlerDescription : handlers) {
+                    try {
+                        ActiveMqQueueListener activeMqListener = ActiveMqQueueListener.builder()
+                                .handler(handlerDescription)
+                                .session(session)
+                                .mqHandlerForwarder(mqHandlerForwarder)
+                                .build();
+                        activeMqListener.startListener();
+                        listenerActive = true;
+                    } catch (JMSException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }, () -> restartListener(handlers));
+        } catch (RuntimeException e) {
+            log.error("Caught exception during start of listener, restarting");
+            restartListener(handlers);
+        }
+    }
+
+    private void restartListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
+        log.info("Restarting activeMQ connection in 10 seconds.");
+        listenerActive = false;
+        boolean interrupted = false;
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            log.info("Interrupted.");
+            interrupted = true;
+        }
+        if (! interrupted) {
+            startListener(handlers);
+        }
+    }
+}

@@ -31,4 +31,8 @@ public class GuavaHelper {
     public static <T> Collector<T, ImmutableList.Builder<T>, ImmutableList<T>> listCollector() {
         return Collector.of(ImmutableList.Builder<T>::new, ImmutableList.Builder<T>::add, (l, r) -> l.addAll(r.build()), ImmutableList.Builder<T>::build);
     }
+
+    public static <T> Collector<T, ImmutableSet.Builder<T>, ImmutableSet<T>> setCollector() {
+        return Collector.of(ImmutableSet.Builder<T>::new, ImmutableSet.Builder<T>::add, (l, r) -> l.addAll(r.build()), ImmutableSet.Builder<T>::build);
+    }
 }

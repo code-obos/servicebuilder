@@ -44,7 +44,13 @@
 
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-activemq</artifactId>
+            <artifactId>servicebuilder-mq</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-mq-activemq</artifactId>
             <scope>provided</scope>
         </dependency>
 

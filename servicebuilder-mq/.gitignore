@@ -1,6 +1,6 @@
 #Idea
 /.idea/
-/servicebuilder-activemq.iml
+/servicebuilder-mq.iml
 
 #Eclipse
 /.classpath
