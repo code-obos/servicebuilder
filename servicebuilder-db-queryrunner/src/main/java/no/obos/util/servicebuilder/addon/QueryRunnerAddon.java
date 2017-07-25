@@ -8,6 +8,7 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.queryrunner.QueryRunnerAdapter;
 import org.apache.commons.dbutils.QueryRunner;
 
 import javax.sql.DataSource;
@@ -39,7 +40,10 @@ public class QueryRunnerAddon implements Addon {
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
-        jerseyConfig.addBinder(binder -> binder.bind(queryRunner).to(QueryRunner.class));
+        jerseyConfig.addBinder(binder -> {
+            binder.bind(queryRunner).to(QueryRunner.class);
+            binder.bindAsContract(QueryRunnerAdapter.class);
+        });
     }
 
 
