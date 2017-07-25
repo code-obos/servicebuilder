@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
+import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
@@ -18,11 +19,13 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
 
 
+@Slf4j
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestServiceRunner {
     @Wither(AccessLevel.PRIVATE)
@@ -45,6 +48,7 @@ public class TestServiceRunner {
 
     @AllArgsConstructor
     public static class Runtime {
+        public final ServiceConfig serviceConfig;
         public final JerseyConfig jerseyConfig;
         public final TestContainer testContainer;
         public final ClientConfig clientConfig;
@@ -56,6 +60,13 @@ public class TestServiceRunner {
         public final Function<TargetGenerator, TargetGenerator> targetConfigurator;
 
         public void stop() {
+            serviceConfig.addons.forEach(addon -> {
+                try {
+                    addon.cleanUp();
+                } catch (RuntimeException ex) {
+                    log.error("Exception during cleanup", ex);
+                }
+            });
             testContainer.stop();
         }
 
@@ -71,6 +82,11 @@ public class TestServiceRunner {
         public <T, Y> T call(Class<Y> clazz, Function<Y, T> testfun) {
             StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).apiPath(null));
             return testfun.apply(stubGenerator.generateClient(clazz));
+        }
+
+        public <Y> void callVoid(Class<Y> clazz, Consumer<Y> testfun) {
+            StubGenerator stubGenerator = stubConfigurator.apply(StubGenerator.defaults(client, uri).apiPath(null));
+            testfun.accept(stubGenerator.generateClient(clazz));
         }
 
         public ResourceConfig getResourceConfig() {
@@ -102,7 +118,7 @@ public class TestServiceRunner {
         );
         Client client = clientGenerator.generate();
 
-        Runtime runtime = new Runtime(jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
+        Runtime runtime = new Runtime(serviceConfigWithContext, jerseyConfig, testContainer, clientConfig, uri, client, stubConfigurator, targetConfigurator);
         return withServiceConfig(serviceConfigWithContext).withRuntime(runtime);
     }
 
@@ -128,6 +144,15 @@ public class TestServiceRunner {
         Runtime runner = start().runtime;
         try {
             return runner.call(testfun);
+        } finally {
+            runner.stop();
+        }
+    }
+
+    public <Y> void oneShotVoid(Class<Y> clazz, Consumer<Y> testfun) {
+        Runtime runner = start().runtime;
+        try {
+            runner.callVoid(clazz, testfun);
         } finally {
             runner.stop();
         }

@@ -34,12 +34,12 @@ public class ActiveMqQueueListener {
 
         Queue queue = session.createQueue(handler.handlerDescription.messageDescription.getQueueName());
         MessageConsumer consumer = session.createConsumer(queue);
-        consumer.setMessageListener(this::handleMessage);
+        consumer.setMessageListener(it -> this.handleMessage(it, session));
         log.debug("Listening to {}", handler.handlerDescription.messageDescription.getQueueName());
     }
 
 
-    private void handleMessage(Message message) {
+    private void handleMessage(Message message, Session session) {
         if (! (message instanceof TextMessage)) {
             log.error("Expected text message, got: ", message.getClass().getName());
             return;
@@ -51,12 +51,15 @@ public class ActiveMqQueueListener {
         } catch (JMSException e) {
             log.error("Could not read text from message", e);
             toErrorQueue(message);
+            ActiveMqUtils.commitSession(session);
         }
         try {
             mqHandlerForwarder.forward(handler, text);
+            ActiveMqUtils.commitSession(session);
         } catch (RuntimeException ex) {
             log.info("Problem forwarding message. Prober logging should be logged by MqHandlerForwarder.");
             toErrorQueue(text);
+            ActiveMqUtils.commitSession(session);
         }
     }
 

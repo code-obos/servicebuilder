@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder;
 
+import no.obos.util.servicebuilder.addon.ActiveMqAddon;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.BasicDatasourceAddon;
 import no.obos.util.servicebuilder.addon.CorsFilterAddon;
@@ -18,7 +19,6 @@ import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.WebAppAddon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.ActiveMqAddon;
 
 public class Addons {
 

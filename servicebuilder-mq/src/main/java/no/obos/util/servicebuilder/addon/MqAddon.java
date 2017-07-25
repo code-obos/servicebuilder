@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.addon;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
-import no.obos.util.servicebuilder.mq.MqMessage;
+import no.obos.util.servicebuilder.mq.MqSender;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -47,28 +46,26 @@ public class MqAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
         serviceConfig.addBinder((binder) -> {
             handlers.forEach(handlerDescription ->
-                    binder.bind(handlerDescription.messageHandlerClass).to(handlerDescription.handlerTypeLiteral)
+                    binder.bind(handlerDescription.messageHandlerClass).to(handlerDescription.messageHandlerClass)
             );
             binder.bind(this).to(MqAddon.class);
         });
     }
 
-    public <T> MqAddon listen (MessageDescription<T> messageDescription, Class<MessageHandler<T>> messageHandler) {
-        TypeLiteral<MessageHandler<T>> typeLiteral = new TypeLiteral<MessageHandler<T>> (){};
+    public <T> MqAddon listen(MessageDescription<T> messageDescription, Class<? extends MessageHandler<T>> messageHandler) {
+        TypeLiteral<MessageHandler<T>> typeLiteral = new TypeLiteral<MessageHandler<T>>() {};
 
+        @SuppressWarnings("unchecked")
         HandlerDescription<T> handlerDescription = HandlerDescription.<T>builder()
                 .healthCheckEntriesGrace(60)
                 .healthCheckEntriesMax(1)
-                .handlerTypeLiteral(typeLiteral)
-                .messageTypeReference(new TypeReference<MqMessage<T>>() {})
                 .messageDescription(messageDescription)
-                .messageHandlerClass(messageHandler)
+                .messageHandlerClass((Class<MessageHandler<T>>) messageHandler)
                 .build();
         return this.withHandlers(GuavaHelper.plus(handlers, handlerDescription));
     }
 
-    public <T> MqAddon send(MessageDescription<T> messageDescription) {
-        TypeLiteral<MessageHandler<T>> typeLiteral = new TypeLiteral<MessageHandler<T>> (){};
+    public <T> MqAddon send(MessageDescription<T> messageDescription, TypeLiteral<MqSender<T>> typeLiteral) {
 
         SenderDescription<T> senderDescription = SenderDescription.<T>builder()
                 .messageDescription(messageDescription)

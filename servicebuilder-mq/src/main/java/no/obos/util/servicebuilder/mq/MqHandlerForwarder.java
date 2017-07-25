@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.mq;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,15 +35,16 @@ public class MqHandlerForwarder {
         String requestId = message.requestId != null
                 ? message.requestId
                 : UUID.randomUUID().toString();
-        if (message.requestId != null) {
+        if (message.requestId == null) {
             log.warn("Message did not contain requestid: " + messageText);
         }
         return requestId;
     }
 
     private <T> MqMessage<T> parseMessage(HandlerDescription<T> handlerDescription, String messageText) {
+        JavaType javaType = objectMapper.getTypeFactory().constructParametricType(MqMessage.class, handlerDescription.messageDescription.MessageType);
         try {
-            return objectMapper.readValue(messageText, handlerDescription.messageTypeReference);
+            return objectMapper.readValue(messageText, javaType);
         } catch (IOException e) {
             log.error("Problem parsing text of message."
                     + "\nType of message: " + handlerDescription.messageDescription.MessageType.getName()

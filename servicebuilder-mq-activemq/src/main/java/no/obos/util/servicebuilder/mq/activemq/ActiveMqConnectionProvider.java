@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.mq.MessageQueueException;
 import org.apache.activemq.ActiveMQConnection;
 
+import javax.jms.Connection;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.Session;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -23,7 +25,7 @@ public class ActiveMqConnectionProvider {
     private final String user;
     private final String password;
 
-    public void startListenerSession(Consumer<Session> fun, ErrorCallback onError) {
+    public void startListenerSession(BiConsumer<Connection, Session> fun, ErrorCallback onError) {
         ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
 
         ExceptionListener onErrorWithClose = (JMSException ex) -> {
@@ -38,7 +40,7 @@ public class ActiveMqConnectionProvider {
             throw new MessageQueueException(e);
         }
         Session session = ActiveMqUtils.startSession(connection);
-        fun.accept(session);
+        fun.accept(connection, session);
     }
 
     public <T> T inSessionWithReturn(Function<Session, T> fun) {
@@ -70,6 +72,6 @@ public class ActiveMqConnectionProvider {
 
 
     public interface ErrorCallback {
-        void onError ();
+        void onError();
     }
 }

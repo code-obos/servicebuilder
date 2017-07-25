@@ -17,7 +17,8 @@ import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 /**
  * Various helper functions for activemq
  */
-@Slf4j class ActiveMqUtils {
+@Slf4j
+class ActiveMqUtils {
 
     static void queueMessage(Session session, String text, String queueName) {
         try {
@@ -68,4 +69,11 @@ import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
         }
     }
 
+    static void commitSession(Session session) {
+        try {
+            session.commit();
+        } catch (JMSException e) {
+            throw new MessageQueueException("Could not commit", e);
+        }
+    }
 }

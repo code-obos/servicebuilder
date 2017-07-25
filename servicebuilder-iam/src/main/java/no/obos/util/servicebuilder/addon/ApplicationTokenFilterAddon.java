@@ -1,8 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,18 +14,12 @@ import no.obos.util.servicebuilder.applicationtoken.SwaggerImplicitAppTokenHeade
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
-import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Legger inn applikasjonsfilter. Avhenger av at TokenServiceAddon er lagt til.

@@ -8,7 +8,9 @@ import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 
+import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.jms.Session;
 
 /**
  * Handles connecting several listeners to activemq in single session, reconnection and status for monitoring.
@@ -24,13 +26,21 @@ public class ActiveMqListener {
     @Getter
     private boolean listenerActive = false;
 
+    private boolean abort = false;
+
+    private Connection connection = null;
+    private Session session = null;
+
     public void startListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
         log.debug("Starting listener...");
         if (listenerActive) {
             throw new RuntimeException("Multiple active sessions in same listener. Check if starting connection threw exception and ActiveMQ ActiveMQConnection.setExceptionListener() failed at the same time.");
         }
+        abort = false;
         try {
-            activeMqConnectionProvider.startListenerSession(session -> {
+            activeMqConnectionProvider.startListenerSession((connection, session) -> {
+                this.connection = connection;
+                this.session = session;
                 for (MqHandlerImpl<?> handlerDescription : handlers) {
                     try {
                         ActiveMqQueueListener activeMqListener = ActiveMqQueueListener.builder()
@@ -46,6 +56,7 @@ public class ActiveMqListener {
                 }
             }, () -> restartListener(handlers));
         } catch (RuntimeException e) {
+            this.session = null;
             log.error("Caught exception during start of listener, restarting");
             restartListener(handlers);
         }
@@ -54,15 +65,27 @@ public class ActiveMqListener {
     private void restartListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
         log.info("Restarting activeMQ connection in 10 seconds.");
         listenerActive = false;
-        boolean interrupted = false;
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             log.info("Interrupted.");
-            interrupted = true;
+            abort = true;
         }
-        if (! interrupted) {
+        if (! abort) {
             startListener(handlers);
+        }
+    }
+
+    public void stop() {
+        try {
+            session.close();
+        } catch (JMSException e) {
+            log.warn("Problem stopping session", e);
+        }
+        try {
+            connection.close();
+        } catch (JMSException e) {
+            log.warn("Problem stopping connection", e);
         }
     }
 }
