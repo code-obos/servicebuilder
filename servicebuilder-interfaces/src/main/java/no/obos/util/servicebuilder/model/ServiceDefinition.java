@@ -10,7 +10,7 @@ public interface ServiceDefinition {
 
     List<Class> getResources();
 
-    default List<MessageDescription> getHandledMessages() {
+    default List<MessageDescription<?>> getHandledMessages() {
         return ImmutableList.of();
     }
 

@@ -21,6 +21,13 @@ public class GuavaHelper {
                 .build();
     }
 
+    public static <T> ImmutableSet<T> plusAll(ImmutableSet<T> list, Iterable<T> iter) {
+        return ImmutableSet.<T>builder()
+                .addAll(list)
+                .addAll(iter)
+                .build();
+    }
+
     public static <K, V> ImmutableMap<K, V> plus(ImmutableMap<K, V> map, K key, V value) {
         return ImmutableMap.<K, V>builder()
                 .putAll(map)

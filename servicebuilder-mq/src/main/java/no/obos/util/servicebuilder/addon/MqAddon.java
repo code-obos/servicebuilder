@@ -26,7 +26,9 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Interface for queueing system.
@@ -82,14 +84,20 @@ public class MqAddon implements Addon {
         return this.withHandlers(GuavaHelper.plus(handlers, handlerDescription));
     }
 
-    public <T> MqAddon send(MessageDescription<T> messageDescription, TypeLiteral<MqSender<T>> typeLiteral, ServiceDefinition serviceDefinition) {
+    public MqAddon send(ServiceDefinition serviceDefinition) {
+        @SuppressWarnings("unchecked")
+        List<SenderDescription<?>> serviceDescriptions = serviceDefinition.getHandledMessages().stream()
+                .map(md -> makeSenderDescription(md, serviceDefinition))
+                .collect(Collectors.toList());
 
-        SenderDescription<T> senderDescription = SenderDescription.<T>builder()
+        return this.withSenders(GuavaHelper.plusAll(senders, serviceDescriptions));
+    }
+
+    private <T> SenderDescription<T> makeSenderDescription(MessageDescription<T> messageDescription, ServiceDefinition serviceDefinition) {
+        return SenderDescription.<T>builder()
                 .messageDescription(messageDescription)
-                .typeLiteral(typeLiteral)
                 .objectMapper(serviceDefinition.getJsonConfig().get())
                 .build();
-        return this.withSenders(GuavaHelper.plus(senders, senderDescription));
     }
 
     static class MqSenderResolver implements JustInTimeInjectionResolver {

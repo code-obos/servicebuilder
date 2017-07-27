@@ -17,7 +17,6 @@ import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MqSender;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.junit.Test;
 import org.slf4j.MDC;
 
@@ -55,7 +54,7 @@ public class MockMqSendReceiveTest {
     ServiceConfig serviceConfig = ServiceConfig.defaults(MyServiceDefinition.instance)
             .addon(MqAddon.defaults
                     .listen(MyServiceDefinition.myMessageV1, MyHandler.class)
-                    .send(MyServiceDefinition.myMessageV1, new TypeLiteral<MqSender<MyMessageV1>>() {}, MyServiceDefinition.instance)
+                    .send(MyServiceDefinition.instance)
             )
             .addon(MqMockAddon.defaults)
             .addon(ObosLogFilterAddon.defaults)
@@ -108,7 +107,7 @@ public class MockMqSendReceiveTest {
     @Getter
     static class MyServiceDefinition implements ServiceDefinition {
         final String name = "Banan";
-        final ImmutableList<MessageDescription> handledMessages = ImmutableList.of(myMessageV1);
+        final ImmutableList<MessageDescription<?>> handledMessages = ImmutableList.of(myMessageV1);
         final ImmutableList resources = ImmutableList.of(MyResource.class);
 
         public final static MessageDescription<MyMessageV1> myMessageV1 = MessageDescription.<MyMessageV1>builder()

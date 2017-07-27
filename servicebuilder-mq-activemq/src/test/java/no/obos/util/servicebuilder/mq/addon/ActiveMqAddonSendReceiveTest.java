@@ -18,7 +18,6 @@ import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MessageMeta;
 import no.obos.util.servicebuilder.mq.MqSender;
 import org.apache.activemq.broker.BrokerService;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -91,7 +90,7 @@ public class ActiveMqAddonSendReceiveTest {
     ServiceConfig serviceConfig = ServiceConfig.defaults(MyServiceDefinition.instance)
             .addon(MqAddon.defaults
                     .listen(MyServiceDefinition.myMessageV1, MyHandler.class)
-                    .send(MyServiceDefinition.myMessageV1, new TypeLiteral<MqSender<MyMessageV1>>() {}, MyServiceDefinition.instance)
+                    .send(MyServiceDefinition.instance)
             )
             .addon(ActiveMqAddon.defaults
                     .url(TCP_LOCALHOST_61616)
@@ -153,7 +152,7 @@ public class ActiveMqAddonSendReceiveTest {
     @Getter
     static class MyServiceDefinition implements ServiceDefinition {
         final String name = "Banan";
-        final ImmutableList<MessageDescription> handledMessages = ImmutableList.of(myMessageV1);
+        final ImmutableList<MessageDescription<?>> handledMessages = ImmutableList.of(myMessageV1);
         final ImmutableList resources = ImmutableList.of(MyResource.class);
 
         public final static MessageDescription<MyMessageV1> myMessageV1 = MessageDescription.<MyMessageV1>builder()
