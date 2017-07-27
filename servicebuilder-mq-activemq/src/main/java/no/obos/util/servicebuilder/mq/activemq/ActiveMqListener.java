@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+import no.obos.util.servicebuilder.mq.MqListener;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -17,7 +18,7 @@ import javax.jms.Session;
  */
 @Slf4j
 @Builder
-public class ActiveMqListener {
+public class ActiveMqListener implements MqListener {
     private final ActiveMqConnectionProvider activeMqConnectionProvider;
 
     private final ImmutableSet<HandlerDescription<?>> handlerDescriptions;
@@ -31,7 +32,13 @@ public class ActiveMqListener {
     private Connection connection = null;
     private Session session = null;
 
-    public void startListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
+    ImmutableSet<MqHandlerImpl<?>> handlers;
+
+    public void setHandlers(Iterable<MqHandlerImpl<?>> handlers) {
+        this.handlers = ImmutableSet.copyOf(handlers);
+    }
+
+    public void startListener() {
         log.debug("Starting listener...");
         if (listenerActive) {
             throw new RuntimeException("Multiple active sessions in same listener. Check if starting connection threw exception and ActiveMQ ActiveMQConnection.setExceptionListener() failed at the same time.");
@@ -73,7 +80,7 @@ public class ActiveMqListener {
             abort = true;
         }
         if (! abort) {
-            startListener(handlers);
+            startListener();
         }
     }
 

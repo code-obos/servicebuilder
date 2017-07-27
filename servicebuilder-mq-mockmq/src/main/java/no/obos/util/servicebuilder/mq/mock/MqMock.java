@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+import no.obos.util.servicebuilder.mq.MqListener;
 import no.obos.util.servicebuilder.mq.MqMessage;
 import no.obos.util.servicebuilder.mq.MqTextSender;
 import no.obos.util.servicebuilder.mq.SenderDescription;
@@ -31,7 +32,7 @@ import static com.google.common.collect.Streams.stream;
  * Mock queue intended for unit testing. Not intended to be run as a listening thread.
  */
 @Slf4j
-public class MqMock implements MqTextSender {
+public class MqMock implements MqTextSender, MqListener {
     final Map<String, SenderDescription<?>> senderDescriptions;
     final LinkedBlockingQueue<QueuedMessage> listeningQueue = Queues.newLinkedBlockingQueue();
     final ImmutableMap<String, CopyOnWriteArrayList<String>> sendingQueues;
@@ -68,11 +69,8 @@ public class MqMock implements MqTextSender {
 
     }
 
-    /**
-     * Only do this once, and before starting listener threads. If not the dark gods of multithreading will bring horrible
-     * agony on you and your children and your childrens children.
-     */
 
+    @Override
     public void setHandlers(Iterable<MqHandlerImpl<?>> handlers) {
         this.handlers = ImmutableMap.copyOf(
                 stream(handlers)
@@ -96,7 +94,8 @@ public class MqMock implements MqTextSender {
         }
     }
 
-    public void launchListenerThread() {
+    @Override
+    public void startListener() {
         if (! handlers.isEmpty()) {
             running = true;
             Runnable runnable = () -> {
@@ -184,7 +183,7 @@ public class MqMock implements MqTextSender {
      */
     public void finishWork() {
         stop();
-        launchListenerThread();
+        startListener();
     }
 
 

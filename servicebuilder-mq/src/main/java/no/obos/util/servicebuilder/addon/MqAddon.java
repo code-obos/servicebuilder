@@ -12,10 +12,21 @@ import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
+import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+import no.obos.util.servicebuilder.mq.MqListener;
 import no.obos.util.servicebuilder.mq.MqSender;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.util.GuavaHelper;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.JustInTimeInjectionResolver;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+
+import javax.inject.Inject;
+import javax.ws.rs.core.Feature;
+import javax.ws.rs.core.FeatureContext;
+import java.util.Map;
 
 /**
  * Interface for queueing system.
@@ -45,7 +56,12 @@ public class MqAddon implements Addon {
 
     @Override
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
+        // Feature is used to start the listeners immediately once dependencies are bound
+        serviceConfig.addRegistations(registrator -> registrator
+                .register(StartListenersFeature.class)
+        );
         serviceConfig.addBinder((binder) -> {
+            binder.bind(MqSenderResolver.class).to(JustInTimeInjectionResolver.class);
             handlers.forEach(handlerDescription ->
                     binder.bind(handlerDescription.messageHandlerClass).to(handlerDescription.messageHandlerClass)
             );
@@ -76,5 +92,50 @@ public class MqAddon implements Addon {
         return this.withSenders(GuavaHelper.plus(senders, senderDescription));
     }
 
+    static class MqSenderResolver implements JustInTimeInjectionResolver {
+        @Inject
+        ServiceLocator serviceLocator;
+        @Inject
+        Map<String, MqSender> senderMap;
+
+        @Override
+        public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+            String typeName = failedInjectionPoint.getRequiredType().getTypeName();
+            if (typeName.startsWith("no.obos.util.servicebuilder.mq.MqSender") && typeName.contains(">") && typeName.contains("<")) {
+                String messageName = typeName.substring(typeName.indexOf('<') + 1, typeName.indexOf('>'));
+                ServiceLocatorUtilities.addOneConstant(serviceLocator, senderMap.get(messageName), "null", failedInjectionPoint.getRequiredType());
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    private static class StartListenersFeature implements Feature {
+        @Inject
+        private ServiceLocator serviceLocator;
+
+        @Override
+        public boolean configure(FeatureContext context) {
+            // Iterates through all configurations, which contains the names of the listeners and handlers
+            MqListener listener = serviceLocator.getService(MqListener.class);
+            MqAddon mqAddon = serviceLocator.getService(MqAddon.class);
+            ImmutableSet<MqHandlerImpl<?>> handlers = mqAddon.handlers.stream()
+                    .map(this::getHandlerImpl)
+                    .collect(GuavaHelper.setCollector());
+            listener.setHandlers(handlers);
+            listener.startListener();
+            return true;
+        }
+
+        private <T> MqHandlerImpl<T> getHandlerImpl(HandlerDescription<T> handlerDescription) {
+            MessageHandler<T> service = serviceLocator.getService(handlerDescription.messageHandlerClass);
+            return MqHandlerImpl.<T>builder()
+                    .handlerDescription(handlerDescription)
+                    .messageHandler(service)
+                    .build();
+        }
+
+    }
 
 }

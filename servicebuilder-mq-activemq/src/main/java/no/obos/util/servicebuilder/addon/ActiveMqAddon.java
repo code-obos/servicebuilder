@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -12,21 +13,18 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.HandlerDescription;
-import no.obos.util.servicebuilder.mq.MessageHandler;
-import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+import no.obos.util.servicebuilder.mq.MqListener;
+import no.obos.util.servicebuilder.mq.MqSender;
 import no.obos.util.servicebuilder.mq.MqSenderImpl;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqConnectionProvider;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqListener;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqSender;
-import no.obos.util.servicebuilder.util.GuavaHelper;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * ActiveMQ backend for MqAddon
@@ -94,18 +92,19 @@ public class ActiveMqAddon implements Addon {
         ActiveMqSender activeMqSender = new ActiveMqSender(this.connectionProvider);
         serviceConfig.addBinder((binder) -> {
             binder.bind(this.connectionProvider).to(ActiveMqConnectionProvider.class);
-            binder.bind(this.listener).to(ActiveMqListener.class);
+            binder.bind(this.listener).to(MqListener.class);
 
-            mqAddon.senders.forEach(senderDescription -> {
-                MqSenderImpl<?> mqSenderImpl = getMqSender(activeMqSender, senderDescription);
-                binder.bind(mqSenderImpl).to(senderDescription.typeLiteral);
-            });
+            ImmutableMap<String, MqSender> senderMap = ImmutableMap.copyOf(
+                    mqAddon.senders.stream()
+                            .collect(Collectors.toMap(
+                                    sd -> sd.messageDescription.MessageType.getName(),
+                                    sd -> getMqSender(activeMqSender, sd)
+                            ))
+            );
+            binder.bind(senderMap).to(new TypeLiteral<Map<String, MqSender>>() {});
         });
 
-        // Feature is used to start the listeners immediately once dependencies are bound
-        serviceConfig.addRegistations(registrator -> registrator
-                .register(StartListenersFeature.class)
-        );
+
     }
 
     private <T> MqSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, SenderDescription<T> senderDescription) {
@@ -153,31 +152,7 @@ public class ActiveMqAddon implements Addon {
         }
     }
 
-    private static class StartListenersFeature implements Feature {
-        @Inject
-        private ServiceLocator serviceLocator;
 
-        @Override
-        public boolean configure(FeatureContext context) {
-            // Iterates through all configurations, which contains the names of the listeners and handlers
-            ActiveMqListener listener = serviceLocator.getService(ActiveMqListener.class);
-            MqAddon mqAddon = serviceLocator.getService(MqAddon.class);
-            ImmutableSet<MqHandlerImpl<?>> handlers = mqAddon.handlers.stream()
-                    .map(this::getHandlerImpl)
-                    .collect(GuavaHelper.setCollector());
-            listener.startListener(handlers);
-            return true;
-        }
-
-        private <T> MqHandlerImpl<T> getHandlerImpl(HandlerDescription<T> handlerDescription) {
-            MessageHandler<T> service = serviceLocator.getService(handlerDescription.messageHandlerClass);
-            return MqHandlerImpl.<T>builder()
-                    .handlerDescription(handlerDescription)
-                    .messageHandler(service)
-                    .build();
-        }
-
-    }
 
     public ActiveMqAddon url(String url) {return withUrl(url);}
 

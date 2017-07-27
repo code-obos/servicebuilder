@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,18 +9,14 @@ import no.obos.util.servicebuilder.BetweenTestsAddon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.HandlerDescription;
-import no.obos.util.servicebuilder.mq.MessageHandler;
-import no.obos.util.servicebuilder.mq.MqHandlerImpl;
+import no.obos.util.servicebuilder.mq.MqListener;
+import no.obos.util.servicebuilder.mq.MqSender;
 import no.obos.util.servicebuilder.mq.MqSenderImpl;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.mq.mock.MqMock;
-import no.obos.util.servicebuilder.util.GuavaHelper;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Feature;
-import javax.ws.rs.core.FeatureContext;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,18 +64,18 @@ public class MqMockAddon implements BetweenTestsAddon {
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
         serviceConfig.addBinder((binder) -> {
             binder.bind(this.mqMock).to(MqMock.class);
-
-            mqAddon.senders.forEach(senderDescription -> {
-                MqSenderImpl<?> mqSenderImpl = getMqSender(senderDescription);
-                binder.bind(mqSenderImpl).to(senderDescription.typeLiteral);
-            });
+            binder.bind(this.mqMock).to(MqListener.class);
+            ImmutableMap<String, MqSender> senderMap = ImmutableMap.copyOf(
+                    mqAddon.senders.stream()
+                            .collect(Collectors.toMap(
+                                    sd -> sd.messageDescription.MessageType.getName(),
+                                    this::getMqSender
+                            ))
+            );
+            binder.bind(senderMap).to(new TypeLiteral<Map<String, MqSender>>() {});
         });
-
-        // Feature is used to start the listeners immediately once dependencies are bound
-        serviceConfig.addRegistations(registrator -> registrator
-                .register(StartListenersFeature.class)
-        );
     }
+
 
     private <T> MqSenderImpl<T> getMqSender(SenderDescription<T> senderDescription) {
         return MqSenderImpl.<T>builder()
@@ -87,32 +84,6 @@ public class MqMockAddon implements BetweenTestsAddon {
                 .senderName(serviceDefinition.getName())
                 .objectMapper(serviceDefinition.getJsonConfig().get())
                 .build();
-    }
-
-    private static class StartListenersFeature implements Feature {
-        @Inject
-        private ServiceLocator serviceLocator;
-
-        @Override
-        public boolean configure(FeatureContext context) {
-            MqMock mqMock = serviceLocator.getService(MqMock.class);
-            MqAddon mqAddon = serviceLocator.getService(MqAddon.class);
-            ImmutableSet<MqHandlerImpl<?>> handlers = mqAddon.handlers.stream()
-                    .map(this::getHandlerImpl)
-                    .collect(GuavaHelper.setCollector());
-            mqMock.setHandlers(handlers);
-            mqMock.launchListenerThread();
-            return true;
-        }
-
-        private <T> MqHandlerImpl<T> getHandlerImpl(HandlerDescription<T> handlerDescription) {
-            MessageHandler<T> service = serviceLocator.getService(handlerDescription.messageHandlerClass);
-            return MqHandlerImpl.<T>builder()
-                    .handlerDescription(handlerDescription)
-                    .messageHandler(service)
-                    .build();
-        }
-
     }
 
     @Override
