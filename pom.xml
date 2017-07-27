@@ -32,6 +32,7 @@
         <module>servicebuilder-addons</module>
         <module>servicebuilder-mq</module>
         <module>servicebuilder-mq-activemq</module>
+        <module>servicebuilder-mq-mockmq</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -98,6 +99,11 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-mq-activemq</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-mq-mockmq</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-mq-mockmq.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+

@@ -69,6 +69,7 @@ public class ActiveMqListener {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
             log.info("Interrupted.");
+            Thread.currentThread().interrupt();
             abort = true;
         }
         if (! abort) {

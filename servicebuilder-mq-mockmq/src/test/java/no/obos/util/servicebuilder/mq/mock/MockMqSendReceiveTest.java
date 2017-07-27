@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.mq.addon;
+package no.obos.util.servicebuilder.mq.mock;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
@@ -6,22 +6,19 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.ActiveMqAddon;
 import no.obos.util.servicebuilder.addon.MqAddon;
+import no.obos.util.servicebuilder.addon.MqMockAddon;
 import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MessageHandler;
-import no.obos.util.servicebuilder.mq.MessageMeta;
 import no.obos.util.servicebuilder.mq.MqSender;
-import org.apache.activemq.broker.BrokerService;
 import org.glassfish.hk2.api.TypeLiteral;
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.slf4j.MDC;
 
 import javax.inject.Inject;
@@ -31,59 +28,26 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
-public class ActiveMqAddonSendReceiveTest {
-
-    public static final String TCP_LOCALHOST_61616 = "tcp://localhost:61616";
+@Slf4j
+public class MockMqSendReceiveTest {
 
     @Test
     public void sendAndReceiveMessage() {
-        BrokerService broker = null;
-        boolean fail = false;
-        try {
-            broker = new BrokerService();
-
-            // configure the broker
-            try {
-                broker.addConnector(TCP_LOCALHOST_61616);
-                broker.setPersistent(false);
-                broker.start();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-
-            MyMessageV1 expected = new MyMessageV1(LocalDate.now(), "brillefin");
-            ArgumentCaptor<MyMessageV1> myMessageV1ArgumentCator = ArgumentCaptor.forClass(MyMessageV1.class);
-            ArgumentCaptor<MessageMeta> messageMetaArgumentCaptor = ArgumentCaptor.forClass(MessageMeta.class);
-            TestServiceRunner.defaults(serviceConfig)
-                    .oneShotVoid(MyResource.class, it -> it.addToQueue(expected));
-            verify(messageHandler).handle(myMessageV1ArgumentCator.capture(), messageMetaArgumentCaptor.capture());
-
-            MyMessageV1 actual = myMessageV1ArgumentCator.getValue();
-            MessageMeta meta = messageMetaArgumentCaptor.getValue();
-
-            assertThat(actual).isEqualTo(expected);
-            assertThat(meta.sourceApp).isEqualTo(MyServiceDefinition.instance.getName());
-            assertThat(meta.requestId).isNotEmpty();
-        } finally {
-            if (broker != null) {
-                try {
-                    broker.stop();
-                } catch (Exception e) {
-                    System.out.println(e.toString());
-                    fail = true;
-                }
-            }
-        }
-        if (fail) {
-            Assert.fail();
-        }
+        MyMessageV1 expected = new MyMessageV1(LocalDate.now(), "brillefin");
+        TestServiceRunner.defaults(serviceConfig)
+                .chain()
+                .call(MyResource.class, it -> it.addToQueue(expected))
+                .withInjectee(MqMock.class, mq -> {
+                    List<MyMessageV1> queueContents = mq.getQueueContents(MyServiceDefinition.myMessageV1);
+                    assertThat(queueContents).isEqualTo(ImmutableList.of(expected));
+                })
+                .run();
     }
 
     final MyHandler messageHandler = mock(MyHandler.class);
@@ -93,9 +57,7 @@ public class ActiveMqAddonSendReceiveTest {
                     .listen(MyServiceDefinition.myMessageV1, MyHandler.class)
                     .send(MyServiceDefinition.myMessageV1, new TypeLiteral<MqSender<MyMessageV1>>() {}, MyServiceDefinition.instance)
             )
-            .addon(ActiveMqAddon.defaults
-                    .url(TCP_LOCALHOST_61616)
-            )
+            .addon(MqMockAddon.defaults)
             .addon(ObosLogFilterAddon.defaults)
             .bind(messageHandler, MyHandler.class)
             .bind(MyResourceImpl.class, MyResource.class);
@@ -138,13 +100,6 @@ public class ActiveMqAddonSendReceiveTest {
         public void addToQueue(MyMessageV1 messageV1) {
             MDC.put(Constants.X_OBOS_REQUEST_ID, UUID.randomUUID().toString());
             myMessageV1MqSender.send(messageV1);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
-            }
-
             MDC.remove(Constants.X_OBOS_REQUEST_ID);
         }
     }

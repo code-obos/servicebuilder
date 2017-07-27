@@ -8,6 +8,7 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.MessageDescription;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
@@ -65,11 +66,12 @@ public class MqAddon implements Addon {
         return this.withHandlers(GuavaHelper.plus(handlers, handlerDescription));
     }
 
-    public <T> MqAddon send(MessageDescription<T> messageDescription, TypeLiteral<MqSender<T>> typeLiteral) {
+    public <T> MqAddon send(MessageDescription<T> messageDescription, TypeLiteral<MqSender<T>> typeLiteral, ServiceDefinition serviceDefinition) {
 
         SenderDescription<T> senderDescription = SenderDescription.<T>builder()
                 .messageDescription(messageDescription)
                 .typeLiteral(typeLiteral)
+                .objectMapper(serviceDefinition.getJsonConfig().get())
                 .build();
         return this.withSenders(GuavaHelper.plus(senders, senderDescription));
     }

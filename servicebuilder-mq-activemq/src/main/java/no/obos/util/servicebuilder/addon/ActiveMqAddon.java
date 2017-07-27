@@ -113,7 +113,7 @@ public class ActiveMqAddon implements Addon {
                 .messageDescription(senderDescription.messageDescription)
                 .mqTextSender(activeMqSender)
                 .senderName(serviceDefinition.getName())
-                .objectMapper(serviceDefinition.getJsonConfig().get())
+                .objectMapper(senderDescription.objectMapper)
                 .build();
     }
 
