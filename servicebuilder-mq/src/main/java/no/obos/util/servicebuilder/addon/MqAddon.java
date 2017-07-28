@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
+import no.obos.util.servicebuilder.mq.MqSwaggerDecorator;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
@@ -25,6 +27,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Interface for queueing system.
@@ -42,9 +45,11 @@ public class MqAddon implements Addon {
     public final ImmutableSet<MessageDescription<?>> senders;
     @Wither(AccessLevel.PRIVATE)
     public final MqHandlerForwarder mqHandlerForwarder;
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean swagger;
 
 
-    public static MqAddon defaults = new MqAddon(ImmutableSet.of(), ImmutableSet.of(), null);
+    public static MqAddon defaults = new MqAddon(ImmutableSet.of(), ImmutableSet.of(), null, true);
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
@@ -65,6 +70,17 @@ public class MqAddon implements Addon {
             );
             binder.bind(this).to(MqAddon.class);
         });
+        if (swagger) {
+
+
+            MqSwaggerDecorator.handledMessages = ImmutableMap.copyOf(
+                    handlers.stream()
+                            .collect(Collectors.toMap(it -> it.messageDescription.name, it -> it.messageDescription))
+            );
+            serviceConfig.addRegistations(registrator -> registrator
+                    .register(MqSwaggerDecorator.class)
+            );
+        }
     }
 
     public <T> MqAddon listen(MessageDescription<T> messageDescription, Class<? extends MessageHandler<T>> messageHandler) {
@@ -128,4 +144,5 @@ public class MqAddon implements Addon {
 
     }
 
+    public MqAddon swagger(boolean swagger) {return withSwagger(swagger);}
 }

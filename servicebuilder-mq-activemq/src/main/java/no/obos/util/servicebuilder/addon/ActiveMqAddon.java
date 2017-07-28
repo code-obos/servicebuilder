@@ -124,7 +124,7 @@ public class ActiveMqAddon implements Addon {
             String queueInput = handlerDescription.messageDescription.getQueueName();
             String queueError = handlerDescription.messageDescription.getErrorQueueName();
             ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, handlerDescription.healthCheckEntriesMax, handlerDescription.healthCheckEntriesMax, user, password);
-            ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, user, password);
+            ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, 1, 60, user, password);
             ObosHealthCheckRegistry.registerCustomCheck("ActiveMqListener active", () ->
                     listener.isListenerActive()
                             ? ObosHealthCheckResult.ok()
