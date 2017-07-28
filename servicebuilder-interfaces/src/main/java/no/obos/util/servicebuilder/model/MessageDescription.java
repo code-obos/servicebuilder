@@ -14,6 +14,7 @@ public class MessageDescription<T> {
     public final Class<T> MessageType;
     private final String overriddenQueueName;
     private final String overriddenErrorQueueName;
+    @Builder.Default public final JsonConfig jsonConfig = JsonConfig.standard;
 
     public String getQueueName() {
         if (overriddenQueueName == null) {

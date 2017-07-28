@@ -15,7 +15,6 @@ import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
-import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
@@ -25,9 +24,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Interface for queueing system.
@@ -42,7 +39,7 @@ public class MqAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableSet<HandlerDescription<?>> handlers;
     @Wither(AccessLevel.PRIVATE)
-    public final ImmutableSet<SenderDescription<?>> senders;
+    public final ImmutableSet<MessageDescription<?>> senders;
     @Wither(AccessLevel.PRIVATE)
     public final MqHandlerForwarder mqHandlerForwarder;
 
@@ -82,19 +79,7 @@ public class MqAddon implements Addon {
     }
 
     public MqAddon send(ServiceDefinition serviceDefinition) {
-        @SuppressWarnings("unchecked")
-        List<SenderDescription<?>> serviceDescriptions = serviceDefinition.getHandledMessages().stream()
-                .map(md -> makeSenderDescription(md, serviceDefinition))
-                .collect(Collectors.toList());
-
-        return this.withSenders(GuavaHelper.plusAll(senders, serviceDescriptions));
-    }
-
-    private <T> SenderDescription<T> makeSenderDescription(MessageDescription<T> messageDescription, ServiceDefinition serviceDefinition) {
-        return SenderDescription.<T>builder()
-                .messageDescription(messageDescription)
-                .objectMapper(serviceDefinition.getJsonConfig().get())
-                .build();
+        return this.withSenders(GuavaHelper.plusAll(senders, serviceDefinition.getHandledMessages()));
     }
 
     static class MqSenderResolver implements JustInTimeInjectionResolver {

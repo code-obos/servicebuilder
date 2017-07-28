@@ -8,11 +8,11 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.BetweenTestsAddon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
+import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MessageSenderImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
-import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.mq.mock.MqMock;
 import org.glassfish.hk2.api.TypeLiteral;
 
@@ -68,7 +68,7 @@ public class MqMockAddon implements BetweenTestsAddon {
             ImmutableMap<String, MessageSender> senderMap = ImmutableMap.copyOf(
                     mqAddon.senders.stream()
                             .collect(Collectors.toMap(
-                                    sd -> sd.messageDescription.MessageType.getName(),
+                                    md -> md.MessageType.getName(),
                                     this::getMqSender
                             ))
             );
@@ -77,12 +77,11 @@ public class MqMockAddon implements BetweenTestsAddon {
     }
 
 
-    private <T> MessageSenderImpl<T> getMqSender(SenderDescription<T> senderDescription) {
+    private <T> MessageSenderImpl<T> getMqSender(MessageDescription<T> messageDescription) {
         return MessageSenderImpl.<T>builder()
-                .messageDescription(senderDescription.messageDescription)
+                .messageDescription(messageDescription)
                 .mqTextSender(mqMock)
                 .senderName(serviceDefinition.getName())
-                .objectMapper(serviceDefinition.getJsonConfig().get())
                 .build();
     }
 

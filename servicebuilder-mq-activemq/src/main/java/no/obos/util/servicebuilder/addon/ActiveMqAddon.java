@@ -11,12 +11,12 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.MessageDescription;
+import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.MqListener;
-import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.mq.MessageSenderImpl;
-import no.obos.util.servicebuilder.mq.SenderDescription;
+import no.obos.util.servicebuilder.mq.MqListener;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqConnectionProvider;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqListener;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqSender;
@@ -99,8 +99,8 @@ public class ActiveMqAddon implements Addon {
             ImmutableMap<String, MessageSender> senderMap = ImmutableMap.copyOf(
                     mqAddon.senders.stream()
                             .collect(Collectors.toMap(
-                                    sd -> sd.messageDescription.MessageType.getName(),
-                                    sd -> getMqSender(activeMqSender, sd)
+                                    md -> md.MessageType.getName(),
+                                    md -> getMqSender(activeMqSender, md)
                             ))
             );
             binder.bind(senderMap).to(new TypeLiteral<Map<String, MessageSender>>() {});
@@ -109,12 +109,11 @@ public class ActiveMqAddon implements Addon {
 
     }
 
-    private <T> MessageSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, SenderDescription<T> senderDescription) {
+    private <T> MessageSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, MessageDescription<T> messageDescription) {
         return MessageSenderImpl.<T>builder()
-                .messageDescription(senderDescription.messageDescription)
+                .messageDescription(messageDescription)
                 .mqTextSender(activeMqSender)
                 .senderName(serviceDefinition.getName())
-                .objectMapper(senderDescription.objectMapper)
                 .build();
     }
 

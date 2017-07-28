@@ -1,7 +1,6 @@
 package no.obos.util.servicebuilder.mq;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,6 @@ import org.slf4j.MDC;
 @Slf4j
 public class MessageSenderImpl<T> implements MessageSender<T> {
     private final MqTextSender mqTextSender;
-    private final ObjectMapper objectMapper;
     private final MessageDescription<T> messageDescription;
     private final String senderName;
 
@@ -30,7 +28,7 @@ public class MessageSenderImpl<T> implements MessageSender<T> {
                 .build();
         String serializedMessage;
         try {
-            serializedMessage = objectMapper.writeValueAsString(mqMessage);
+            serializedMessage = messageDescription.jsonConfig.get().writeValueAsString(mqMessage);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

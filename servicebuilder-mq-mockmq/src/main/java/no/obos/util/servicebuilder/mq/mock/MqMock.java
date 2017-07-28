@@ -14,7 +14,6 @@ import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
 import no.obos.util.servicebuilder.mq.MqMessage;
 import no.obos.util.servicebuilder.mq.MqTextSender;
-import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ import static com.google.common.collect.Streams.stream;
  */
 @Slf4j
 public class MqMock implements MqTextSender, MqListener {
-    final Map<String, SenderDescription<?>> senderDescriptions;
+    final Map<String, MessageDescription<?>> senderDescriptions;
     final LinkedBlockingQueue<QueuedMessage> listeningQueue = Queues.newLinkedBlockingQueue();
     final ImmutableMap<String, CopyOnWriteArrayList<String>> sendingQueues;
     final ImmutableSet<String> listeningQueueNames;
@@ -47,7 +46,7 @@ public class MqMock implements MqTextSender, MqListener {
     @Builder
     public MqMock(
             Iterable<MessageDescription> listenMessageDescriptions,
-            Iterable<SenderDescription<?>> senderDescriptions,
+            Iterable<MessageDescription<?>> senderDescriptions,
             MqHandlerForwarder mqHandlerForwarder)
     {
         this.mqHandlerForwarder = mqHandlerForwarder;
@@ -55,12 +54,12 @@ public class MqMock implements MqTextSender, MqListener {
         this.senderDescriptions = ImmutableMap.copyOf(
                 stream(senderDescriptions)
                         .distinct()
-                        .collect(Collectors.toMap(it -> it.messageDescription.getQueueName(), Function.identity()))
+                        .collect(Collectors.toMap(MessageDescription::getQueueName, Function.identity()))
         );
 
         sendingQueues = ImmutableMap.copyOf(
                 stream(senderDescriptions)
-                        .collect(Collectors.toMap(it -> it.messageDescription.getQueueName(), it -> Lists.newCopyOnWriteArrayList()))
+                        .collect(Collectors.toMap(MessageDescription::getQueueName, it -> Lists.newCopyOnWriteArrayList()))
         );
 
         listeningQueueNames = stream(listenMessageDescriptions)
@@ -132,21 +131,21 @@ public class MqMock implements MqTextSender, MqListener {
 
     public <T> List<T> getQueueContents(MessageDescription<T> messageDescription) {
         @SuppressWarnings("unchecked")
-        SenderDescription<T> senderDescription = (SenderDescription<T>) senderDescriptions.get(messageDescription.getQueueName());
-        JavaType javaType = senderDescription.objectMapper.getTypeFactory().constructParametricType(MqMessage.class, senderDescription.messageDescription.MessageType);
+        MessageDescription<T> senderDescription = (MessageDescription<T>) senderDescriptions.get(messageDescription.getQueueName());
+        JavaType javaType = messageDescription.jsonConfig.get().getTypeFactory().constructParametricType(MqMessage.class, messageDescription.MessageType);
         return sendingQueues.get(messageDescription.getQueueName()).stream()
                 .map(it -> parseMessage(senderDescription, it))
                 .map(it -> it.content)
                 .collect(Collectors.toList());
     }
 
-    private <T> MqMessage<T> parseMessage(SenderDescription<T> senderDescription, String messageText) {
-        JavaType javaType = senderDescription.objectMapper.getTypeFactory().constructParametricType(MqMessage.class, senderDescription.messageDescription.MessageType);
+    private <T> MqMessage<T> parseMessage(MessageDescription<T> messageDescription, String messageText) {
+        JavaType javaType = messageDescription.jsonConfig.get().getTypeFactory().constructParametricType(MqMessage.class, messageDescription.MessageType);
         try {
-            return senderDescription.objectMapper.readValue(messageText, javaType);
+            return messageDescription.jsonConfig.get().readValue(messageText, javaType);
         } catch (IOException e) {
             log.error("Problem parsing text of message."
-                    + "\nType of message: " + senderDescription.messageDescription.MessageType.getName()
+                    + "\nType of message: " + messageDescription.MessageType.getName()
                     + "\nMessage: " + messageText);
             throw new RuntimeException("Problem parsing message text");
         }
