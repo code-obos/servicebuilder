@@ -67,10 +67,10 @@ public class ActiveMqQueueListener {
         try {
             log.info("Sending message to error queue: " + text);
             TextMessage errorMessage = session.createTextMessage(text);
-
             Queue queue = session.createQueue(handler.handlerDescription.messageDescription.getErrorQueueName());
             MessageProducer errorProducer = session.createProducer(queue);
             errorProducer.send(errorMessage);
+            errorProducer.close();
         } catch (JMSException jmse) {
             log.error("Failed to create error message", jmse);
         }
@@ -82,6 +82,7 @@ public class ActiveMqQueueListener {
             Queue queue = session.createQueue(handler.handlerDescription.messageDescription.getErrorQueueName());
             MessageProducer errorProducer = session.createProducer(queue);
             errorProducer.send(message);
+            errorProducer.close();
         } catch (JMSException jmse) {
             log.error("Failed to create error message", jmse);
         }

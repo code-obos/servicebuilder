@@ -61,14 +61,6 @@ class ActiveMqUtils {
         }
     }
 
-    static void closeConnectionNoException(ActiveMQConnection connection) {
-        try {
-            connection.close();
-        } catch (JMSException ex) {
-            log.error("Could not close session connection", ex);
-        }
-    }
-
     static void commitSession(Session session) {
         try {
             session.commit();

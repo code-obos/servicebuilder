@@ -20,6 +20,7 @@ import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqConnectionProvider;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqListener;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqSender;
+import no.obos.util.servicebuilder.mq.activemq.QueueManager;
 import org.glassfish.hk2.api.TypeLiteral;
 
 import java.util.Map;
@@ -93,6 +94,7 @@ public class ActiveMqAddon implements Addon {
         serviceConfig.addBinder((binder) -> {
             binder.bind(this.connectionProvider).to(ActiveMqConnectionProvider.class);
             binder.bind(this.listener).to(MqListener.class);
+            binder.bindAsContract(QueueManager.class);
 
             ImmutableMap<String, MqSender> senderMap = ImmutableMap.copyOf(
                     mqAddon.senders.stream()
