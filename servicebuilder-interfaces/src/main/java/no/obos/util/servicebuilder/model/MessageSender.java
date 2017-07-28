@@ -1,8 +1,8 @@
-package no.obos.util.servicebuilder.mq;
+package no.obos.util.servicebuilder.model;
 
 /**
  * Interface for sending messages. Is available as injection candidate.
  */
-public interface MqSender<T> {
+public interface MessageSender<T> {
     void send(T message);
 }

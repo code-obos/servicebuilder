@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import no.obos.util.servicebuilder.model.MessageDescription;
+import no.obos.util.servicebuilder.model.MessageHandler;
 
 /**
  * Describes various aspects of a message handler. Internal use.

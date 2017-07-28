@@ -14,8 +14,8 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.MqListener;
-import no.obos.util.servicebuilder.mq.MqSender;
-import no.obos.util.servicebuilder.mq.MqSenderImpl;
+import no.obos.util.servicebuilder.model.MessageSender;
+import no.obos.util.servicebuilder.mq.MessageSenderImpl;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqConnectionProvider;
 import no.obos.util.servicebuilder.mq.activemq.ActiveMqListener;
@@ -96,21 +96,21 @@ public class ActiveMqAddon implements Addon {
             binder.bind(this.listener).to(MqListener.class);
             binder.bindAsContract(QueueManager.class);
 
-            ImmutableMap<String, MqSender> senderMap = ImmutableMap.copyOf(
+            ImmutableMap<String, MessageSender> senderMap = ImmutableMap.copyOf(
                     mqAddon.senders.stream()
                             .collect(Collectors.toMap(
                                     sd -> sd.messageDescription.MessageType.getName(),
                                     sd -> getMqSender(activeMqSender, sd)
                             ))
             );
-            binder.bind(senderMap).to(new TypeLiteral<Map<String, MqSender>>() {});
+            binder.bind(senderMap).to(new TypeLiteral<Map<String, MessageSender>>() {});
         });
 
 
     }
 
-    private <T> MqSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, SenderDescription<T> senderDescription) {
-        return MqSenderImpl.<T>builder()
+    private <T> MessageSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, SenderDescription<T> senderDescription) {
+        return MessageSenderImpl.<T>builder()
                 .messageDescription(senderDescription.messageDescription)
                 .mqTextSender(activeMqSender)
                 .senderName(serviceDefinition.getName())

@@ -8,19 +8,18 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.MessageDescription;
+import no.obos.util.servicebuilder.model.MessageHandler;
+import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.mq.HandlerDescription;
-import no.obos.util.servicebuilder.mq.MessageHandler;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
-import no.obos.util.servicebuilder.mq.MqSender;
 import no.obos.util.servicebuilder.mq.SenderDescription;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import javax.inject.Inject;
@@ -72,8 +71,6 @@ public class MqAddon implements Addon {
     }
 
     public <T> MqAddon listen(MessageDescription<T> messageDescription, Class<? extends MessageHandler<T>> messageHandler) {
-        TypeLiteral<MessageHandler<T>> typeLiteral = new TypeLiteral<MessageHandler<T>>() {};
-
         @SuppressWarnings("unchecked")
         HandlerDescription<T> handlerDescription = HandlerDescription.<T>builder()
                 .healthCheckEntriesGrace(60)
@@ -104,12 +101,12 @@ public class MqAddon implements Addon {
         @Inject
         ServiceLocator serviceLocator;
         @Inject
-        Map<String, MqSender> senderMap;
+        Map<String, MessageSender> senderMap;
 
         @Override
         public boolean justInTimeResolution(Injectee failedInjectionPoint) {
             String typeName = failedInjectionPoint.getRequiredType().getTypeName();
-            if (typeName.startsWith("no.obos.util.servicebuilder.mq.MqSender") && typeName.contains(">") && typeName.contains("<")) {
+            if (typeName.startsWith(MessageSender.class.getName()) && typeName.contains(">") && typeName.contains("<")) {
                 String messageName = typeName.substring(typeName.indexOf('<') + 1, typeName.indexOf('>'));
                 ServiceLocatorUtilities.addOneConstant(serviceLocator, senderMap.get(messageName), "null", failedInjectionPoint.getRequiredType());
                 return true;

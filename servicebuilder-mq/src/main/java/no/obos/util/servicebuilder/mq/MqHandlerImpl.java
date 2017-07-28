@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder.mq;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import no.obos.util.servicebuilder.model.MessageHandler;
 
 @Builder
 @EqualsAndHashCode

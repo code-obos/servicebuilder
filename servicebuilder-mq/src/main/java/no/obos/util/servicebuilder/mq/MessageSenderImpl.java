@@ -7,12 +7,13 @@ import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.MessageDescription;
+import no.obos.util.servicebuilder.model.MessageSender;
 import org.slf4j.MDC;
 
 @AllArgsConstructor
 @Builder
 @Slf4j
-public class MqSenderImpl<T> implements MqSender<T> {
+public class MessageSenderImpl<T> implements MessageSender<T> {
     private final MqTextSender mqTextSender;
     private final ObjectMapper objectMapper;
     private final MessageDescription<T> messageDescription;

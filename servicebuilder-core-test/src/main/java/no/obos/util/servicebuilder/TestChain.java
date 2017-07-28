@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
+import java.util.Map;
 import java.util.function.Consumer;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -54,24 +56,34 @@ public class TestChain {
                 ));
     }
 
-    public <T extends Addon> TestChain withAddon(Class<T> clazz, Consumer<T> fun) {
+    public <T extends Addon> TestChain addon(Class<T> clazz, Consumer<T> fun) {
         return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addonInstance(clazz)));
     }
 
-    public <T> TestChain withInjectee(Class<T> clazz, Consumer<T> fun) {
+    public <T> TestChain injectee(Class<T> clazz, Consumer<T> fun) {
         return action(testChain -> fun.accept(testChain.serviceLocator.get().getService(clazz)));
     }
 
-    public <T> TestChain withInjectee(TypeLiteral<T> typeLiteral, Consumer<T> fun) {
+    public <T> TestChain injectee(TypeLiteral<T> typeLiteral, Consumer<T> fun) {
         return action(testChain -> fun.accept(testChain.serviceLocator.get().getService(typeLiteral.getType())));
     }
 
-    public TestChain withServiceConfig(Consumer<ServiceConfig> fun) {
+    public TestChain serviceConfig(Consumer<ServiceConfig> fun) {
         return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig()));
     }
 
-    public TestChain withServiceLocator(Consumer<ServiceLocator> fun) {
+    public TestChain serviceLocator(Consumer<ServiceLocator> fun) {
         return action(testChain -> fun.accept(testChain.serviceLocator.get()));
+    }
+
+    public <T> TestChain message(Class<T> messageType, Consumer<MessageSender<T>> fun) {
+        return action(testChain -> {
+            ServiceLocator serviceLocator = testChain.serviceLocator.get();
+            Map<String, MessageSender> map = serviceLocator.getService(new TypeLiteral<Map<String, MessageSender>>() {}.getType());
+            @SuppressWarnings("unchecked")
+            MessageSender<T> messageSender = (MessageSender<T>) map.get(messageType.getName());
+            fun.accept(messageSender);
+        });
     }
 
     private TestChain action(Action action) {

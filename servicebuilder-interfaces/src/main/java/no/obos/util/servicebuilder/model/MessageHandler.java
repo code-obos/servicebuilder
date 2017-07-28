@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.mq;
+package no.obos.util.servicebuilder.model;
 
 /**
  * Interface for handling messages to be implemented by application

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.obos.util.servicebuilder.model.MessageHandler;
+import no.obos.util.servicebuilder.model.MessageMeta;
 import org.slf4j.MDC;
 
 import java.io.IOException;

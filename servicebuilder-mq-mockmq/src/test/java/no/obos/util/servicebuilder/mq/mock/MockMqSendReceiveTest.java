@@ -15,8 +15,8 @@ import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.MessageHandler;
-import no.obos.util.servicebuilder.mq.MqSender;
+import no.obos.util.servicebuilder.model.MessageHandler;
+import no.obos.util.servicebuilder.model.MessageSender;
 import org.junit.Test;
 import org.slf4j.MDC;
 
@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import static no.obos.util.servicebuilder.mq.mock.MockMqSendReceiveTest.MyServiceDefinition.MY_SERVICE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -37,13 +38,26 @@ import static org.mockito.Mockito.mock;
 public class MockMqSendReceiveTest {
 
     @Test
-    public void sendAndReceiveMessage() {
-        MyMessageV1 expected = new MyMessageV1(LocalDate.now(), "brillefin");
+    public void messageSentByCall() {
+        MyMessageV1_0 expected = new MyMessageV1_0(LocalDate.now(), "brillefin");
         TestServiceRunner.defaults(serviceConfig)
                 .chain()
                 .call(MyResource.class, it -> it.addToQueue(expected))
-                .withInjectee(MqMock.class, mq -> {
-                    List<MyMessageV1> queueContents = mq.getQueueContents(MyServiceDefinition.myMessageV1);
+                .injectee(MqMock.class, mq -> {
+                    List<MyMessageV1_0> queueContents = mq.getQueueContents(MyServiceDefinition.myMessageV1);
+                    assertThat(queueContents).isEqualTo(ImmutableList.of(expected));
+                })
+                .run();
+    }
+
+    @Test
+    public void messageIsSent() {
+        MyMessageV1_0 expected = new MyMessageV1_0(LocalDate.now(), "brillefin");
+        TestServiceRunner.defaults(serviceConfig)
+                .chain()
+                .message(MyMessageV1_0.class, sender -> sender.send(expected))
+                .injectee(MqMock.class, mq -> {
+                    List<MyMessageV1_0> queueContents = mq.getQueueContents(MyServiceDefinition.myMessageV1);
                     assertThat(queueContents).isEqualTo(ImmutableList.of(expected));
                 })
                 .run();
@@ -51,10 +65,10 @@ public class MockMqSendReceiveTest {
 
     final MyHandler messageHandler = mock(MyHandler.class);
 
-    ServiceConfig serviceConfig = ServiceConfig.defaults(MyServiceDefinition.instance)
+    ServiceConfig serviceConfig = ServiceConfig.defaults(MY_SERVICE)
             .addon(MqAddon.defaults
                     .listen(MyServiceDefinition.myMessageV1, MyHandler.class)
-                    .send(MyServiceDefinition.instance)
+                    .send(MY_SERVICE)
             )
             .addon(MqMockAddon.defaults)
             .addon(ObosLogFilterAddon.defaults)
@@ -67,13 +81,13 @@ public class MockMqSendReceiveTest {
     @ToString
     @Getter
     @Setter
-    public static class MyMessageV1 {
+    public static class MyMessageV1_0 {
         public LocalDate time;
         public String string;
     }
 
 
-    public interface MyHandler extends MessageHandler<MyMessageV1> {
+    public interface MyHandler extends MessageHandler<MyMessageV1_0> {
     }
 
 
@@ -82,23 +96,23 @@ public class MockMqSendReceiveTest {
     @Consumes(MediaType.APPLICATION_JSON)
     public interface MyResource {
         @POST
-        void addToQueue(MyMessageV1 messageV1);
+        void addToQueue(MyMessageV1_0 messageV1);
     }
 
 
     public static class MyResourceImpl implements MyResource {
-        final MqSender<MyMessageV1> myMessageV1MqSender;
+        final MessageSender<MyMessageV1_0> myMessageV1MessageSender;
 
         @Inject
-        MyResourceImpl(MqSender<MyMessageV1> myMessageV1MqSender) {
-            this.myMessageV1MqSender = myMessageV1MqSender;
+        MyResourceImpl(MessageSender<MyMessageV1_0> myMessageV1MessageSender) {
+            this.myMessageV1MessageSender = myMessageV1MessageSender;
         }
 
 
 
-        public void addToQueue(MyMessageV1 messageV1) {
+        public void addToQueue(MyMessageV1_0 messageV1) {
             MDC.put(Constants.X_OBOS_REQUEST_ID, UUID.randomUUID().toString());
-            myMessageV1MqSender.send(messageV1);
+            myMessageV1MessageSender.send(messageV1);
             MDC.remove(Constants.X_OBOS_REQUEST_ID);
         }
     }
@@ -110,14 +124,14 @@ public class MockMqSendReceiveTest {
         final ImmutableList<MessageDescription<?>> handledMessages = ImmutableList.of(myMessageV1);
         final ImmutableList resources = ImmutableList.of(MyResource.class);
 
-        public final static MessageDescription<MyMessageV1> myMessageV1 = MessageDescription.<MyMessageV1>builder()
+        public final static MessageDescription<MyMessageV1_0> myMessageV1 = MessageDescription.<MyMessageV1_0>builder()
                 .description("For test")
-                .MessageType(MyMessageV1.class)
+                .MessageType(MyMessageV1_0.class)
                 .name("myMessage")
                 .version("1.0")
                 .build();
 
-        final static MyServiceDefinition instance = new MyServiceDefinition();
+        final static MyServiceDefinition MY_SERVICE = new MyServiceDefinition();
     }
 
 }

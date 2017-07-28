@@ -14,9 +14,9 @@ import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.MessageDescription;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import no.obos.util.servicebuilder.mq.MessageHandler;
-import no.obos.util.servicebuilder.mq.MessageMeta;
-import no.obos.util.servicebuilder.mq.MqSender;
+import no.obos.util.servicebuilder.model.MessageHandler;
+import no.obos.util.servicebuilder.model.MessageMeta;
+import no.obos.util.servicebuilder.model.MessageSender;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -125,18 +125,18 @@ public class ActiveMqAddonSendReceiveTest {
 
 
     public static class MyResourceImpl implements MyResource {
-        final MqSender<MyMessageV1> myMessageV1MqSender;
+        final MessageSender<MyMessageV1> myMessageV1MessageSender;
 
         @Inject
-        MyResourceImpl(MqSender<MyMessageV1> myMessageV1MqSender) {
-            this.myMessageV1MqSender = myMessageV1MqSender;
+        MyResourceImpl(MessageSender<MyMessageV1> myMessageV1MessageSender) {
+            this.myMessageV1MessageSender = myMessageV1MessageSender;
         }
 
 
 
         public void addToQueue(MyMessageV1 messageV1) {
             MDC.put(Constants.X_OBOS_REQUEST_ID, UUID.randomUUID().toString());
-            myMessageV1MqSender.send(messageV1);
+            myMessageV1MessageSender.send(messageV1);
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

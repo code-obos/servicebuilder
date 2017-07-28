@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.mq;
+package no.obos.util.servicebuilder.model;
 
 import lombok.Builder;
 import lombok.ToString;

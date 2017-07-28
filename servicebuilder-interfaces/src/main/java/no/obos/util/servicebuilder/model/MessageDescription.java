@@ -6,7 +6,7 @@ import lombok.ToString;
 
 @ToString
 @Builder
-@EqualsAndHashCode(of = {"name","version"})
+@EqualsAndHashCode(of = {"name", "version"})
 public class MessageDescription<T> {
     public final String name;
     public final String version;
@@ -14,6 +14,7 @@ public class MessageDescription<T> {
     public final Class<T> MessageType;
     private final String overriddenQueueName;
     private final String overriddenErrorQueueName;
+
     public String getQueueName() {
         if (overriddenQueueName == null) {
             return name + "_" + "v" + version;
@@ -21,6 +22,7 @@ public class MessageDescription<T> {
             return overriddenQueueName;
         }
     }
+
     public String getErrorQueueName() {
         if (overriddenErrorQueueName == null) {
             return name + "_" + "v" + version + "_ERROR";
