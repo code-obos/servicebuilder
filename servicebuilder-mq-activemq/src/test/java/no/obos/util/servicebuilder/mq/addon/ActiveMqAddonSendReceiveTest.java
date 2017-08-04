@@ -13,10 +13,10 @@ import no.obos.util.servicebuilder.addon.MqAddon;
 import no.obos.util.servicebuilder.addon.ObosLogFilterAddon;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.MessageDescription;
-import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.model.MessageHandler;
-import no.obos.util.servicebuilder.model.MessageMeta;
+import no.obos.util.servicebuilder.model.MessageMetadata;
 import no.obos.util.servicebuilder.model.MessageSender;
+import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.apache.activemq.broker.BrokerService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,13 +59,13 @@ public class ActiveMqAddonSendReceiveTest {
 
             MyMessageV1 expected = new MyMessageV1(LocalDate.now(), "brillefin");
             ArgumentCaptor<MyMessageV1> myMessageV1ArgumentCator = ArgumentCaptor.forClass(MyMessageV1.class);
-            ArgumentCaptor<MessageMeta> messageMetaArgumentCaptor = ArgumentCaptor.forClass(MessageMeta.class);
+            ArgumentCaptor<MessageMetadata> messageMetaArgumentCaptor = ArgumentCaptor.forClass(MessageMetadata.class);
             TestServiceRunner.defaults(serviceConfig)
                     .oneShotVoid(MyResource.class, it -> it.addToQueue(expected));
             verify(messageHandler).handle(myMessageV1ArgumentCator.capture(), messageMetaArgumentCaptor.capture());
 
             MyMessageV1 actual = myMessageV1ArgumentCator.getValue();
-            MessageMeta meta = messageMetaArgumentCaptor.getValue();
+            MessageMetadata meta = messageMetaArgumentCaptor.getValue();
 
             assertThat(actual).isEqualTo(expected);
             assertThat(meta.sourceApp).isEqualTo(MyServiceDefinition.instance.getName());

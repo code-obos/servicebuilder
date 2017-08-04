@@ -45,13 +45,14 @@ public class ActiveMqQueueListener {
             return;
         }
         TextMessage textMessage = (TextMessage) message;
-        String text = null;
+        String text;
         try {
             text = textMessage.getText();
         } catch (JMSException e) {
             log.error("Could not read text from message", e);
             toErrorQueue(message);
             ActiveMqUtils.commitSession(session);
+            return;
         }
         try {
             mqHandlerForwarder.forward(handler, text);
@@ -73,6 +74,7 @@ public class ActiveMqQueueListener {
             errorProducer.close();
         } catch (JMSException jmse) {
             log.error("Failed to create error message", jmse);
+            throw new RuntimeException("Error queueing error message, aborting");
         }
     }
 
@@ -85,6 +87,7 @@ public class ActiveMqQueueListener {
             errorProducer.close();
         } catch (JMSException jmse) {
             log.error("Failed to create error message", jmse);
+            throw new RuntimeException("Error queueing error message, aborting");
         }
     }
 

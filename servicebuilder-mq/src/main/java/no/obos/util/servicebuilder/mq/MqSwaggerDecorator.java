@@ -1,7 +1,11 @@
 package no.obos.util.servicebuilder.mq;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.jsonschema.JsonSchema;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
+import com.fasterxml.jackson.module.jsonSchema.factories.VisitorContext;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.jaxrs.Reader;
@@ -23,21 +27,32 @@ public class MqSwaggerDecorator implements ReaderListener {
     @Override
     public void afterScan(Reader reader, Swagger swagger) {
 
-        final StringBuilder description = new StringBuilder();
+        final StringBuilder descriptions = new StringBuilder();
 
         handledMessages.values().forEach(md -> {
-                    JsonSchema jsonSchema;
+                    ObjectMapper mapper = md.jsonConfig.get();
+                    String schema;
                     try {
-                        jsonSchema = md.jsonConfig.get().generateJsonSchema(md.MessageType);
-                    } catch (JsonMappingException e) {
+                        SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+                        visitor.setVisitorContext(new VisitorContext() {
+                            @Override
+                            public String javaTypeToUrn(JavaType jt) {
+                                return null;
+                            }
+                        });
+                        mapper.acceptJsonFormatVisitor(md.MessageType, visitor);
+                        JsonSchema jsonSchema = visitor.finalSchema();
+                        schema = mapper.writeValueAsString(jsonSchema);
+                    } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
-                    description.append("\n\n"
-                            + "<b>" + md.name + "</b><br>\n"
-                            + "<it>" + md.description + "</it><br>\n"
-                            + "Queue name: " + md.getQueueName() + "<br>\n"
-                            + jsonSchema
-                    );
+
+                    descriptions.append(String.format(
+                            "\n\n###%s\n\n_%s_\n\nQueue name: %s\n\n%s",
+                            md.name,
+                            md.description,
+                            md.getQueueName(),
+                            schema));
                 }
 
         );
@@ -46,6 +61,14 @@ public class MqSwaggerDecorator implements ReaderListener {
         if (info == null) {
             info = new Info();
         }
-        info.description(info.getDescription() + "Handled messages" + description);
+
+        String messageDescriptions = "#Handled messages\n"
+                + descriptions;
+        if (info.getDescription() != null) {
+
+            info.description(info.getDescription() + "\n\n" + messageDescriptions);
+        } else {
+            info.description(messageDescriptions);
+        }
     }
 }

@@ -11,7 +11,6 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.GuavaHelper;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -48,10 +47,6 @@ public class ServiceConfig {
 
     public <T> ServiceConfig bind(Class<T> toBind) {
         return bind(binder -> binder.bindAsContract(toBind));
-    }
-
-    public <T> ServiceConfig bindParameterized(T toBind) {
-        return bind(binder -> binder.bind(toBind).to(new TypeLiteral<T>() {}));
     }
 
     public ServiceConfig bind(Binder binder) {

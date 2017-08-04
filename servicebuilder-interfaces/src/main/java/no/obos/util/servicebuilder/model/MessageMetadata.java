@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @Builder
 @ToString
-public class MessageMeta {
+public class MessageMetadata {
     public final String requestId;
     public final String sourceApp;
 }

@@ -43,8 +43,12 @@ public class MqAddon implements Addon {
     public final ImmutableSet<HandlerDescription<?>> handlers;
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableSet<MessageDescription<?>> senders;
+
+    /**
+     * Used internally to communicate with mq implementation.
+     */
     @Wither(AccessLevel.PRIVATE)
-    public final MqHandlerForwarder mqHandlerForwarder;
+    final MqHandlerForwarder mqHandlerForwarder;
     @Wither(AccessLevel.PRIVATE)
     public final boolean swagger;
 
@@ -61,7 +65,7 @@ public class MqAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
         // Feature is used to start the listeners immediately once dependencies are bound
         serviceConfig.addRegistations(registrator -> registrator
-                .register(StartListenersFeature.class)
+                .register(StartListenerFeature.class)
         );
         serviceConfig.addBinder((binder) -> {
             binder.bind(MqSenderResolver.class).to(JustInTimeInjectionResolver.class);
@@ -98,6 +102,14 @@ public class MqAddon implements Addon {
         return this.withSenders(GuavaHelper.plusAll(senders, serviceDefinition.getHandledMessages()));
     }
 
+    /**
+     * Magic solution to inject senders based on generic message type. Uses hk2 just in time injection.
+     * Basically, when hk2 does not find a candidate for injection among bound classes, it asks any just
+     * in time injection resolvers if they have an implementation of the class.
+     * <p>
+     * Senders injected via this resolver is provided in a sender map given by the mq implementation addon
+     * (e.g. ActiveMqAddon). Thus the addon must bind the sender map.
+     */
     static class MqSenderResolver implements JustInTimeInjectionResolver {
         @Inject
         ServiceLocator serviceLocator;
@@ -117,7 +129,10 @@ public class MqAddon implements Addon {
     }
 
 
-    private static class StartListenersFeature implements Feature {
+    /**
+     * Starts a new thread for the listener using MqListener provided by mq implementation.
+     */
+    private static class StartListenerFeature implements Feature {
         @Inject
         private ServiceLocator serviceLocator;
 
@@ -129,8 +144,7 @@ public class MqAddon implements Addon {
             ImmutableSet<MqHandlerImpl<?>> handlers = mqAddon.handlers.stream()
                     .map(this::getHandlerImpl)
                     .collect(GuavaHelper.setCollector());
-            listener.setHandlers(handlers);
-            listener.startListener();
+            listener.startListener(handlers);
             return true;
         }
 

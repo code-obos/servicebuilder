@@ -14,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static no.obos.util.servicebuilder.mq.activemq.ActiveMqUtils.closeConnection;
+import static no.obos.util.servicebuilder.mq.activemq.ActiveMqUtils.closeConnectionNoException;
 
 /**
  * Handles connections to activeMQ so other classes wont have to deal with connection-specific information.
@@ -25,12 +26,12 @@ public class ActiveMqConnectionProvider {
     private final String user;
     private final String password;
 
-    public void startListenerSession(BiConsumer<Connection, Session> fun, ErrorCallback onError) {
+    public void startListenerSession(BiConsumer<Connection, Session> listener, ErrorCallback onError) {
         ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
 
         ExceptionListener onErrorWithClose = (JMSException ex) -> {
             log.error("Problem with ActiveMQ session, closing connection and forwarding", ex);
-            closeConnection(connection);
+            closeConnectionNoException(connection);
             onError.onError();
         };
         try {
@@ -40,7 +41,7 @@ public class ActiveMqConnectionProvider {
             throw new MessageQueueException(e);
         }
         Session session = ActiveMqUtils.startSession(connection);
-        fun.accept(connection, session);
+        listener.accept(connection, session);
     }
 
     public <T> T inSessionWithReturn(Function<Session, T> fun) {

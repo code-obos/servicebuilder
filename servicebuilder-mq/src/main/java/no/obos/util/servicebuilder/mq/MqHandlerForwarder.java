@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.MessageHandler;
-import no.obos.util.servicebuilder.model.MessageMeta;
+import no.obos.util.servicebuilder.model.MessageMetadata;
 import org.slf4j.MDC;
 
 import java.io.IOException;
@@ -56,7 +56,8 @@ public class MqHandlerForwarder {
     }
 
     private <T> void forwardMessage(MqHandlerImpl<T> handler, MqMessage<T> message) {
-        MessageMeta messageMeta = MessageMeta.builder()
+        log.info("Received message: {}", message.toString());
+        MessageMetadata messageMetadata = MessageMetadata.builder()
                 .requestId(message.requestId)
                 .sourceApp(message.sourceApp)
                 .build();
@@ -64,7 +65,7 @@ public class MqHandlerForwarder {
         MessageHandler<T> messageHandler = handler.messageHandler;
 
         try {
-            messageHandler.handle(message.content, messageMeta);
+            messageHandler.handle(message.content, messageMetadata);
         } catch (RuntimeException ex) {
             log.error("Exception during processing message.", ex);
             throw ex;

@@ -68,11 +68,7 @@ public class ActiveMqAddon implements Addon {
                 .password(password)
                 .build();
 
-        ActiveMqListener listener = ActiveMqListener.builder()
-                .mqHandlerForwarder(mqAddon.mqHandlerForwarder)
-                .activeMqConnectionProvider(connectionProvider)
-                .handlerDescriptions(mqAddon.handlers)
-                .build();
+        ActiveMqListener listener = new ActiveMqListener(connectionProvider, mqAddon.mqHandlerForwarder);
 
         return this
                 .withMqAddon(mqAddon)
@@ -123,8 +119,8 @@ public class ActiveMqAddon implements Addon {
         mqAddon.handlers.forEach(handlerDescription -> {
             String queueInput = handlerDescription.messageDescription.getQueueName();
             String queueError = handlerDescription.messageDescription.getErrorQueueName();
-            ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, handlerDescription.healthCheckEntriesMax, handlerDescription.healthCheckEntriesMax, user, password);
-            ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, 1, 60, user, password);
+            ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, handlerDescription.healthCheckEntriesMax, handlerDescription.healthCheckEntriesGrace, user, password);
+            ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, 1, 1, user, password);
             ObosHealthCheckRegistry.registerCustomCheck("ActiveMqListener active", () ->
                     listener.isListenerActive()
                             ? ObosHealthCheckResult.ok()

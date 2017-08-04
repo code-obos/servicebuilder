@@ -70,7 +70,7 @@ public class MqMock implements MqTextSender, MqListener {
 
 
     @Override
-    public void setHandlers(Iterable<MqHandlerImpl<?>> handlers) {
+    public void startListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
         this.handlers = ImmutableMap.copyOf(
                 stream(handlers)
                         .collect(Collectors.toMap(
@@ -79,6 +79,7 @@ public class MqMock implements MqTextSender, MqListener {
                                 )
                         )
         );
+        startListener();
     }
 
     @Override
@@ -93,8 +94,7 @@ public class MqMock implements MqTextSender, MqListener {
         }
     }
 
-    @Override
-    public void startListener() {
+    private void startListener() {
         if (! handlers.isEmpty()) {
             running = true;
             Runnable runnable = () -> {

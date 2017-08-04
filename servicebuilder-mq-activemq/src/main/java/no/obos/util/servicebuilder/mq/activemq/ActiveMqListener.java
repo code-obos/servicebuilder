@@ -1,10 +1,9 @@
 package no.obos.util.servicebuilder.mq.activemq;
 
 import com.google.common.collect.ImmutableSet;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.mq.HandlerDescription;
 import no.obos.util.servicebuilder.mq.MqHandlerForwarder;
 import no.obos.util.servicebuilder.mq.MqHandlerImpl;
 import no.obos.util.servicebuilder.mq.MqListener;
@@ -17,33 +16,26 @@ import javax.jms.Session;
  * Handles connecting several listeners to activemq in single session, reconnection and status for monitoring.
  */
 @Slf4j
-@Builder
+@RequiredArgsConstructor
 public class ActiveMqListener implements MqListener {
     private final ActiveMqConnectionProvider activeMqConnectionProvider;
 
-    private final ImmutableSet<HandlerDescription<?>> handlerDescriptions;
     private final MqHandlerForwarder mqHandlerForwarder;
 
     @Getter
     private boolean listenerActive = false;
 
-    private boolean abort = false;
+    private boolean threadIsInterrupted = false;
 
     private Connection connection = null;
     private Session session = null;
 
-    ImmutableSet<MqHandlerImpl<?>> handlers;
-
-    public void setHandlers(Iterable<MqHandlerImpl<?>> handlers) {
-        this.handlers = ImmutableSet.copyOf(handlers);
-    }
-
-    public void startListener() {
+    public void startListener(ImmutableSet<MqHandlerImpl<?>> handlers) {
         log.debug("Starting listener...");
         if (listenerActive) {
             throw new RuntimeException("Multiple active sessions in same listener. Check if starting connection threw exception and ActiveMQ ActiveMQConnection.setExceptionListener() failed at the same time.");
         }
-        abort = false;
+        threadIsInterrupted = false;
         try {
             activeMqConnectionProvider.startListenerSession((connection, session) -> {
                 this.connection = connection;
@@ -77,10 +69,10 @@ public class ActiveMqListener implements MqListener {
         } catch (InterruptedException e) {
             log.info("Interrupted.");
             Thread.currentThread().interrupt();
-            abort = true;
+            threadIsInterrupted = true;
         }
-        if (! abort) {
-            startListener();
+        if (! threadIsInterrupted) {
+            startListener(handlers);
         }
     }
 
