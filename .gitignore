@@ -1,12 +1,11 @@
 #Idea
-/.idea/
-/servicebuilder.iml
+.idea/
+*.iml
 
 #Eclipse
-/.classpath
-/.project
-/.settings/
+.classpath
+.project
+.settings/
 
 #Maven
-/target
-
+target
