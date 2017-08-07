@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.mq;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;

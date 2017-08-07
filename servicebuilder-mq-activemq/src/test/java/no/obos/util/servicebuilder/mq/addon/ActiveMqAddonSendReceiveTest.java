@@ -56,7 +56,6 @@ public class ActiveMqAddonSendReceiveTest {
                 throw new RuntimeException(e);
             }
 
-
             MyMessageV1 expected = new MyMessageV1(LocalDate.now(), "brillefin");
             ArgumentCaptor<MyMessageV1> myMessageV1ArgumentCator = ArgumentCaptor.forClass(MyMessageV1.class);
             ArgumentCaptor<MessageMetadata> messageMetaArgumentCaptor = ArgumentCaptor.forClass(MessageMetadata.class);
@@ -131,8 +130,6 @@ public class ActiveMqAddonSendReceiveTest {
         MyResourceImpl(MessageSender<MyMessageV1> myMessageV1MessageSender) {
             this.myMessageV1MessageSender = myMessageV1MessageSender;
         }
-
-
 
         public void addToQueue(MyMessageV1 messageV1) {
             MDC.put(Constants.X_OBOS_REQUEST_ID, UUID.randomUUID().toString());

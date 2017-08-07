@@ -22,6 +22,7 @@ import static no.obos.util.servicebuilder.mq.activemq.ActiveMqUtils.closeConnect
 @Slf4j
 @Builder
 public class ActiveMqConnectionProvider {
+
     private final String url;
     private final String user;
     private final String password;

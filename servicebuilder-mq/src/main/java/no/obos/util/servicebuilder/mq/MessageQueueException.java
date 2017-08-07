@@ -9,4 +9,5 @@ public class MessageQueueException extends RuntimeException {
     public MessageQueueException(Throwable cause) {
         super(cause);
     }
+
 }

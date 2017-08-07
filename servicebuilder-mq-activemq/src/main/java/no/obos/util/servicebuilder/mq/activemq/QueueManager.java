@@ -27,9 +27,10 @@ import java.util.Map;
 @AllArgsConstructor(onConstructor = @__({@Inject}))
 public class QueueManager {
 
+    private static final long REQUEUE_TIMEOUT = 1000;
+
     @Inject
     private final ActiveMqConnectionProvider activeMqConnectionProvider;
-    private static final long REQUEUE_TIMEOUT = 1000;
 
     public void requeueFailedMessages(HandlerDescription handlerDescription) {
         activeMqConnectionProvider.inSession(session -> {
@@ -63,7 +64,6 @@ public class QueueManager {
 
                     try {
                         TextMessage newMessage = session.createTextMessage(text);
-
                         producer.send(newMessage);
                         message.acknowledge();
                     } catch (Exception e) {
@@ -80,7 +80,6 @@ public class QueueManager {
                 throw new MessageQueueException(ex);
             }
         });
-
     }
 
     public int getErrorQueueSize(HandlerDescription handlerDescription) {
@@ -126,4 +125,5 @@ public class QueueManager {
             throw new MessageQueueException("Could not query statistics for " + queueName, e);
         }
     }
+
 }

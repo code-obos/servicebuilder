@@ -18,13 +18,12 @@ import javax.jms.Session;
 @Slf4j
 @RequiredArgsConstructor
 public class ActiveMqListener implements MqListener {
-    private final ActiveMqConnectionProvider activeMqConnectionProvider;
 
+    private final ActiveMqConnectionProvider activeMqConnectionProvider;
     private final MqHandlerForwarder mqHandlerForwarder;
 
     @Getter
     private boolean listenerActive = false;
-
     private boolean threadIsInterrupted = false;
 
     private Connection connection = null;

@@ -83,7 +83,6 @@ public class ActiveMqAddon implements Addon {
         listener.stop();
     }
 
-
     @Override
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
         ActiveMqSender activeMqSender = new ActiveMqSender(this.connectionProvider);
@@ -101,8 +100,6 @@ public class ActiveMqAddon implements Addon {
             );
             binder.bind(senderMap).to(new TypeLiteral<Map<String, MessageSender>>() {});
         });
-
-
     }
 
     private <T> MessageSenderImpl<T> getMqSender(ActiveMqSender activeMqSender, MessageDescription<T> messageDescription) {
@@ -112,7 +109,6 @@ public class ActiveMqAddon implements Addon {
                 .senderName(serviceDefinition.getName())
                 .build();
     }
-
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
@@ -131,7 +127,6 @@ public class ActiveMqAddon implements Addon {
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-
         if (url == null) {
             properties.failIfNotPresent(
                     CONFIG_KEY_URL,
@@ -149,15 +144,21 @@ public class ActiveMqAddon implements Addon {
         }
     }
 
+    public ActiveMqAddon url(String url) {
+        return withUrl(url);
+    }
 
+    public ActiveMqAddon user(String user) {
+        return withUser(user);
+    }
 
-    public ActiveMqAddon url(String url) {return withUrl(url);}
-
-    public ActiveMqAddon user(String user) {return withUser(user);}
-
-    public ActiveMqAddon password(String password) {return withPassword(password);}
+    public ActiveMqAddon password(String password) {
+        return withPassword(password);
+    }
 
     @Override
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(MqAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(MqAddon.class);
+    }
 
 }

@@ -10,6 +10,7 @@ import no.obos.util.servicebuilder.mq.MqTextSender;
 @Slf4j
 @AllArgsConstructor
 public class ActiveMqSender implements MqTextSender {
+
     private final ActiveMqConnectionProvider activeMqConnectionProvider;
 
     public void queueMessage(String message, String queue) {

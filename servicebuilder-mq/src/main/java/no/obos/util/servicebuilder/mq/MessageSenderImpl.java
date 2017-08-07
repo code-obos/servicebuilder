@@ -13,10 +13,10 @@ import org.slf4j.MDC;
 @Builder
 @Slf4j
 public class MessageSenderImpl<T> implements MessageSender<T> {
+
     private final MqTextSender mqTextSender;
     private final MessageDescription<T> messageDescription;
     private final String senderName;
-
 
     @Override
     public void send(T message) {
@@ -34,4 +34,5 @@ public class MessageSenderImpl<T> implements MessageSender<T> {
         }
         mqTextSender.queueMessage(serializedMessage, messageDescription.getQueueName());
     }
+
 }

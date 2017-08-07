@@ -16,9 +16,9 @@ import no.obos.util.servicebuilder.model.MessageDescription;
 
 @SwaggerDefinition
 public class MqSwaggerDecorator implements ReaderListener {
+
     //Yeah, yeah global mutable. Only way to get around swagger not instantiating from hk2
     public static ImmutableMap<String, MessageDescription> handledMessages = ImmutableMap.of();
-
 
     @Override
     public void beforeScan(Reader reader, Swagger swagger) {
@@ -71,4 +71,6 @@ public class MqSwaggerDecorator implements ReaderListener {
             info.description(messageDescriptions);
         }
     }
+
 }
+

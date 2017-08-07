@@ -13,6 +13,7 @@ import no.obos.util.servicebuilder.model.MessageHandler;
 @EqualsAndHashCode
 @ToString
 public class HandlerDescription<T> {
+
     public final MessageDescription<T> messageDescription;
     public final Class<MessageHandler<T>> messageHandlerClass;
     public final int healthCheckEntriesMax;

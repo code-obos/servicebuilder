@@ -20,6 +20,7 @@ import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 @Slf4j
 @AllArgsConstructor
 public class MqHandlerForwarder {
+
     final ObjectMapper objectMapper;
 
     public <T> void forward(MqHandlerImpl<T> handler, String messageText) {
@@ -71,4 +72,5 @@ public class MqHandlerForwarder {
             throw ex;
         }
     }
+
 }

@@ -52,7 +52,6 @@ public class MqAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean swagger;
 
-
     public static MqAddon defaults = new MqAddon(ImmutableSet.of(), ImmutableSet.of(), null, true);
 
     @Override
@@ -75,8 +74,6 @@ public class MqAddon implements Addon {
             binder.bind(this).to(MqAddon.class);
         });
         if (swagger) {
-
-
             MqSwaggerDecorator.handledMessages = ImmutableMap.copyOf(
                     handlers.stream()
                             .collect(Collectors.toMap(it -> it.messageDescription.name, it -> it.messageDescription))
@@ -158,5 +155,7 @@ public class MqAddon implements Addon {
 
     }
 
-    public MqAddon swagger(boolean swagger) {return withSwagger(swagger);}
+    public MqAddon swagger(boolean swagger) {
+        return withSwagger(swagger);
+    }
 }

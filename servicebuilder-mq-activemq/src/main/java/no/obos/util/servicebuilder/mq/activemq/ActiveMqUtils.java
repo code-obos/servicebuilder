@@ -76,4 +76,5 @@ class ActiveMqUtils {
             throw new MessageQueueException("Could not commit", e);
         }
     }
+
 }

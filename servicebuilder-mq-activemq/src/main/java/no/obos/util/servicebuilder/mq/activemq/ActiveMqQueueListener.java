@@ -13,7 +13,6 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 
-
 /**
  * Listens to a single activemq queue and forwards message to handler.
  * Startup and reconnect is handled by ActiveMqListener. Session is shared between queues.
@@ -22,22 +21,16 @@ import javax.jms.TextMessage;
 @Builder
 public class ActiveMqQueueListener {
 
-
-
     private final Session session;
     private final MqHandlerForwarder mqHandlerForwarder;
     private final MqHandlerImpl<?> handler;
 
-
-
     public void startListener() throws JMSException {
-
         Queue queue = session.createQueue(handler.handlerDescription.messageDescription.getQueueName());
         MessageConsumer consumer = session.createConsumer(queue);
         consumer.setMessageListener(it -> this.handleMessage(it, session));
         log.debug("Listening to {}", handler.handlerDescription.messageDescription.getQueueName());
     }
-
 
     private void handleMessage(Message message, Session session) {
         if (! (message instanceof TextMessage)) {
