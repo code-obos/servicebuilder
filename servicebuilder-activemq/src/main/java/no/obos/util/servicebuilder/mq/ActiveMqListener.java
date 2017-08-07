@@ -66,12 +66,12 @@ public class ActiveMqListener implements MessageQueueListener {
             consumer.setMessageListener(message -> handleMessage(handler, message, session));
             log.debug("Listening to {}", queueInput);
         } catch (Exception e) {
-            log.error("Failed to initialize message consumer", e);
+            restartListener(handler, e);
         }
     }
 
-    private void restartListener(MessageHandler handler, JMSException ex) {
-        log.error("MQ listener failed, restarting in 10 seconds...", ex);
+    private void restartListener(MessageHandler handler, Exception e) {
+        log.error("MQ listener failed, restarting in 10 seconds...", e);
         try {
             Thread.sleep(10000);
         } catch (InterruptedException ignored) {
