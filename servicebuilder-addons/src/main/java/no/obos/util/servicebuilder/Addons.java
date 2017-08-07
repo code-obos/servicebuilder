@@ -123,6 +123,25 @@ public class Addons {
         return ApplicationTokenFilterAddon.defaults;
     }
 
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-activemq</artifactId>
+        </dependency>
+    */
+    public static ActiveMqListenerAddon activeMqListener() {
+        return ActiveMqListenerAddon.defaults;
+    }
+
+    /*
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-activemq</artifactId>
+        </dependency>
+    */
+    public static ActiveMqSenderAddon activeMqSender() {
+        return ActiveMqSenderAddon.defaults;
+    }
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)

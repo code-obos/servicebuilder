@@ -5,28 +5,24 @@
     <parent>
         <groupId>no.obos.util</groupId>
         <artifactId>servicebuilder</artifactId>
-        <version>4.0.3-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-addons</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-db</artifactId>
-            <scope>provided</scope>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
         </dependency>
 
         <dependency>
