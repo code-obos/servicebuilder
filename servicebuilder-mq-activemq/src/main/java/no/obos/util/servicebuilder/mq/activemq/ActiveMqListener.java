@@ -35,6 +35,7 @@ public class ActiveMqListener implements MqListener {
         if (listenerActive) {
             throw new RuntimeException("Multiple active sessions in same listener. Check if starting connection threw exception and ActiveMQ ActiveMQConnection.setExceptionListener() failed at the same time.");
         }
+        listenerActive = true;
         threadIsInterrupted = false;
         try {
             activeMqConnectionProvider.startListenerSession((connection, session) -> {
@@ -48,7 +49,6 @@ public class ActiveMqListener implements MqListener {
                                 .mqHandlerForwarder(mqHandlerForwarder)
                                 .build();
                         activeMqListener.startListener();
-                        listenerActive = true;
                     } catch (JMSException ex) {
                         throw new RuntimeException(ex);
                     }

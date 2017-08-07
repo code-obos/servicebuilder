@@ -121,12 +121,12 @@ public class ActiveMqAddon implements Addon {
             String queueError = handlerDescription.messageDescription.getErrorQueueName();
             ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, handlerDescription.healthCheckEntriesMax, handlerDescription.healthCheckEntriesGrace, user, password);
             ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, 1, 1, user, password);
-            ObosHealthCheckRegistry.registerCustomCheck("ActiveMqListener active", () ->
-                    listener.isListenerActive()
-                            ? ObosHealthCheckResult.ok()
-                            : ObosHealthCheckResult.error("ActiveMqListener not active")
-            );
         });
+        ObosHealthCheckRegistry.registerCustomCheck("ActiveMqListener active", () ->
+                listener.isListenerActive()
+                        ? ObosHealthCheckResult.ok()
+                        : ObosHealthCheckResult.error("ActiveMqListener not active")
+        );
     }
 
     @Override
