@@ -13,6 +13,8 @@ import java.net.URISyntaxException;
 
 class ActiveMqUtils {
 
+    private static final String BROKER_URL_JUNIT = "vm://localhost";
+
     static void queueMessage(Session session, String text, String queueName) {
         try {
             Queue queue = session.createQueue(queueName);
@@ -29,13 +31,22 @@ class ActiveMqUtils {
     }
 
     static ActiveMQConnection openConnection(String user, String password, String url) {
+        String brokerUrl = brokerUrl(url);
         try {
-            ActiveMQConnection connection = ActiveMQConnection.makeConnection(user, password, url);
+            ActiveMQConnection connection = ActiveMQConnection.makeConnection(user, password, brokerUrl);
             connection.start();
             return connection;
         } catch (JMSException | URISyntaxException ex) {
             throw new MessageQueueException("Could not establish connection to ActiveMQ", ex);
         }
+    }
+
+    static String brokerUrl(String url) {
+        if (url.startsWith(BROKER_URL_JUNIT)) {
+            return url;
+        }
+
+        return url.startsWith("failover:") ? url : "failover:" + url;
     }
 
     static Session startSession(ActiveMQConnection connection) {
