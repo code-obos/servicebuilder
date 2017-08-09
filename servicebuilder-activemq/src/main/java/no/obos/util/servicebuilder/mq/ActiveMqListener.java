@@ -59,25 +59,14 @@ public class ActiveMqListener implements MessageQueueListener {
         log.debug("Starting listener...");
         try {
             ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
-            connection.setExceptionListener(jmsException -> restartListener(handler, jmsException));
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue queue = session.createQueue(queueInput);
             MessageConsumer consumer = session.createConsumer(queue);
             consumer.setMessageListener(message -> handleMessage(handler, message, session));
             log.debug("Listening to {}", queueInput);
         } catch (Exception e) {
-            restartListener(handler, e);
+            log.error("Error starting listening to queue {} with exception {}", queueInput, e);
         }
-    }
-
-    private void restartListener(MessageHandler handler, Exception e) {
-        log.error("MQ listener failed, restarting in 10 seconds...", e);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException ignored) {
-            // Ignored
-        }
-        startListener(handler);
     }
 
     private void handleMessage(MessageHandler handler, Message message, Session session) {
