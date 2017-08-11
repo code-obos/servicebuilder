@@ -64,7 +64,7 @@ public class ActiveMqListener implements MessageQueueListener {
             consumer.setMessageListener(message -> handleMessage(handler, message, session));
             log.debug("Listening to {}", queueInput);
         } catch (Exception e) {
-            log.error("Error starting listening to queue {} with exception {}", queueInput, e);
+            log.error("Error starting listening to queue {}", queueInput, e);
         }
     }
 
