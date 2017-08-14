@@ -15,6 +15,7 @@ import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import org.jboss.logging.MDC;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,16 +24,18 @@ import javax.ws.rs.Path;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Objects;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class JerseyClientAddonTest {
-    Controller nestedController = mock(Controller.class);
 
-    TestServiceRunner nestedService = TestServiceRunner.defaults(
+    private Controller nestedController = mock(Controller.class);
+
+    private TestServiceRunner nestedService = TestServiceRunner.defaults(
             TestServiceFull.config
                     .addon(ObosLogFilterAddon.defaults)
                     .bind(nestedController, Controller.class)
@@ -58,7 +61,7 @@ public class JerseyClientAddonTest {
                 .oneShot(Api.class, Api::call_with_stub);
 
         //then
-        verify(nestedController).isCallValid(eq(expected));
+        verify(nestedController).isCallValid(argThat(new VersionAgnosticCall(expected)));
         nestedRuntime.stop();
     }
 
@@ -82,13 +85,15 @@ public class JerseyClientAddonTest {
 
         //when
         when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken() {
-            public String getApplicationTokenId() {return "something";}
+            public String getApplicationTokenId() {
+                return "something";
+            }
         });
         TestServiceRunner.defaults(outerServiceConfig)
                 .oneShot(Api.class, Api::call_with_stub);
 
         //then
-        verify(nestedController).isCallValid(eq(expected));
+        verify(nestedController).isCallValid(argThat(new VersionAgnosticCall(expected)));
         nestedRuntime.stop();
     }
 
@@ -111,13 +116,15 @@ public class JerseyClientAddonTest {
 
         //when
         when(tokenServiceClient.getApplicationToken()).thenReturn(new ApplicationToken() {
-            public String getApplicationTokenId() {return "something";}
+            public String getApplicationTokenId() {
+                return "something";
+            }
         });
         TestServiceRunner.defaults(outerServiceConfig)
                 .oneShot(Api.class, Api::call_with_target);
 
         //then
-        verify(nestedController).isCallValid(eq(expected));
+        verify(nestedController).isCallValid(argThat(new VersionAgnosticCall(expected)));
         nestedRuntime.stop();
     }
 
@@ -140,7 +147,7 @@ public class JerseyClientAddonTest {
                 .oneShot(Api.class, Api::call_with_target);
 
         //then
-        verify(nestedController).isCallValid(eq(expected));
+        verify(nestedController).isCallValid(argThat(new VersionAgnosticCall(expected)));
         nestedRuntime.stop();
     }
 
@@ -167,12 +174,13 @@ public class JerseyClientAddonTest {
                 .oneShot(Api.class, Api::call_with_target);
 
         //then
-        verify(nestedController).isCallValid(eq(expected));
+        verify(nestedController).isCallValid(argThat(new VersionAgnosticCall(expected)));
         nestedRuntime.stop();
         MDC.remove(Constants.X_OBOS_REQUEST_ID);
     }
 
-    @Path("service") public interface Api {
+    @Path("service")
+    public interface Api {
         @GET
         boolean call_with_stub();
 
@@ -207,13 +215,56 @@ public class JerseyClientAddonTest {
     }
 
 
-    final ServiceDefinition serviceDefinition = ServiceDefinitionUtil.simple(Api.class);
+    private final ServiceDefinition serviceDefinition = ServiceDefinitionUtil.simple(Api.class);
 
-    TestServiceFull.Call getCall() {
+    private TestServiceFull.Call getCall() {
         return TestServiceFull.Call.builder()
                 .header("Accept", "application/json")
-                .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
-                .header(Constants.CLIENT_APPNAME_HEADER, "anonymous_service:4.1")
+                .header("User-Agent", "^Jersey/\\d+\\.\\d+\\.\\d+ \\(Jersey InMemory Connector\\)$")
+                .header(Constants.CLIENT_APPNAME_HEADER, "^anonymous_service:\\d+\\.\\d+$")
                 .build();
+    }
+
+    private class VersionAgnosticCall extends ArgumentMatcher<TestServiceFull.Call> {
+
+        private final TestServiceFull.Call expected;
+
+        VersionAgnosticCall(TestServiceFull.Call expected) {
+            this.expected = Objects.requireNonNull(expected);
+        }
+
+        @Override
+        public boolean matches(Object argument) {
+            return argument instanceof TestServiceFull.Call && matches((TestServiceFull.Call) argument);
+        }
+
+        private boolean matches(TestServiceFull.Call argument) {
+            TestServiceFull.Call expected = this.expected;
+
+            for (String headerKey : expected.headers.keySet()) {
+                expected = exchangeExpectedHeaderWithArgumentHeaderIfMatches(expected, argument, headerKey);
+            }
+
+            return argument.equals(expected);
+        }
+
+        private TestServiceFull.Call exchangeExpectedHeaderWithArgumentHeaderIfMatches(
+                TestServiceFull.Call expected,
+                TestServiceFull.Call argument,
+                String headerKey)
+        {
+            String argumentHeader = argument.headers.get(headerKey);
+            String expectedHeader = expected.headers.get(headerKey);
+
+            if (argumentHeader != null
+                    && expectedHeader != null
+                    && expectedHeader.startsWith("^")
+                    && expectedHeader.endsWith("$")
+                    && argumentHeader.matches(expectedHeader))
+            {
+                return expected.toBuilder().header(headerKey, argumentHeader).build();
+            }
+            return expected;
+        }
     }
 }

@@ -3,10 +3,8 @@ package no.obos.util.servicebuilder;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.experimental.Wither;
 import no.obos.metrics.ObosHealthCheckRegistry;
-import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.mq.ActiveMqSender;
@@ -41,7 +39,7 @@ public class ActiveMqSenderAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean registerHealthcheck;
 
-    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null,  null, 60, true);
+    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
 
 
     @Override
@@ -90,17 +88,36 @@ public class ActiveMqSenderAddon implements Addon {
                 ;
     }
 
-    public ActiveMqSenderAddon mqSender (MessageQueueSender mqSender){return withMqSender(mqSender);}
+    public ActiveMqSenderAddon mqSender(MessageQueueSender mqSender) {
+        return withMqSender(mqSender);
+    }
 
-    public ActiveMqSenderAddon name (String name){return withName(name);}
+    public ActiveMqSenderAddon name(String name) {
+        return withName(name);
+    }
 
-    public ActiveMqSenderAddon url (String url){return withUrl(url);}
+    public ActiveMqSenderAddon url(String url) {
+        return withUrl(url);
+    }
 
-    public ActiveMqSenderAddon user (String user){return withUser(user);}
+    public ActiveMqSenderAddon user(String user) {
+        return withUser(user);
+    }
 
-    public ActiveMqSenderAddon password (String password){return withPassword(password);}
+    public ActiveMqSenderAddon password(String password) {
+        return withPassword(password);
+    }
 
-    public ActiveMqSenderAddon queue (String queue){return withQueue(queue);}
+    public ActiveMqSenderAddon queue(String queue) {
+        return withQueue(queue);
+    }
 
-    public ActiveMqSenderAddon queueEntriesGrace (int queueEntriesGrace){return withQueueEntriesGrace(queueEntriesGrace);}
+    public ActiveMqSenderAddon queueEntriesGrace(int queueEntriesGrace) {
+        return withQueueEntriesGrace(queueEntriesGrace);
+    }
+
+    public ActiveMqSenderAddon registerHealthcheck(boolean registerHealthcheck) {
+        return withRegisterHealthcheck(registerHealthcheck);
+    }
+
 }
