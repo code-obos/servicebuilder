@@ -2,23 +2,20 @@ package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
-import no.obos.util.servicebuilder.TestServiceRunnerJetty;
-import no.obos.util.servicebuilder.addon.SwaggerAddon;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SwaggerAddonTest {
+public class SwaggerAddonTest extends AddonTestBase {
 
     @Test
     public void serves_swagger() {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(SwaggerAddon.defaults);
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("api.baseurl", "ape")
                 .oneShot(target -> target
                         .path("api")

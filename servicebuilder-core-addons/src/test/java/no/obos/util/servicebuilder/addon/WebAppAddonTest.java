@@ -10,15 +10,14 @@ import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class WebAppAddonTest {
+public class WebAppAddonTest extends AddonTestBase {
 
     @Test
     public void serves_from_classpath() {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(WebAppAddon.defaults);
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("webapp.resource.url", "classpath:webapp")
                 .oneShot(target -> target
                         .path("webapp")
@@ -35,8 +34,7 @@ public class WebAppAddonTest {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(WebAppAddon.defaults);
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("webapp.resource.url", "file:src/test/resources/webapp")
                 .oneShot(target -> target
                         .path("webapp")

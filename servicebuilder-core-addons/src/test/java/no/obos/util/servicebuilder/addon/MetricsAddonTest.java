@@ -2,22 +2,20 @@ package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
-import no.obos.util.servicebuilder.TestServiceRunnerJetty;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MetricsAddonTest {
+public class MetricsAddonTest extends AddonTestBase {
 
     @Test
     public void ping() {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(MetricsAddon.defaults);
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .oneShot(target -> target
                         .path("metrics")
                         .path("ping")
@@ -32,8 +30,7 @@ public class MetricsAddonTest {
 
         ServiceConfig serviceConfig = TestService.config
                 .addon(MetricsAddon.defaults);
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .oneShot(target -> target
                         .path("metrics")
                         .path("healthcheck")
@@ -49,8 +46,7 @@ public class MetricsAddonTest {
         ServiceConfig serviceConfig = TestService.config
                 .addon(MetricsAddon.defaults)
                 .addon(JerseyClientAddon.defaults(TestService.instance).apptoken(false));
-        Response call = TestServiceRunnerJetty
-                .defaults(serviceConfig)
+        Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("test.service.url", "http://no.way.this.is.a.valid.address.zzz:23456")
                 .oneShot(target -> target
                         .path("metrics")
