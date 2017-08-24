@@ -12,7 +12,10 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
+import java.util.Properties;
 import java.util.function.Function;
 
 import static java.util.function.Function.identity;
@@ -20,9 +23,6 @@ import static java.util.function.Function.identity;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestServiceRunnerJetty {
-    public static final int DEFAULT_PORT = 0;
-    public static final String DEFAULT_VERSION = "1.0";
-    public static final String DEFAULT_CONTEXTPATH = "/test/v" + DEFAULT_VERSION;
 
     public final ServiceConfig serviceConfig;
     @Wither(AccessLevel.PRIVATE)
@@ -35,11 +35,7 @@ public class TestServiceRunnerJetty {
     public final PropertyMap propertyMap;
 
     public static TestServiceRunnerJetty defaults(ServiceConfig serviceConfig) {
-
-        return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), PropertyMap.empty
-                .put("server.port", String.valueOf(DEFAULT_PORT))
-                .put("service.version", String.valueOf(DEFAULT_VERSION))
-                .put("server.contextPath", DEFAULT_CONTEXTPATH));
+        return new TestServiceRunnerJetty(serviceConfig, identity(), identity(), identity(), PropertyMap.empty);
     }
 
 
@@ -130,5 +126,20 @@ public class TestServiceRunnerJetty {
 
     public TestServiceRunnerJetty propertyMap(PropertyMap propertyMap) {
         return withPropertyMap(propertyMap);
+    }
+
+    public TestServiceRunnerJetty propertyFile(String filePath) {
+        Properties properties = loadProperties(filePath);
+        return withPropertyMap(propertyMap.putAllProperties(properties));
+    }
+
+    private Properties loadProperties(String file) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(file)) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            return properties;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

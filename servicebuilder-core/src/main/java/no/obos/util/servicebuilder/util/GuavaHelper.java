@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
+import java.util.Map;
 import java.util.stream.Collector;
 
 public class GuavaHelper {
@@ -25,6 +26,13 @@ public class GuavaHelper {
         return ImmutableMap.<K, V>builder()
                 .putAll(map)
                 .put(key, value)
+                .build();
+    }
+
+    public static <K, V> ImmutableMap<K, V> plus(ImmutableMap<K, V> originalMap, Map<K, V> mapToAdd) {
+        return ImmutableMap.<K, V>builder()
+                .putAll(originalMap)
+                .putAll(mapToAdd)
                 .build();
     }
 

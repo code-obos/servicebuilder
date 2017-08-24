@@ -1,10 +1,12 @@
 package no.obos.util.servicebuilder.config;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.Map;
+import java.util.Properties;
 
 public class PropertyMap implements PropertyProvider {
     public final ImmutableMap<String, String> properties;
@@ -17,6 +19,10 @@ public class PropertyMap implements PropertyProvider {
 
     public PropertyMap put(String key, String value) {
         return new PropertyMap(GuavaHelper.plus(properties, key, value));
+    }
+
+    public PropertyMap putAllProperties(Properties props) {
+        return new PropertyMap(GuavaHelper.plus(properties, Maps.fromProperties(props)));
     }
 
     @Override
