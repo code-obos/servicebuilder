@@ -41,8 +41,14 @@ public class QueryRunnerAddon implements Addon {
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
-            binder.bind(queryRunner).to(QueryRunner.class);
-            binder.bindAsContract(QueryRunnerAdapter.class);
+            if (name != null) {
+
+                binder.bind(queryRunner).to(QueryRunner.class).named(name);
+                binder.bindAsContract(QueryRunnerAdapter.class).named(name);
+            }else{
+                binder.bind(queryRunner).to(QueryRunner.class);
+                binder.bindAsContract(QueryRunnerAdapter.class);
+            }
         });
     }
 
