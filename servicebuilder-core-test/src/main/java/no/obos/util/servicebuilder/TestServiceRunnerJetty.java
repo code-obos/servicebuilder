@@ -111,14 +111,24 @@ public class TestServiceRunnerJetty {
     }
 
 
-    public TestServiceRunnerJetty property(String key, String value) {return propertyMap(this.propertyMap.put(key, value));}
+    public TestServiceRunnerJetty property(String key, String value) {
+        return propertyMap(this.propertyMap.put(key, value));
+    }
 
 
-    public TestServiceRunnerJetty clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return withClientConfigurator(clientConfigurator);}
+    public TestServiceRunnerJetty clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {
+        return withClientConfigurator(clientConfigurator);
+    }
 
-    public TestServiceRunnerJetty stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+    public TestServiceRunnerJetty stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {
+        return withStubConfigurator(stubConfigurator);
+    }
 
-    public TestServiceRunnerJetty targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
+    public TestServiceRunnerJetty targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {
+        return withTargetConfigurator(targetConfigurator);
+    }
 
-    public TestServiceRunnerJetty propertyMap(PropertyMap propertyMap) {return withPropertyMap(propertyMap);}
+    public TestServiceRunnerJetty propertyMap(PropertyMap propertyMap) {
+        return withPropertyMap(propertyMap);
+    }
 }
