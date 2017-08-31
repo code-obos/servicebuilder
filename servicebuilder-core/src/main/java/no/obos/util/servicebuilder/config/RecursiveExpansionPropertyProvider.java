@@ -20,7 +20,7 @@ public abstract class RecursiveExpansionPropertyProvider implements PropertyProv
             throw new AppConfigException("Loop in variable expansion. Offending key: " + key + " previous values: " + alreadyExpanded);
         }
         alreadyExpanded.add(key);
-        if (propertyProvider.getNoExpansion(key) != null) {
+        if (propertyProvider.getNoExpansion(key) == null) {
             throw new AppConfigException("Missing value when expanding variable. Path: " + alreadyExpanded);
         }
         String valueUnexpanded = propertyProvider.getNoExpansion(key);
