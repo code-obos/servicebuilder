@@ -4,17 +4,17 @@ import lombok.AllArgsConstructor;
 import no.obos.util.config.AppConfig;
 import no.obos.util.config.AppConfigLoader;
 import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.util.ApiVersionUtil;
 import no.obos.util.version.Version;
 import no.obos.util.version.VersionUtil;
 
 @AllArgsConstructor
-public class AppConfigBackedPropertyProvider implements PropertyProvider {
+public class AppConfigBackedPropertyProvider extends RecursiveExpansionPropertyProvider {
     private final AppConfig appConfig;
 
-    public String get(String key) {
-        return appConfig.get(key);
+    @Override
+    public String getNoExpansion(String key) {
+        return appConfig.getValueNoExpansion(key);
     }
 
     @Override

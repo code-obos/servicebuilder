@@ -2,13 +2,12 @@ package no.obos.util.servicebuilder.config;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.util.Map;
 import java.util.Properties;
 
-public class PropertyMap implements PropertyProvider {
+public class PropertyMap extends RecursiveExpansionPropertyProvider {
     public final ImmutableMap<String, String> properties;
 
     public PropertyMap(Map<String, String> properties) {
@@ -26,7 +25,7 @@ public class PropertyMap implements PropertyProvider {
     }
 
     @Override
-    public String get(String key) {
+    public String getNoExpansion(String key) {
         return properties.get(key);
     }
 
