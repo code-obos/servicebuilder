@@ -216,7 +216,9 @@ public class JerseyClientAddon implements Addon {
         }
     }
 
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(ApplicationTokenIdAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(ApplicationTokenIdAddon.class);
+    }
 
 
     @AllArgsConstructor
@@ -226,17 +228,31 @@ public class JerseyClientAddon implements Addon {
     }
 
 
-    public JerseyClientAddon uri(URI uri) {return withUri(uri);}
+    public JerseyClientAddon uri(URI uri) {
+        return withUri(uri);
+    }
 
-    public JerseyClientAddon apptoken(boolean apptoken) {return withApptoken(apptoken);}
+    public JerseyClientAddon apptoken(boolean apptoken) {
+        return withApptoken(apptoken);
+    }
 
-    public JerseyClientAddon apiPrefix(String apiPrefix) {return withApiPrefix(apiPrefix);}
+    public JerseyClientAddon apiPrefix(String apiPrefix) {
+        return withApiPrefix(apiPrefix);
+    }
 
-    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {return withClientConfigBase(clientConfigBase);}
+    public JerseyClientAddon clientConfigBase(ClientConfig clientConfigBase) {
+        return withClientConfigBase(clientConfigBase);
+    }
 
-    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {return withMonitorIntegration(monitorIntegration);}
+    public JerseyClientAddon monitorIntegration(boolean monitorIntegration) {
+        return withMonitorIntegration(monitorIntegration);
+    }
 
-    public JerseyClientAddon targetThrowsExceptions(boolean targetThrowsExceptions) {return withTargetThrowsExceptions(targetThrowsExceptions);}
+    public JerseyClientAddon targetThrowsExceptions(boolean targetThrowsExceptions) {
+        return withTargetThrowsExceptions(targetThrowsExceptions);
+    }
 
-    public JerseyClientAddon addApiVersionToPath(boolean addApiVersionToPath) {return withAddApiVersionToPath(addApiVersionToPath);}
+    public JerseyClientAddon addApiVersionToPath(boolean addApiVersionToPath) {
+        return withAddApiVersionToPath(addApiVersionToPath);
+    }
 }

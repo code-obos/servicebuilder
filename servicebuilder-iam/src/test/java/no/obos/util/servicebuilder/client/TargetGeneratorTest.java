@@ -25,7 +25,8 @@ public class TargetGeneratorTest {
 
 
 
-    @Path("service") public interface Api {
+    @Path("service")
+    public interface Api {
         @POST
         @Produces("application/json")
         @Consumes("application/json")

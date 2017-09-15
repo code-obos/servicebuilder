@@ -104,13 +104,19 @@ public class JdbiAddon implements Addon {
 
 
     @Override
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(DataSourceAddon.class);
+    }
 
     public JdbiAddon dao(Class<?> dao) {
         return withDaos(GuavaHelper.plus(daos, dao));
     }
 
-    public JdbiAddon name(String name) {return withName(name);}
+    public JdbiAddon name(String name) {
+        return withName(name);
+    }
 
-    public JdbiAddon dbi(DBI dbi) {return withDbi(dbi);}
+    public JdbiAddon dbi(DBI dbi) {
+        return withDbi(dbi);
+    }
 }

@@ -76,7 +76,8 @@ public class JerseyConfig {
     }
 
 
-    public interface Hk2ConfigModule extends Binder, Registrator {}
+    public interface Hk2ConfigModule extends Binder, Registrator {
+    }
 
 
     class InjectionBinder extends AbstractBinder {

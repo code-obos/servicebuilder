@@ -12,7 +12,9 @@ public class HttpProblemExceptionMapper implements ExceptionMapper<HttpProblemEx
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public HttpProblemExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public HttpProblemExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(HttpProblemException exception) {

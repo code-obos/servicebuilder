@@ -53,7 +53,8 @@ public class ClientGenerator {
         if (appTokenSupplier != null) {
             binders.add(binder -> binder
                     .bind(appTokenSupplier)
-                    .to(new TypeLiteral<Supplier<String>>() {})
+                    .to(new TypeLiteral<Supplier<String>>() {
+                    })
                     .named(AppTokenClientFilter.APP_TOKEN_SUPPLIER_BIND_NAME)
             );
             clientConfig.register(AppTokenClientFilter.class);
@@ -69,9 +70,15 @@ public class ClientGenerator {
         return ClientBuilder.newClient(clientConfig);
     }
 
-    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {return withClientConfigBase(clientConfigBase);}
+    public ClientGenerator clientConfigBase(ClientConfig clientConfigBase) {
+        return withClientConfigBase(clientConfigBase);
+    }
 
-    public ClientGenerator clientAppName(String clientAppName) {return withClientAppName(clientAppName);}
+    public ClientGenerator clientAppName(String clientAppName) {
+        return withClientAppName(clientAppName);
+    }
 
-    public ClientGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {return withAppTokenSupplier(appTokenSupplier);}
+    public ClientGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {
+        return withAppTokenSupplier(appTokenSupplier);
+    }
 }

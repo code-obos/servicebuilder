@@ -119,7 +119,7 @@ public class ActiveMqListenerAddon implements Addon {
                 .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR))
                 .queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)))
                 .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
-        ;
+                ;
     }
 
 
@@ -140,24 +140,44 @@ public class ActiveMqListenerAddon implements Addon {
         }
     }
 
-    public ActiveMqListenerAddon mqListener (MessageQueueListener mqListener){return withMqListener(mqListener);}
+    public ActiveMqListenerAddon mqListener(MessageQueueListener mqListener) {
+        return withMqListener(mqListener);
+    }
 
-    public ActiveMqListenerAddon name (String name){return withName(name);}
+    public ActiveMqListenerAddon name(String name) {
+        return withName(name);
+    }
 
-    public ActiveMqListenerAddon url (String url){return withUrl(url);}
+    public ActiveMqListenerAddon url(String url) {
+        return withUrl(url);
+    }
 
-    public ActiveMqListenerAddon user (String user){return withUser(user);}
+    public ActiveMqListenerAddon user(String user) {
+        return withUser(user);
+    }
 
-    public ActiveMqListenerAddon password (String password){return withPassword(password);}
+    public ActiveMqListenerAddon password(String password) {
+        return withPassword(password);
+    }
 
-    public ActiveMqListenerAddon queueInput (String queueInput){return withQueueInput(queueInput);}
+    public ActiveMqListenerAddon queueInput(String queueInput) {
+        return withQueueInput(queueInput);
+    }
 
-    public ActiveMqListenerAddon queueError (String queueError){return withQueueError(queueError);}
+    public ActiveMqListenerAddon queueError(String queueError) {
+        return withQueueError(queueError);
+    }
 
-    public ActiveMqListenerAddon queueEntriesMax (int queueEntriesMax){return withQueueEntriesMax(queueEntriesMax);}
+    public ActiveMqListenerAddon queueEntriesMax(int queueEntriesMax) {
+        return withQueueEntriesMax(queueEntriesMax);
+    }
 
-    public ActiveMqListenerAddon queueEntriesGrace (int queueEntriesGrace){return withQueueEntriesGrace(queueEntriesGrace);}
+    public ActiveMqListenerAddon queueEntriesGrace(int queueEntriesGrace) {
+        return withQueueEntriesGrace(queueEntriesGrace);
+    }
 
-    public ActiveMqListenerAddon handler (Class<? extends MessageHandler> handler){return withHandler(handler);}
+    public ActiveMqListenerAddon handler(Class<? extends MessageHandler> handler) {
+        return withHandler(handler);
+    }
 
 }

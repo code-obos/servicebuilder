@@ -39,5 +39,7 @@ public class RequireAppNameHeaderAddon implements Addon {
     }
 
 
-    public RequireAppNameHeaderAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {return withSwaggerImplicitHeaders(swaggerImplicitHeaders);}
+    public RequireAppNameHeaderAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {
+        return withSwaggerImplicitHeaders(swaggerImplicitHeaders);
+    }
 }

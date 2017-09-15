@@ -27,7 +27,7 @@ public class ProblemResponseParserTest {
     public void setUp() throws Exception {
         Map<String, String> context = new HashMap<>();
         context.put("banos", "banos_val");
-//        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
+        //        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
         problemResponse = ProblemResponse.builder()
                 .title("title")
                 .detail("detail")
@@ -38,7 +38,7 @@ public class ProblemResponseParserTest {
                 .status(403)
                 .type("about:null")
                 .build();
-//                ("title", "detail", 1, "refId", true, "about:null", context);
+        //                ("title", "detail", 1, "refId", true, "about:null", context);
     }
 
     @Test

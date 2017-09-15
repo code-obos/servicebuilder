@@ -52,19 +52,35 @@ public class LogParams {
 
     public final static LogParams defaults = new LogParams(true, LogLevel.INFO, false, ImmutableSet.of(), true, true);
 
-    public LogParams enableLogging(boolean enableLogging) {return withEnableLogging(enableLogging);}
+    public LogParams enableLogging(boolean enableLogging) {
+        return withEnableLogging(enableLogging);
+    }
 
-    public LogParams logLevel(LogLevel logLevel) {return withLogLevel(logLevel);}
+    public LogParams logLevel(LogLevel logLevel) {
+        return withLogLevel(logLevel);
+    }
 
-    public LogParams logHeaders(boolean logHeaders) {return withLogHeaders(logHeaders);}
+    public LogParams logHeaders(boolean logHeaders) {
+        return withLogHeaders(logHeaders);
+    }
 
-    public LogParams skipHeaders(ImmutableSet<String> skipHeaders) {return this.skipHeaders == skipHeaders ? this : new LogParams(this.enableLogging, this.logLevel, this.logHeaders, skipHeaders, this.logResponseEntity, this.logRequestPayload);}
+    public LogParams skipHeaders(ImmutableSet<String> skipHeaders) {
+        return this.skipHeaders == skipHeaders ? this : new LogParams(this.enableLogging, this.logLevel, this.logHeaders, skipHeaders, this.logResponseEntity, this.logRequestPayload);
+    }
 
-    public LogParams clearSkipHeaders() {return withSkipHeaders(ImmutableSet.of());}
+    public LogParams clearSkipHeaders() {
+        return withSkipHeaders(ImmutableSet.of());
+    }
 
-    public LogParams skipHeader(String skipHeader) {return withSkipHeaders(GuavaHelper.plus(ImmutableSet.of(), skipHeader));}
+    public LogParams skipHeader(String skipHeader) {
+        return withSkipHeaders(GuavaHelper.plus(ImmutableSet.of(), skipHeader));
+    }
 
-    public LogParams logResponseEntity(boolean logResponseEntity) {return withLogResponseEntity(logResponseEntity);}
+    public LogParams logResponseEntity(boolean logResponseEntity) {
+        return withLogResponseEntity(logResponseEntity);
+    }
 
-    public LogParams logRequestPayload(boolean logRequestPayload) {return withLogRequestPayload(logRequestPayload);}
+    public LogParams logRequestPayload(boolean logRequestPayload) {
+        return withLogRequestPayload(logRequestPayload);
+    }
 }

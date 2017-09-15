@@ -43,5 +43,7 @@ public class ServerLogAddon implements Addon {
         );
     }
 
-    public ServerLogAddon logParams(LogParams logParams) {return withLogParams(logParams);}
+    public ServerLogAddon logParams(LogParams logParams) {
+        return withLogParams(logParams);
+    }
 }

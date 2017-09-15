@@ -18,7 +18,9 @@ public class FieldLevelExceptionMapper implements ExceptionMapper<FieldLevelVali
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public FieldLevelExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public FieldLevelExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(FieldLevelValidationException exception) {

@@ -14,7 +14,9 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public RuntimeExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public RuntimeExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(RuntimeException exception) {

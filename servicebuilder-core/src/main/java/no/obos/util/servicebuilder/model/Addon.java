@@ -10,7 +10,7 @@ import java.util.Set;
 public interface Addon {
     /**
      * Lets addon access application properties. Should return a clone of the addon with new configuration based on properties, or this if no property changes.
-     *
+     * <p>
      * runs before initialize, addToJerseyConfig and addToJettyServer
      */
     default Addon withProperties(PropertyProvider properties) {
@@ -21,7 +21,7 @@ public interface Addon {
      * Lets addon initialize state that will be used in runtime, and pull state from already finalized addons.
      * Should return a clone of the addon with the new state.
      * By convention, an Addon should store its state in a nested class, Runtime, so it is accessible from other addons
-     *
+     * <p>
      * Runs before addToJerseyConfig and addToJettyServer
      */
     default Addon initialize(ServiceConfig serviceConfig) {
@@ -44,9 +44,10 @@ public interface Addon {
     /**
      * Returns a list of addon classes that the addon should be finalized after. Thus this addon
      * may utilize said addons in its initialize step.
-     *
+     * <p>
      * WARNING: dependency resolution is not transient. Thus if A->B->C, A.initializeAfter should return (B,C) and B.finalizeafter should return (C).
-     *
      */
-    default Set<Class<?>> initializeAfter() {return ImmutableSet.of();}
+    default Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of();
+    }
 }

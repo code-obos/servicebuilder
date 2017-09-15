@@ -45,7 +45,7 @@ public class QueryRunnerAddon implements Addon {
 
                 binder.bind(queryRunner).to(QueryRunner.class).named(name);
                 binder.bindAsContract(QueryRunnerAdapter.class).named(name);
-            }else{
+            } else {
                 binder.bind(queryRunner).to(QueryRunner.class);
                 binder.bindAsContract(QueryRunnerAdapter.class);
             }
@@ -54,7 +54,11 @@ public class QueryRunnerAddon implements Addon {
 
 
     @Override
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(DataSourceAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(DataSourceAddon.class);
+    }
 
-    public QueryRunnerAddon name(String name) {return withName(name);}
+    public QueryRunnerAddon name(String name) {
+        return withName(name);
+    }
 }

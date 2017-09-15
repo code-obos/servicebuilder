@@ -84,9 +84,15 @@ public class WebAppAddon implements Addon {
         jettyServer.addAppContext(webAppContext);
     }
 
-    public WebAppAddon pathSpec(String pathSpec) {return withPathSpec(pathSpec);}
+    public WebAppAddon pathSpec(String pathSpec) {
+        return withPathSpec(pathSpec);
+    }
 
-    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {return withSessionTimeoutSeconds(sessionTimeoutSeconds);}
+    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {
+        return withSessionTimeoutSeconds(sessionTimeoutSeconds);
+    }
 
-    public WebAppAddon resourceUri(URI resourceUri) {return withResourceUri(resourceUri);}
+    public WebAppAddon resourceUri(URI resourceUri) {
+        return withResourceUri(resourceUri);
+    }
 }

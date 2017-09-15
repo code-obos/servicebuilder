@@ -19,7 +19,9 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public ConstraintViolationExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public ConstraintViolationExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(ConstraintViolationException exception) {

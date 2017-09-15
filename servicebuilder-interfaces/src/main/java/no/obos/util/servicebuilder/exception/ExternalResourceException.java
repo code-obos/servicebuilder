@@ -30,7 +30,7 @@ public class ExternalResourceException extends WebApplicationException {
     private static String getMetaDataSummary(MetaData metaData) {
         String ret = "";
         ret = ret + "Target: " + metaData.targetName;
-        if(metaData.httpResponseMetaData != null) {
+        if (metaData.httpResponseMetaData != null) {
             ret += ", Status: " + metaData.httpResponseMetaData.status;
             if (metaData.httpResponseMetaData.problemResponse != null) {
                 ret += ", Detail: " + metaData.httpResponseMetaData.problemResponse.detail;

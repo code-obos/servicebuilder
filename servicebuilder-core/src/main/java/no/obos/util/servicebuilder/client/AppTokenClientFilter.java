@@ -18,7 +18,9 @@ public class AppTokenClientFilter implements ClientRequestFilter {
     final Supplier<String> appTokenSupplier;
 
     @Inject
-    public AppTokenClientFilter(@Named(APP_TOKEN_SUPPLIER_BIND_NAME) Supplier<String> appTokenSupplier) {this.appTokenSupplier = appTokenSupplier;}
+    public AppTokenClientFilter(@Named(APP_TOKEN_SUPPLIER_BIND_NAME) Supplier<String> appTokenSupplier) {
+        this.appTokenSupplier = appTokenSupplier;
+    }
 
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {

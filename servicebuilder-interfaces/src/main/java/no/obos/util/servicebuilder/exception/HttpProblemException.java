@@ -6,7 +6,7 @@ import no.obos.util.servicebuilder.model.ProblemResponse;
 
 import javax.ws.rs.WebApplicationException;
 
-public class HttpProblemException extends WebApplicationException{
+public class HttpProblemException extends WebApplicationException {
     @Getter
     private final ProblemResponse problemResponse;
 

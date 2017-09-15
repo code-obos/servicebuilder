@@ -28,7 +28,8 @@ public class ProblemResponse {
      * JAXB default constructor
      */
     @SuppressWarnings("unused")
-    private ProblemResponse() {}
+    private ProblemResponse() {
+    }
 
     @JsonCreator
     @Builder(toBuilder = true)

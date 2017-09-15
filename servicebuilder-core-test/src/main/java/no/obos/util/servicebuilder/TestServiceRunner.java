@@ -77,9 +77,13 @@ public class TestServiceRunner {
             return jerseyConfig.getResourceConfig();
         }
 
-        public Runtime stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+        public Runtime stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {
+            return withStubConfigurator(stubConfigurator);
+        }
 
-        public Runtime targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
+        public Runtime targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {
+            return withTargetConfigurator(targetConfigurator);
+        }
     }
 
     public TestServiceRunner start() {
@@ -133,14 +137,24 @@ public class TestServiceRunner {
         }
     }
 
-    public TestServiceRunner property(String key, String value) {return propertyMap(this.propertyMap.put(key, value));}
+    public TestServiceRunner property(String key, String value) {
+        return propertyMap(this.propertyMap.put(key, value));
+    }
 
 
-    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {return withClientConfigurator(clientConfigurator);}
+    public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {
+        return withClientConfigurator(clientConfigurator);
+    }
 
-    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {return withStubConfigurator(stubConfigurator);}
+    public TestServiceRunner stubConfigurator(Function<StubGenerator, StubGenerator> stubConfigurator) {
+        return withStubConfigurator(stubConfigurator);
+    }
 
-    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {return withTargetConfigurator(targetConfigurator);}
+    public TestServiceRunner targetConfigurator(Function<TargetGenerator, TargetGenerator> targetConfigurator) {
+        return withTargetConfigurator(targetConfigurator);
+    }
 
-    public TestServiceRunner propertyMap(PropertyMap propertyMap) {return withPropertyMap(propertyMap);}
+    public TestServiceRunner propertyMap(PropertyMap propertyMap) {
+        return withPropertyMap(propertyMap);
+    }
 }

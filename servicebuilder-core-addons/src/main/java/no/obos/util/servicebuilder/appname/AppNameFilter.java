@@ -14,7 +14,7 @@ import java.io.IOException;
 public class AppNameFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-        if(allwaysAccept(requestContext)) {
+        if (allwaysAccept(requestContext)) {
             return;
         }
         String appNameHeader = requestContext.getHeaderString(Constants.CLIENT_APPNAME_HEADER);

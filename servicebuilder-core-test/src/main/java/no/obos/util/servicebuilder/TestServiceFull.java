@@ -49,7 +49,8 @@ public class TestServiceFull implements ServiceDefinition {
 
 
     @Api
-    public @Path(PATH) interface ResourceFull {
+    public @Path(PATH)
+    interface ResourceFull {
         @GET
         @Produces("application/json")
         boolean get();

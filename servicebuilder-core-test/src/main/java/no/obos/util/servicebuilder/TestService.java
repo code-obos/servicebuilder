@@ -28,7 +28,8 @@ public class TestService implements ServiceDefinition {
 
 
     @Api
-    public @Path(PATH) interface Resource {
+    public @Path(PATH)
+    interface Resource {
         @GET
         @Produces("application/json")
         Payload get();

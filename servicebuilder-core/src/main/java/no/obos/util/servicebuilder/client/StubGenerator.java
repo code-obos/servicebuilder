@@ -56,11 +56,19 @@ public class StubGenerator {
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
 
-    public StubGenerator header(String key, String value) {return withHeaders(GuavaHelper.plus(headers, key, value));}
+    public StubGenerator header(String key, String value) {
+        return withHeaders(GuavaHelper.plus(headers, key, value));
+    }
 
-    public StubGenerator cookie(Cookie cookie) {return withCookies(GuavaHelper.plus(cookies, cookie));}
+    public StubGenerator cookie(Cookie cookie) {
+        return withCookies(GuavaHelper.plus(cookies, cookie));
+    }
 
-    public StubGenerator logging(boolean logging) {return withLogging(logging);}
+    public StubGenerator logging(boolean logging) {
+        return withLogging(logging);
+    }
 
-    public StubGenerator apiPath(String apiPrefix) {return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.logging, apiPrefix, this.cookies, this.headers);}
+    public StubGenerator apiPath(String apiPrefix) {
+        return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.logging, apiPrefix, this.cookies, this.headers);
+    }
 }

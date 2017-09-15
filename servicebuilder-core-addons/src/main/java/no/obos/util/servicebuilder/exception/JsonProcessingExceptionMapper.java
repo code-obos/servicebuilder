@@ -15,7 +15,9 @@ public class JsonProcessingExceptionMapper implements ExceptionMapper<JsonProces
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public JsonProcessingExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public JsonProcessingExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(JsonProcessingException exception) {

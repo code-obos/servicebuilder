@@ -55,7 +55,11 @@ public class SwaggerAddon implements Addon {
         jettyServer.getServletContext().addServlet(apiDocServletHolder, pathSpec);
     }
 
-    public SwaggerAddon apiBasePath(String apiBasePath) {return withApiBasePath(apiBasePath);}
+    public SwaggerAddon apiBasePath(String apiBasePath) {
+        return withApiBasePath(apiBasePath);
+    }
 
-    public SwaggerAddon apiVersion(String apiVersion) {return withApiVersion(apiVersion);}
+    public SwaggerAddon apiVersion(String apiVersion) {
+        return withApiVersion(apiVersion);
+    }
 }

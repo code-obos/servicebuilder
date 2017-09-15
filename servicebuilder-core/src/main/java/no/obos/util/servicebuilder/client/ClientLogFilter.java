@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Priority(Priorities.USER)
 @Slf4j
-public class ClientLogFilter implements ClientRequestFilter, ClientResponseFilter{
+public class ClientLogFilter implements ClientRequestFilter, ClientResponseFilter {
     public static final String PROPERTYNAME = "ClientLogFilter.startTime";
 
     @Override
@@ -25,8 +25,8 @@ public class ClientLogFilter implements ClientRequestFilter, ClientResponseFilte
     public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
         Long totalMillis = null;
 
-        Long startNanos = (Long)requestContext.getProperty(PROPERTYNAME);
-        if(startNanos != null) {
+        Long startNanos = (Long) requestContext.getProperty(PROPERTYNAME);
+        if (startNanos != null) {
             long totalNanos = System.nanoTime() - startNanos;
             totalMillis = totalNanos / 1_000_000;
         }

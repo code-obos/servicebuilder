@@ -99,17 +99,31 @@ public class BasicDatasourceAddon implements DataSourceAddon {
         }
     }
 
-    public BasicDatasourceAddon name(String name) {return withName(name);}
+    public BasicDatasourceAddon name(String name) {
+        return withName(name);
+    }
 
-    public BasicDatasourceAddon url(String url) {return withUrl(url);}
+    public BasicDatasourceAddon url(String url) {
+        return withUrl(url);
+    }
 
-    public BasicDatasourceAddon driverClassName(String driverClassName) {return withDriverClassName(driverClassName);}
+    public BasicDatasourceAddon driverClassName(String driverClassName) {
+        return withDriverClassName(driverClassName);
+    }
 
-    public BasicDatasourceAddon username(String username) {return withUsername(username);}
+    public BasicDatasourceAddon username(String username) {
+        return withUsername(username);
+    }
 
-    public BasicDatasourceAddon password(String password) {return withPassword(password);}
+    public BasicDatasourceAddon password(String password) {
+        return withPassword(password);
+    }
 
-    public BasicDatasourceAddon validationQuery(String validationQuery) {return withValidationQuery(validationQuery);}
+    public BasicDatasourceAddon validationQuery(String validationQuery) {
+        return withValidationQuery(validationQuery);
+    }
 
-    public BasicDatasourceAddon monitorIntegration(boolean monitorIntegration) {return withMonitorIntegration(monitorIntegration);}
+    public BasicDatasourceAddon monitorIntegration(boolean monitorIntegration) {
+        return withMonitorIntegration(monitorIntegration);
+    }
 }

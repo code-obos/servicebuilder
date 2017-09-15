@@ -74,7 +74,9 @@ public class AddonStartOrderTest {
             }
 
             @Override
-            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> initializeAfter() {
+                return ImmutableSet.of(Dependee.class);
+            }
         }
 
         ServiceConfig config = ServiceConfig.defaults(serviceDefinition)
@@ -108,7 +110,9 @@ public class AddonStartOrderTest {
             }
 
             @Override
-            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Dependee.class);}
+            public Set<Class<?>> initializeAfter() {
+                return ImmutableSet.of(Dependee.class);
+            }
         }
 
         class Dependent implements Addon {
@@ -119,7 +123,9 @@ public class AddonStartOrderTest {
             }
 
             @Override
-            public Set<Class<?>> initializeAfter() {return ImmutableSet.of(Immediate.class, Dependee.class);}
+            public Set<Class<?>> initializeAfter() {
+                return ImmutableSet.of(Immediate.class, Dependee.class);
+            }
         }
 
         ServiceConfig config = ServiceConfig.defaults(serviceDefinition)

@@ -109,12 +109,20 @@ public class ApplicationTokenFilterAddon implements Addon {
         return this.withAcceptedAppIds(acceptedAppIds);
     }
 
-    public ApplicationTokenFilterAddon requireAppTokenByDefault(boolean requireAppTokenByDefault) {return withRequireAppTokenByDefault(requireAppTokenByDefault);}
+    public ApplicationTokenFilterAddon requireAppTokenByDefault(boolean requireAppTokenByDefault) {
+        return withRequireAppTokenByDefault(requireAppTokenByDefault);
+    }
 
-    public ApplicationTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {return withSwaggerImplicitHeaders(swaggerImplicitHeaders);}
+    public ApplicationTokenFilterAddon swaggerImplicitHeaders(boolean swaggerImplicitHeaders) {
+        return withSwaggerImplicitHeaders(swaggerImplicitHeaders);
+    }
 
-    public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {return withFasttrackFilter(fasttrackFilter);}
+    public ApplicationTokenFilterAddon fasttrackFilter(Predicate<ContainerRequestContext> fasttrackFilter) {
+        return withFasttrackFilter(fasttrackFilter);
+    }
 
     @Override
-    public Set<Class<?>> initializeAfter() {return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);}
+    public Set<Class<?>> initializeAfter() {
+        return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);
+    }
 }

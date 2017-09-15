@@ -12,7 +12,9 @@ public class UserMessageExceptionMapper implements ExceptionMapper<UserMessageEx
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public UserMessageExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public UserMessageExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(UserMessageException exception) {

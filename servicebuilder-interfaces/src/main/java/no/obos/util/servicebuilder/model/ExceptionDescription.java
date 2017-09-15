@@ -25,12 +25,12 @@ public class ExceptionDescription {
     public final Integer status;
 
     /**
-     "type" (string) - A URI reference [RFC3986] that identifies the
-     problem type.  This specification encourages that, when
-     dereferenced, it provide human-readable documentation for the
-     problem type (e.g., using HTML [W3C.REC-html5-20141028]).  When
-     this member is not present, its value is assumed to be
-     "about:blank".
+     * "type" (string) - A URI reference [RFC3986] that identifies the
+     * problem type.  This specification encourages that, when
+     * dereferenced, it provide human-readable documentation for the
+     * problem type (e.g., using HTML [W3C.REC-html5-20141028]).  When
+     * this member is not present, its value is assumed to be
+     * "about:blank".
      */
     public final String type;
 

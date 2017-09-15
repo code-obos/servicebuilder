@@ -16,7 +16,9 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public ValidationExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public ValidationExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(ValidationException exception) {

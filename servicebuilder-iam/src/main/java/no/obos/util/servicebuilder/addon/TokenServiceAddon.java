@@ -75,13 +75,21 @@ public class TokenServiceAddon implements ApplicationTokenIdAddon, Addon {
         return () -> runtime.tokenServiceClient.getApplicationToken().getApplicationTokenId();
     }
 
-    public TokenServiceAddon url(String url) {return withUrl(url);}
+    public TokenServiceAddon url(String url) {
+        return withUrl(url);
+    }
 
-    public TokenServiceAddon appId(String appId) {return withAppId(appId);}
+    public TokenServiceAddon appId(String appId) {
+        return withAppId(appId);
+    }
 
-    public TokenServiceAddon appSecret(String appSecret) {return withAppSecret(appSecret);}
+    public TokenServiceAddon appSecret(String appSecret) {
+        return withAppSecret(appSecret);
+    }
 
-    public TokenServiceAddon tokenServiceClient(TokenServiceClient tokenServiceClient) {return withTokenServiceClient(tokenServiceClient);}
+    public TokenServiceAddon tokenServiceClient(TokenServiceClient tokenServiceClient) {
+        return withTokenServiceClient(tokenServiceClient);
+    }
 
     @AllArgsConstructor
     public static class Runtime {

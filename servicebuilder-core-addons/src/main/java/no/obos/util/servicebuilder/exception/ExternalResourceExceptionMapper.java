@@ -27,7 +27,9 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
     private final static String INDENTATION = "  ";
 
     @Inject
-    public ExternalResourceExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public ExternalResourceExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(ExternalResourceException exception) {

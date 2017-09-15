@@ -45,7 +45,8 @@ public class JdbiAddonTest {
     }
 
 
-    public @Path("") interface Api {
+    public @Path("")
+    interface Api {
         @GET
         @Produces(MediaType.APPLICATION_JSON)
         List<Integer> get();

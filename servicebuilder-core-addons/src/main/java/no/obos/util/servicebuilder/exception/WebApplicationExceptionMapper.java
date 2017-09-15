@@ -13,7 +13,9 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     final private ExceptionUtil exceptionUtil;
 
     @Inject
-    public WebApplicationExceptionMapper(ExceptionUtil exceptionUtil) {this.exceptionUtil = exceptionUtil;}
+    public WebApplicationExceptionMapper(ExceptionUtil exceptionUtil) {
+        this.exceptionUtil = exceptionUtil;
+    }
 
     @Override
     public Response toResponse(WebApplicationException exception) {
