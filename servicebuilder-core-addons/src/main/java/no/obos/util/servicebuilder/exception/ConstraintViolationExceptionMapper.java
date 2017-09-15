@@ -2,10 +2,12 @@ package no.obos.util.servicebuilder.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.LogLevel;
+import no.obos.util.servicebuilder.model.NoLogging;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Payload;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import java.util.List;
@@ -27,7 +29,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     public Response toResponse(ConstraintViolationException exception) {
         Set<ConstraintViolation<?>> errorSet = exception.getConstraintViolations();
         List<String> errors = errorSet.stream()
-                .map(error -> error.getPropertyPath().toString() + ", " + error.getMessage() + ", was: " + error.getInvalidValue())
+                .map(this::errorMessage)
                 .collect(Collectors.toList());
         String msg = String.format("Validering av parametere feilet med: %s", errors.toString());
 
@@ -37,5 +39,17 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
                 .detail(msg)
                 .logger(log)
         );
+    }
+
+    private String errorMessage(ConstraintViolation<?> error) {
+        Set<Class<? extends Payload>> payload = error.getConstraintDescriptor().getPayload();
+
+        if (payload.contains(NoLogging.class)) {
+            return error.getPropertyPath().toString() + ", " + error.getMessage();
+        } else {
+            return error.getPropertyPath().toString() + ", " + error.getMessage() + ", was: " + error.getInvalidValue();
+
+        }
+
     }
 }
