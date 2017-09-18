@@ -48,8 +48,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
             return error.getPropertyPath().toString() + ", " + error.getMessage();
         } else {
             return error.getPropertyPath().toString() + ", " + error.getMessage() + ", was: " + error.getInvalidValue();
-
         }
-
     }
+
 }
