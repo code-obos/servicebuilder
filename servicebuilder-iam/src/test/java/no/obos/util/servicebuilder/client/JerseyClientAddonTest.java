@@ -225,7 +225,7 @@ public class JerseyClientAddonTest {
                 .build();
     }
 
-    private class VersionAgnosticCall extends ArgumentMatcher<TestServiceFull.Call> {
+    private class VersionAgnosticCall implements ArgumentMatcher<TestServiceFull.Call> {
 
         private final TestServiceFull.Call expected;
 
@@ -234,11 +234,7 @@ public class JerseyClientAddonTest {
         }
 
         @Override
-        public boolean matches(Object argument) {
-            return argument instanceof TestServiceFull.Call && matches((TestServiceFull.Call) argument);
-        }
-
-        private boolean matches(TestServiceFull.Call argument) {
+        public boolean matches(TestServiceFull.Call argument) {
             TestServiceFull.Call expected = this.expected;
 
             for (String headerKey : expected.headers.keySet()) {
