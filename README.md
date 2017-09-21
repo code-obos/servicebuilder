@@ -8,3 +8,4 @@ A framework for creating OBOS services.
 
 ## Breaking changes in v6
 * Updated dependencies to be compatible with Bean Validation 2.0 (JSR 380) Reference Implementation.
+* Updated to Mockito version 2.
