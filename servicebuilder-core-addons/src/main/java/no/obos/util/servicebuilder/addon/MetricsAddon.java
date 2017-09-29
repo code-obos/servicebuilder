@@ -1,8 +1,8 @@
 package no.obos.util.servicebuilder.addon;
 
 import no.obos.metrics.ObosMetricsServlet;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JettyServer;
+import no.obos.util.servicebuilder.model.Addon;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 /**

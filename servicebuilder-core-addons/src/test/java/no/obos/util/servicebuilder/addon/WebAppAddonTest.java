@@ -2,8 +2,6 @@ package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
-import no.obos.util.servicebuilder.TestServiceRunnerJetty;
-import no.obos.util.servicebuilder.addon.WebAppAddon;
 import org.junit.Test;
 
 import javax.ws.rs.core.Response;

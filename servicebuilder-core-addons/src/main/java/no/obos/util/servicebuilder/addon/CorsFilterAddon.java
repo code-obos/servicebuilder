@@ -1,8 +1,8 @@
 package no.obos.util.servicebuilder.addon;
 
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.cors.ResponseCorsFilter;
+import no.obos.util.servicebuilder.model.Addon;
 
 /**
  * Implementerer en mest mulig liberal CORS-protokoll basert på https://mortoray.com/2014/04/09/allowing-unlimited-access-with-cors/ .

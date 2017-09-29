@@ -1,12 +1,12 @@
 package no.obos.util.servicebuilder.addon;
 
-import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.exception.HttpProblemException;
 import no.obos.util.servicebuilder.exception.UserMessageException;
+import no.obos.util.servicebuilder.model.LogLevel;
+import no.obos.util.servicebuilder.model.ProblemResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;

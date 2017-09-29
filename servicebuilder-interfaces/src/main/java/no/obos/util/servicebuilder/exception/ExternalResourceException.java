@@ -3,7 +3,6 @@ package no.obos.util.servicebuilder.exception;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;

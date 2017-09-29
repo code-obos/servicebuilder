@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.exception.ConstraintViolationExceptionMapper;
 import no.obos.util.servicebuilder.exception.ExceptionUtil;
@@ -16,6 +15,7 @@ import no.obos.util.servicebuilder.exception.RuntimeExceptionMapper;
 import no.obos.util.servicebuilder.exception.UserMessageExceptionMapper;
 import no.obos.util.servicebuilder.exception.ValidationExceptionMapper;
 import no.obos.util.servicebuilder.exception.WebApplicationExceptionMapper;
+import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import javax.ws.rs.NotFoundException;
