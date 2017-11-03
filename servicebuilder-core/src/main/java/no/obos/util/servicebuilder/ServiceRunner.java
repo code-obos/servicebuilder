@@ -2,6 +2,7 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.config.AppConfigBackedPropertyProvider;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -10,6 +11,7 @@ import static java.util.stream.Collectors.toList;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_CONTEXT_PATH;
 import static no.obos.util.servicebuilder.JettyServer.CONFIG_KEY_SERVER_PORT;
 
+@Slf4j
 @AllArgsConstructor
 public class ServiceRunner {
     final ServiceConfig serviceConfig;
@@ -77,6 +79,13 @@ public class ServiceRunner {
     }
 
     public void stop() {
+        serviceConfig.addons.forEach(addon -> {
+            try {
+                addon.cleanUp();
+            } catch (RuntimeException ex) {
+                log.error("Exception during cleanup", ex);
+            }
+        });
         jettyServer.stop();
     }
 }

@@ -47,7 +47,11 @@ public interface Addon {
      * <p>
      * WARNING: dependency resolution is not transient. Thus if A->B->C, A.initializeAfter should return (B,C) and B.finalizeafter should return (C).
      */
-    default Set<Class<?>> initializeAfter() {
-        return ImmutableSet.of();
+    default Set<Class<?>> initializeAfter() {return ImmutableSet.of();}
+
+    /**
+     * Removes any lingering state upon stopping.
+     */
+    default void cleanUp() {
     }
 }
