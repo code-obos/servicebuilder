@@ -69,6 +69,10 @@ public class ServiceConfig {
         );
     }
 
+    public ServiceConfig registerInstance(Object toRegister) {
+        return register(registrator -> registrator.register(toRegister));
+    }
+
     public ServiceConfig register(Class toRegister) {
         return register(registrator -> registrator.register(toRegister));
     }
