@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.model.Addon;
-import no.obos.util.servicebuilder.model.MessageSender;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -14,7 +13,6 @@ import javax.inject.Inject;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
-import java.util.Map;
 import java.util.function.Consumer;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -74,16 +72,6 @@ public class TestChain {
 
     public TestChain serviceLocator(Consumer<ServiceLocator> fun) {
         return action(testChain -> fun.accept(testChain.serviceLocator.get()));
-    }
-
-    public <T> TestChain message(Class<T> messageType, Consumer<MessageSender<T>> fun) {
-        return action(testChain -> {
-            ServiceLocator serviceLocator = testChain.serviceLocator.get();
-            Map<String, MessageSender> map = serviceLocator.getService(new TypeLiteral<Map<String, MessageSender>>() {}.getType());
-            @SuppressWarnings("unchecked")
-            MessageSender<T> messageSender = (MessageSender<T>) map.get(messageType.getName());
-            fun.accept(messageSender);
-        });
     }
 
     private TestChain action(Action action) {
