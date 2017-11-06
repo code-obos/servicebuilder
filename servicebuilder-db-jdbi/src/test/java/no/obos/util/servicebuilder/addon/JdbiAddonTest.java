@@ -18,21 +18,39 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JdbiAddonTest {
+
+
+    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
+            .addon(ExceptionMapperAddon.defaults)
+            .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
+                    .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
+                    .insert("testable", 101, "'Per'")
+                    .insert("testable", 303, "'Espen'")
+                    .script("INSERT INTO testable VALUES (202, 'Per');")
+            )
+            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name("Banan"))
+            .bind(ApiImpl.class, Api.class);
+
+
     @Test
     public void runsWithJdbi() {
         List<Integer> expected = Lists.newArrayList(101, 202);
-        ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
-                .addon(ExceptionMapperAddon.defaults)
-                .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
-                        .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
-                        .insert("testable", 101, "'Per'")
-                        .insert("testable", 303, "'Espen'")
-                        .script("INSERT INTO testable VALUES (202, 'Per');")
-                )
-                .addon(JdbiAddon.defaults.dao(JdbiDto.class).name("Banan"))
-                .bind(ApiImpl.class, Api.class);
-        List<Integer> actual = TestServiceRunner.defaults(serviceConfig).oneShot(Api.class, Api::get);
+        List<Integer> actual = TestServiceRunner.defaults(serviceConfig)
+                .oneShot(Api.class, Api::get);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testChainExample() {
+        List<Integer> expected = Lists.newArrayList(101, 202);
+        TestServiceRunner.defaults(serviceConfig)
+                .chain()
+                .call(Api.class, Api::get)
+                .addonNamed(addon_name, JdbiAddon.class, it -> {
+                    List<Integer> actual = it.createDao(JdbiDto.class).doGet("Per");
+                    assertThat(actual).isEqualTo(expected);
+                })
+                .run();
     }
 
     public interface JdbiDto {
@@ -61,4 +79,7 @@ public class JdbiAddonTest {
             return jdbiDto.doGet("Per");
         }
     }
+
+
+    static final String addon_name = "Banan";
 }

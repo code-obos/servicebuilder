@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
@@ -23,8 +24,9 @@ import javax.ws.rs.core.HttpHeaders;
 import java.util.Set;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class JdbiAddon implements Addon {
+public class JdbiAddon implements NamedAddon {
 
+    @Getter
     @Wither(AccessLevel.PRIVATE)
     public final String name;
     @Wither(AccessLevel.PRIVATE)

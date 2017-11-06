@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
+import no.obos.util.servicebuilder.addon.NamedAddon;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -56,6 +57,10 @@ public class TestChain {
 
     public <T extends Addon> TestChain addon(Class<T> clazz, Consumer<T> fun) {
         return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addonInstance(clazz)));
+    }
+
+    public <T extends NamedAddon> TestChain addonNamed(String name, Class<T> clazz, Consumer<T> fun) {
+        return action(testChain -> fun.accept(testChain.serviceRunner.getServiceConfig().addonInstanceNamed(clazz, name)));
     }
 
     public <T> TestChain injectee(Class<T> clazz, Consumer<T> fun) {
