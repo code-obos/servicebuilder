@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,15 +18,9 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.ApiVersionUtil;
-import no.obos.util.servicebuilder.util.Hk2Helper;
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InstantiationData;
-import org.glassfish.hk2.api.InstantiationService;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.client.ClientConfig;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -109,9 +104,13 @@ public class JerseyClientAddon implements Addon {
                 .clientAppName(clientAppName)
                 .appTokenSupplier(appTokenIdSupplier)
                 .generate();
-        StubGenerator stubGenerator = StubGenerator.defaults(client, uri);
+        StubGenerator stubGenerator = StubGenerator.defaults(client, uri)
+                .apiPath(apiPrefix);
 
-        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator));
+        TargetGenerator targetGenerator = TargetGenerator.defaults(client, uri)
+                .throwExceptionForErrors(true);
+
+        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator, targetGenerator));
     }
 
 
@@ -119,14 +118,21 @@ public class JerseyClientAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     String serviceName = serviceDefinition.getName();
-                    binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
-                    binder.bind(runtime.client).to(Client.class).named(serviceName);
-                    binder.bindFactory(WebTargetFactory.class).to(WebTarget.class).named(serviceName);
-                    binder.bind(runtime.generator).to(StubGenerator.class).named(serviceName);
+                    if (! Strings.isNullOrEmpty(serviceName)) {
+                        binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
+                        binder.bind(runtime.client).to(Client.class).named(serviceName);
+                        binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class).named(serviceName);
+                        binder.bind(runtime.stubGenerator).to(StubGenerator.class).named(serviceName);
+                    } else {
+                        binder.bind(this).to(JerseyClientAddon.class);
+                        binder.bind(runtime.client).to(Client.class);
+                        binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class);
+                        binder.bind(runtime.stubGenerator).to(StubGenerator.class);
+                    }
+
                     serviceDefinition.getResources().forEach(clazz -> {
-                                binder.bind(this).to(JerseyClientAddon.class).named(clazz.getCanonicalName());
                                 //noinspection unchecked
-                                binder.bindFactory(StubFactory.class).to(clazz).in(Singleton.class);
+                                binder.bindFactory(new StubFactory(clazz, runtime.stubGenerator)).to(clazz).in(Singleton.class);
                             }
 
                     );
@@ -142,25 +148,12 @@ public class JerseyClientAddon implements Addon {
     }
 
 
+    @AllArgsConstructor
     public static class StubFactory implements Factory<Object> {
-
-        final InstantiationService instantiationService;
-        final ServiceLocator serviceLocator;
-
-        @Inject
-        public StubFactory(InstantiationService instantiationService, ServiceLocator serviceLocator) {
-            this.instantiationService = instantiationService;
-            this.serviceLocator = serviceLocator;
-        }
+        final Class<?> requiredType;
+        final StubGenerator generator;
 
         public Object provide() {
-            Class<?> requiredType = getStubClass();
-            JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, requiredType.getCanonicalName());
-
-            StubGenerator generator = configuration.runtime.generator
-                    .apiPath(configuration.apiPrefix);
-
-
             return generator
                     .generateClient(requiredType);
         }
@@ -169,34 +162,14 @@ public class JerseyClientAddon implements Addon {
         public void dispose(Object instance) {
 
         }
-
-        private Class<?> getStubClass() {
-            InstantiationData instantiationData = instantiationService.getInstantiationData();
-            Injectee parentInjectee = instantiationData.getParentInjectee();
-            return (Class) parentInjectee.getRequiredType();
-        }
     }
 
 
+    @AllArgsConstructor
     public static class WebTargetFactory implements Factory<WebTarget> {
-
-        final InstantiationService instantiationService;
-        final ServiceLocator serviceLocator;
-
-        @Inject
-        public WebTargetFactory(InstantiationService instantiationService, ServiceLocator serviceLocator) {
-            this.instantiationService = instantiationService;
-            this.serviceLocator = serviceLocator;
-        }
+        TargetGenerator generator;
 
         public WebTarget provide() {
-            String serviceName = Hk2Helper.getInjecteeName(instantiationService);
-            Client client = serviceLocator.getService(Client.class, serviceName);
-
-            JerseyClientAddon configuration = serviceLocator.getService(JerseyClientAddon.class, serviceName);
-            TargetGenerator generator = TargetGenerator.defaults(client, configuration.uri)
-                    .throwExceptionForErrors(true);
-
             return generator.generate();
         }
 
@@ -213,7 +186,8 @@ public class JerseyClientAddon implements Addon {
     @AllArgsConstructor
     public static class Runtime {
         public final Client client;
-        StubGenerator generator;
+        public final StubGenerator stubGenerator;
+        public final TargetGenerator targetGenerator;
     }
 
 
