@@ -9,13 +9,11 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.client.ClientGenerator;
-import no.obos.util.servicebuilder.client.StringProvider;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
 import no.obos.util.servicebuilder.model.Addon;
-import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.ApiVersionUtil;
@@ -26,14 +24,11 @@ import org.glassfish.hk2.api.InstantiationData;
 import org.glassfish.hk2.api.InstantiationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.client.ClientConfig;
-import org.jvnet.hk2.annotations.Optional;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Set;
@@ -149,13 +144,11 @@ public class JerseyClientAddon implements Addon {
 
     public static class StubFactory implements Factory<Object> {
 
-        final HttpHeaders headers;
         final InstantiationService instantiationService;
         final ServiceLocator serviceLocator;
 
         @Inject
-        public StubFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator) {
-            this.headers = headers;
+        public StubFactory(InstantiationService instantiationService, ServiceLocator serviceLocator) {
             this.instantiationService = instantiationService;
             this.serviceLocator = serviceLocator;
         }
@@ -187,17 +180,13 @@ public class JerseyClientAddon implements Addon {
 
     public static class WebTargetFactory implements Factory<WebTarget> {
 
-        final HttpHeaders headers;
         final InstantiationService instantiationService;
         final ServiceLocator serviceLocator;
-        final StringProvider apptokenProvider;
 
         @Inject
-        public WebTargetFactory(HttpHeaders headers, InstantiationService instantiationService, ServiceLocator serviceLocator, @Named(Constants.APPTOKENID_HEADER) @Optional StringProvider apptokenProvider) {
-            this.headers = headers;
+        public WebTargetFactory(InstantiationService instantiationService, ServiceLocator serviceLocator) {
             this.instantiationService = instantiationService;
             this.serviceLocator = serviceLocator;
-            this.apptokenProvider = apptokenProvider;
         }
 
         public WebTarget provide() {
