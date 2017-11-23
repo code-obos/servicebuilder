@@ -68,8 +68,11 @@ public class ActiveMqListenerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final Class<? extends MessageHandler> handler;
 
-    public static ActiveMqListenerAddon defaults = new ActiveMqListenerAddon(null, null, null, null, null, null, null, 1, 60, null);
+    private static final ActiveMqListenerAddon defaults = new ActiveMqListenerAddon(null, null, null, null, null, null, null, 1, 60, null);
 
+    public static ActiveMqListenerAddon defaults(Class<? extends MessageHandler> messageHandler) {
+        return defaults.handler(messageHandler);
+    }
 
     @Override
     public void addToJerseyConfig(JerseyConfig serviceConfig) {

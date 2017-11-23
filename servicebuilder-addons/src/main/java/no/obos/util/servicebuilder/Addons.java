@@ -17,6 +17,7 @@ import no.obos.util.servicebuilder.addon.TokenServiceAddon;
 import no.obos.util.servicebuilder.addon.UserTokenFilterAddon;
 import no.obos.util.servicebuilder.addon.WebAppAddon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.mq.MessageHandler;
 
 public class Addons {
 
@@ -129,8 +130,8 @@ public class Addons {
             <artifactId>servicebuilder-activemq</artifactId>
         </dependency>
     */
-    public static ActiveMqListenerAddon activeMqListener() {
-        return ActiveMqListenerAddon.defaults;
+    public static ActiveMqListenerAddon activeMqListener(Class<? extends MessageHandler> handler) {
+        return ActiveMqListenerAddon.defaults(handler);
     }
 
     /*
