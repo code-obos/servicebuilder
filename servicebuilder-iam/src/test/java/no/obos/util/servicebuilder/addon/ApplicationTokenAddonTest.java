@@ -140,6 +140,56 @@ public class ApplicationTokenAddonTest {
                 .oneShotVoid(ResourceFineGrained.class, ResourceFineGrained::get2);
     }
 
+    @Api
+    @Path("mele")
+    public interface ResourceSuperFineGrained {
+        @GET
+        @AppIdWhiteList({AUTHORIZED2_INT})
+        @Produces(MediaType.APPLICATION_JSON)
+        void get();
+
+        @GET
+        @Path("dele")
+        @Produces(MediaType.APPLICATION_JSON)
+        void get2();
+    }
+
+    @Test
+    public void annotationSetOnlyOnSpecificEndpoint() {
+        appTokenMock(VALID, AUTHORIZED2);
+
+        getTestServiceRunner(VALID, ResourceSuperFineGrained.class, mock(ResourceSuperFineGrained.class))
+                .oneShotVoid(ResourceSuperFineGrained.class, ResourceSuperFineGrained::get);
+    }
+
+    @Test
+    public void annotationSetOnlyOnSpecificEndpoint2() {
+        appTokenMock(VALID, AUTHORIZED2);
+
+        getTestServiceRunner(VALID, ResourceSuperFineGrained.class, mock(ResourceSuperFineGrained.class))
+                .oneShotVoid(ResourceSuperFineGrained.class, ResourceSuperFineGrained::get2);
+    }
+
+    @Test
+    public void annotationSetOnlyOnSpecificEndpoint_getAUTHORIZED3_expectUnauthorized() {
+        appTokenMock(VALID, AUTHORIZED3);
+
+        try {
+            getTestServiceRunner(VALID, ResourceSuperFineGrained.class, mock(ResourceSuperFineGrained.class))
+                    .oneShotVoid(ResourceSuperFineGrained.class, ResourceSuperFineGrained::get);
+        } catch (ExternalResourceException e) {
+            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED for this endpoint");
+        }
+    }
+
+    @Test
+    public void annotationSetOnlyOnSpecificEndpoint_get2AUTHORIZED3() {
+        appTokenMock(VALID, AUTHORIZED3);
+
+        getTestServiceRunner(VALID, ResourceSuperFineGrained.class, mock(ResourceSuperFineGrained.class))
+                .oneShotVoid(ResourceSuperFineGrained.class, ResourceSuperFineGrained::get2);
+    }
+
     private <T> TestServiceRunner getTestServiceRunner(String apptokenHeader, Class<T> resource, T resourceImpl) {
         return TestServiceRunner.defaults(
                 ServiceConfig.defaults(ServiceDefinitionUtil.simple(resource))
