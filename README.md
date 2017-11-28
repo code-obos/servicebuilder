@@ -11,4 +11,5 @@ A framework for creating OBOS services.
 * Updated to Mockito version 2.
 
 ## Breaking changes in v7
-* Updated ActiveMqListenerAddon to require MessageHandler
+* Updated ActiveMqListenerAddon to require MessageHandler.
+* Added annotation for fine grained application token id handling on resource and specific endpoints.

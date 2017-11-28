@@ -25,14 +25,17 @@ public class StubGenerator {
     @Wither(AccessLevel.PRIVATE)
     final boolean logging;
     @Wither(AccessLevel.PRIVATE)
+    final boolean throwExceptionForErrors;
+    @Wither(AccessLevel.PRIVATE)
     final String apiPath;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableList<Cookie> cookies;
     @Wither(AccessLevel.PRIVATE)
     final ImmutableMap<String, String> headers;
 
+
     public static StubGenerator defaults(Client client, URI uri) {
-        return new StubGenerator(client, uri, true, "api", ImmutableList.of(), ImmutableMap.of());
+        return new StubGenerator(client, uri, true, true, "api", ImmutableList.of(), ImmutableMap.of());
     }
 
     public <T> T generateClient(Class<T> resource) {
@@ -46,7 +49,9 @@ public class StubGenerator {
         if (apiPath != null) {
             webTarget = webTarget.path(apiPath);
         }
-        webTarget.register(ClientErrorResponseFilter.class);
+        if(throwExceptionForErrors) {
+            webTarget.register(ClientErrorResponseFilter.class);
+        }
         webTarget.register(RequestIdClientFilter.class);
         webTarget.register(ClientNameFilter.class);
         if (logging) {
@@ -60,6 +65,11 @@ public class StubGenerator {
         return withHeaders(GuavaHelper.plus(headers, key, value));
     }
 
+
+    public StubGenerator throwExceptionForErrors(boolean throwExceptionForErrors) {
+        return withThrowExceptionForErrors(throwExceptionForErrors);
+    }
+
     public StubGenerator cookie(Cookie cookie) {
         return withCookies(GuavaHelper.plus(cookies, cookie));
     }
@@ -68,7 +78,7 @@ public class StubGenerator {
         return withLogging(logging);
     }
 
-    public StubGenerator apiPath(String apiPrefix) {
-        return this.apiPath == apiPrefix ? this : new StubGenerator(this.client, this.uri, this.logging, apiPrefix, this.cookies, this.headers);
+    public StubGenerator apiPath(String apiPath) {
+        return withApiPath(apiPath);
     }
 }
