@@ -31,6 +31,7 @@
         <module>servicebuilder-db-jdbi</module>
         <module>servicebuilder-activemq</module>
         <module>servicebuilder-addons</module>
+        <module>servicebuilder-elasticsearch</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -92,6 +93,11 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-addons</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-elasticsearch</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

@@ -144,6 +144,16 @@ public class Addons {
         return ActiveMqSenderAddon.defaults;
     }
 
+    /*
+    <dependency>
+        <groupId>no.obos.util</groupId>
+        <artifactId>servicebuilder-elasticsearch</artifactId>
+    </dependency>
+*/
+    public static ElasticsearchAddon elasticsearch() {
+        return ElasticsearchAddon.defaults;
+    }
+
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)
                 .addon(SwaggerAddon.defaults)
