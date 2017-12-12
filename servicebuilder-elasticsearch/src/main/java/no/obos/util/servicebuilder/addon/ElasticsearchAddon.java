@@ -1,10 +1,11 @@
-package no.obos.util.servicebuilder;
+package no.obos.util.servicebuilder.addon;
 
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
+import no.obos.util.servicebuilder.JerseyConfig;
+import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -16,9 +17,7 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ElasticsearchAddon implements Addon {
@@ -33,7 +32,7 @@ public class ElasticsearchAddon implements Addon {
     public static final String CLUSTER_PORT_EXPOSED_TRANSPORT = "es.cluster.port.exposed.transport";
     public static final String CLUSTER_COORDINATOR_URL = "es.cluster.coordinator.url";
     public static final String CLUSTER_COORDINATOR_PORT = "es.cluster.coordinator.port";
-    public static final String CLUSTER_INDEX_NAME_ARRAY = "es.cluster.indexnames";
+    public static final String CLUSTER_INDEX_NAME = "es.cluster.indexname";
 
     @Wither(AccessLevel.PRIVATE)
     public final Client client;
@@ -59,7 +58,7 @@ public class ElasticsearchAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final int coordinatorPort;
     @Wither(AccessLevel.PRIVATE)
-    public final String indexnames;
+    public final String indexname;
     @Wither(AccessLevel.PRIVATE)
     public final boolean registerHealthcheck;
 
@@ -80,11 +79,10 @@ public class ElasticsearchAddon implements Addon {
 //        );
     }
 
-    @Override
-    public void addToJettyServer(JettyServer jettyServer) {
-        Arra
-        ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Balle", clustername, indexnames, client.admin().cluster());
-    }
+//    @Override
+//    public void addToJettyServer(JettyServer jettyServer) {
+//        ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Balle", clustername, indexnames, client.admin().cluster());
+//    }
 
     @Override
     public ElasticsearchAddon initialize(ServiceConfig serviceConfig) {
@@ -162,7 +160,7 @@ public class ElasticsearchAddon implements Addon {
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        String prefix = Strings.isNullOrEmpty(indexnames) ? "" : indexnames + ".";
+        String prefix = Strings.isNullOrEmpty(indexname) ? "" : indexname + ".";
 
         properties.failIfNotPresent(
                 prefix + CLUSTER_NAME,
@@ -175,7 +173,7 @@ public class ElasticsearchAddon implements Addon {
                 prefix + CLUSTER_PORT_EXPOSED_TRANSPORT,
                 prefix + CLUSTER_COORDINATOR_URL,
                 prefix + CLUSTER_COORDINATOR_PORT,
-                prefix + CLUSTER_INDEX_NAME_ARRAY
+                prefix + CLUSTER_INDEX_NAME
         );
 
         return this
@@ -189,7 +187,7 @@ public class ElasticsearchAddon implements Addon {
                 .portExposedTransport(properties.get(prefix + CLUSTER_PORT_EXPOSED_TRANSPORT))
                 .coordinatorUrl(properties.get(prefix + CLUSTER_COORDINATOR_URL))
                 .coordinatorPort(Integer.parseInt(properties.get(prefix + CLUSTER_COORDINATOR_PORT)))
-                .indexnames(properties.get(prefix + CLUSTER_INDEX_NAME_ARRAY))
+                .indexname(properties.get(prefix + CLUSTER_INDEX_NAME))
                 ;
     }
 
@@ -233,8 +231,8 @@ public class ElasticsearchAddon implements Addon {
         return withCoordinatorPort(coordinatorPort);
     }
 
-    public ElasticsearchAddon indexnames(String indexnames) {
-        return withIndexnames(indexnames);
+    public ElasticsearchAddon indexname(String indexname) {
+        return withIndexname(indexname);
     }
 
     public ElasticsearchAddon registerHealthcheck(boolean registerHealthcheck) {
