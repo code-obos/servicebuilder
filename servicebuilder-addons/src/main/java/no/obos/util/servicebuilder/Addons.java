@@ -134,9 +134,13 @@ public class Addons {
         <groupId>no.obos.util</groupId>
         <artifactId>servicebuilder-elasticsearch</artifactId>
     </dependency>
-*/
-    public static ElasticsearchAddon elasticsearch() {
-        return ElasticsearchAddon.defaults;
+    */
+    public static ElasticsearchAddonImpl elasticsearch() {
+        return ElasticsearchAddonImpl.defaults;
+    }
+
+    public static ElasticsearchIndexAddon elasticsearchIndex(String indexName, Class<?> indexedType) {
+        return ElasticsearchIndexAddon.defaults(indexName, indexedType);
     }
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
