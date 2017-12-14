@@ -12,12 +12,11 @@ import org.elasticsearch.client.Client;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.List;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ElasticsearchIndexAddon implements Addon {
@@ -43,14 +42,10 @@ public class ElasticsearchIndexAddon implements Addon {
 
     @Override
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
-        Map<String, Searcher<?>> searcherMap = new HashMap<>();
-        searcherMap.put(indexedType.getName(), new Searcher<>(client));
         serviceConfig.addBinder(binder -> {
-            binder.bind(searcherMap).to(new TypeLiteral<Map<String, Searcher>>() {});
+            binder.bind(this).to(ElasticsearchIndexAddon.class).named(indexname);
             binder.bind(SearcherIndexNameResolver.class).to(JustInTimeInjectionResolver.class);
-                }
-
-        );
+        });
     }
 
     public ElasticsearchIndexAddon client(Client client) {
@@ -58,8 +53,7 @@ public class ElasticsearchIndexAddon implements Addon {
     }
 
     public static ElasticsearchIndexAddon defaults(String balleIndex, Class indexedType) {
-        return defaults
-                .withIndexname(balleIndex)
+        return defaults.withIndexname(balleIndex)
                 .withIndexedType(indexedType);
     }
 
@@ -75,17 +69,40 @@ public class ElasticsearchIndexAddon implements Addon {
     static class SearcherIndexNameResolver implements JustInTimeInjectionResolver {
         @Inject
         ServiceLocator serviceLocator;
-        @Inject
-        Map<String, Searcher> searcherMap;
+
+
         @Override
         public boolean justInTimeResolution(Injectee failedInjectionPoint) {
-            String typeName = failedInjectionPoint.getRequiredType().getTypeName();
-            if (typeName.startsWith(Searcher.class.getName()) && typeName.contains(">") && typeName.contains("<")) {
-                String indexName = typeName.substring(typeName.indexOf('<') + 1, typeName.indexOf('>'));
-                ServiceLocatorUtilities.addOneConstant(serviceLocator, searcherMap.get(indexName), "null", failedInjectionPoint.getRequiredType());
-                return true;
+            Type requiredType = failedInjectionPoint.getRequiredType();
+            String typeName = requiredType.getTypeName();
+
+            if (alreadyBound(requiredType) || ! isMainTypeSearcher(typeName)) {
+                return false;
             }
-            return false;
+
+            List<ElasticsearchIndexAddon> indexAddons = serviceLocator.getAllServices(ElasticsearchIndexAddon.class);
+
+            for (ElasticsearchIndexAddon indexAddon : indexAddons) {
+                Class<?> indexedType = indexAddon.indexedType;
+                if (indexedType.getTypeName().equals(getIndexedTypeName(typeName))) {
+                    Searcher<?> constant = new Searcher<>(indexAddon.client, indexedType);
+                    ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
+                }
+            }
+
+            return true;
+        }
+
+        private String getIndexedTypeName(String typeName) {
+            return typeName.substring(typeName.indexOf("<") + 1, typeName.indexOf(">"));
+        }
+
+        private boolean isMainTypeSearcher(String typeName) {
+            return typeName.startsWith(Searcher.class.getName()) && typeName.contains(">") && typeName.contains("<");
+        }
+
+        private boolean alreadyBound(Type requiredType) {
+            return serviceLocator.getAllServices(requiredType).size() > 0;
         }
     }
 }
