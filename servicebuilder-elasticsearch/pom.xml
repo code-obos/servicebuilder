@@ -11,6 +11,10 @@
 
     <artifactId>servicebuilder-elasticsearch</artifactId>
 
+    <properties>
+        <elasticsearch.version>5.6.5</elasticsearch.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>no.obos.util</groupId>
@@ -23,35 +27,42 @@
             <artifactId>servicebuilder-core-addons</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>transport</artifactId>
-            <version>5.4.0</version>
+            <version>${elasticsearch.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
-            <version>5.4.0</version>
+            <version>${elasticsearch.version}</version>
             <!--<scope>test</scope>-->
         </dependency>
         <dependency><!-- required by elasticsearch -->
             <groupId>org.elasticsearch.plugin</groupId>
             <artifactId>transport-netty4-client</artifactId>
-            <version>5.4.0</version>
+            <version>${elasticsearch.version}</version>
             <!--<scope>test</scope>-->
         </dependency>
         <dependency><!-- required by elasticsearch -->
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.7</version>
+            <version>2.8.2</version>
+            <!--<scope>test</scope>-->
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>no.obos.elastic</groupId>-->
-            <!--<artifactId>elastic-client</artifactId>-->
-            <!--<version>5.0.1-SNAPSHOT</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.8.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

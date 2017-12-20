@@ -1,8 +1,8 @@
 package no.obos.util.servicebuilder.es;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -10,40 +10,50 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @AllArgsConstructor
 public class Searcher<T> {
-    final Client client;
+    private final Client client;
     public final Class<T> indexedClass;
+    private final String indexname;
+    private final ObjectMapper objectMapper;
 
-    public ClusterHealthResponse getHealthy() {
-        return client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
+    public List<T> query(QueryBuilder queryBuilder) {
+        return execute(queryBuilder);
     }
 
-    public List<T> query(QueryBuilder queryBuilder, Function<SearchHit, T> model) {
-        return bla(queryBuilder, model);
+    public List<T> query(String field, String value) {
+        return execute(QueryBuilders.queryStringQuery(value).field(field));
     }
 
-    public List<T> query(String field, String value, Function<SearchHit, T> model) {
-        return bla(QueryBuilders.termQuery(field, value), model);
+    private List<T> execute(QueryBuilder queryBuilder) {
+        return performQuery(0).andThen(this::transform).apply(queryBuilder);
     }
 
-    private List<T> bla(QueryBuilder queryBuilder, Function<SearchHit, T> model) {
-        return performQuery(0, "", "").andThen(transform(model)).apply(queryBuilder);
+    private List<T> transform(SearchResponse searchResponse) {
+        return Arrays.stream(searchResponse.getHits().getHits()).map(this::transformHit).distinct().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private Function<SearchResponse, List<T>> transform(Function<SearchHit, T> model) {
-        return searchResponse -> Arrays.stream(searchResponse.getHits().getHits()).map(model).distinct().collect(Collectors.toList());
+    private T transformHit(SearchHit hit) {
+        String json = hit.getSourceAsString();
+        try {
+            return objectMapper.readValue(json, indexedClass);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    private Function<QueryBuilder, SearchResponse> performQuery(int resultSetSize, String indexname, String indextype) {
-        int finalResultSetSize = resultSetSize <= 0 ? Integer.MAX_VALUE : resultSetSize;
-        return (query) -> client.prepareSearch(indexname)
-                                .setTypes(indextype)
+    private Function<QueryBuilder, SearchResponse> performQuery(int resultSetSize) {
+        int finalResultSetSize = resultSetSize <= 0 ? 10000 : resultSetSize;
+        return (query) -> client.prepareSearch(indexname).setTypes(indexname)
                                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
                                 .setQuery(query)
                                 .setSize(finalResultSetSize)

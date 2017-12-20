@@ -6,8 +6,7 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.ElasticsearchAddonMockImpl;
-import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
+import no.obos.util.servicebuilder.addon.*;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -38,7 +37,7 @@ public class SearcherTest {
     @Test
     public void testValidConnectionBetweenClientAndServer() {
         testServiceRunner.chain()
-                .addon(ElasticsearchAddonMockImpl.class, it -> {
+                .addon(ElasticsearchAddon.class, it -> {
                     Client client = it.getClient();
                     ClusterHealthResponse clusterHealthResponse = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
 
@@ -62,6 +61,8 @@ public class SearcherTest {
 
         ServiceConfig serviceConfig = ServiceConfig
                 .defaults(ServiceDefinitionUtil.simple(Resource.class))
+                .addon(ExceptionMapperAddon.defaults)
+                .addon(ServerLogAddon.defaults)
                 .addon(ElasticsearchAddonMockImpl.defaults)
                 .addon(ElasticsearchIndexAddon.defaults("balleIndex", TestService.Payload.class))
                 .addon(ElasticsearchIndexAddon.defaults("puppeIndex", String.class))
@@ -87,10 +88,7 @@ public class SearcherTest {
 
         @Override
         public Response get() {
-            ClusterHealthResponse clusterHealthResponse1 = searcher1.getHealthy();
-            ClusterHealthResponse clusterHealthResponse2 = searcher2.getHealthy();
-
-            return Response.ok().entity(clusterHealthResponse1.getStatus() + " and " + clusterHealthResponse2.getStatus()).build();
+            return Response.ok().build();
         }
     }
 }

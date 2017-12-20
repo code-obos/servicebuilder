@@ -28,7 +28,7 @@ import java.util.Collection;
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
-    public final static ElasticsearchAddonMockImpl defaults = new ElasticsearchAddonMockImpl(null, null, null, null);
+    public final static ElasticsearchAddonMockImpl defaults = new ElasticsearchAddonMockImpl(null, null, null, null, true);
 
     @Wither(AccessLevel.PRIVATE)
     private final Path path;
@@ -41,6 +41,10 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
 
     @Wither(AccessLevel.PRIVATE)
     private final String clustername;
+
+    @Getter
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean unitTest;
 
     @Override
     public ElasticsearchAddonMockImpl initialize(ServiceConfig serviceConfig) {
@@ -67,7 +71,15 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
             e.printStackTrace();
         }
 
-        return this.withNode(node).withPath(path).withClient(new PreBuiltTransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, 9301)));
+        return this
+                .withNode(node)
+                .withPath(path)
+                .withClient(
+                        new PreBuiltTransportClient(settings)
+                                .addTransportAddress(
+                                        new InetSocketTransportAddress(address, 9311)
+                                )
+                );
     }
 
     @Override
@@ -81,7 +93,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
         deleteRecursively(path);
     }
 
-    public void deleteRecursively(Path path) {
+    private void deleteRecursively(Path path) {
 
         try {
             if(Files.isDirectory(path)) {
@@ -102,12 +114,12 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
                         .put("http.enabled", "true")
                         .put("path.home", path.toString())
                         .put("cluster.name", "test-search-api-5-local_junit")
-                        .put("http.port", 9201)
-                        .put("transport.tcp.port", 9301)
-                        .put("http.publish_port", 9201)
+                        .put("http.port", 9211)
+                        .put("transport.tcp.port", 9311)
+                        .put("http.publish_port", 9211)
                         .put("http.publish_host", "127.0.0.1")
                         .put("transport.bind_host", "127.0.0.1")
-                        .put("transport.publish_port", 9301)
+                        .put("transport.publish_port", 9311)
                         .put("transport.publish_host", "127.0.0.1")
                         .build(),
                 Lists.newArrayList(Netty4Plugin.class));

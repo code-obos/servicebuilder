@@ -8,9 +8,11 @@ import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
+import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
+import no.obos.util.servicebuilder.model.JsonConfig;
 import org.elasticsearch.client.Client;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
@@ -22,16 +24,11 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ElasticsearchIndexAddon implements Addon {
 
-//    @Wither(AccessLevel.PRIVATE)
-//    final Client client;
-//
-//    @Wither(AccessLevel.PRIVATE)
-//    final String clustername;
-
-    @Wither(AccessLevel.PRIVATE)
     public final String indexname;
 
     @Wither(AccessLevel.PRIVATE)
@@ -40,11 +37,22 @@ public class ElasticsearchIndexAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final ElasticsearchAddon elasticsearchAddon;
 
-    private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null);
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean doIndexing;
+
+    @Wither(AccessLevel.PRIVATE)
+    private final JsonConfig jsonConfig;
+
+
+
+
+
+    private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null, false, JsonConfig.standard);
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
-        ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Indexer: ", elasticsearchAddon.getClustername(), indexname, elasticsearchAddon.getClient().admin().cluster());
+        Client client = elasticsearchAddon.getClient();
+        ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Indexer: ", getClusterName(client), indexname, client.admin().cluster());
     }
 
     @Override
@@ -74,6 +82,13 @@ public class ElasticsearchIndexAddon implements Addon {
         return ImmutableSet.of(ElasticsearchAddonImpl.class);
     }
 
+    private ElasticsearchIndexAddon withIndexname(String indexname2) {
+        String indexname = indexname2.toLowerCase();
+        return this.indexname == indexname ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
+    }
+
+
+
     /**
      * Magic solution to inject senders based on generic message type. Uses hk2 just in time injection.
      * Basically, when hk2 does not find a candidate for injection among bound classes, it asks any just
@@ -92,7 +107,8 @@ public class ElasticsearchIndexAddon implements Addon {
             Type requiredType = failedInjectionPoint.getRequiredType();
             String typeName = requiredType.getTypeName();
 
-            if (alreadyBound(requiredType) || ! isMainTypeSearcher(typeName)) {
+            boolean isHandledByMe = ! isMainTypeSearcher(typeName) && ! isMainTypeIndexer(typeName);
+            if (alreadyBound(requiredType) || isHandledByMe) {
                 return false;
             }
 
@@ -101,8 +117,14 @@ public class ElasticsearchIndexAddon implements Addon {
             for (ElasticsearchIndexAddon indexAddon : indexAddons) {
                 Class<?> indexedType = indexAddon.indexedType;
                 if (indexedType.getTypeName().equals(getIndexedTypeName(typeName))) {
-                    Searcher<?> constant = new Searcher<>(indexAddon.elasticsearchAddon.getClient(), indexedType);
-                    ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
+                    Client client = indexAddon.elasticsearchAddon.getClient();
+                    if(isMainTypeSearcher(typeName)) {
+                        Searcher<?> constant = new Searcher<>(client, indexedType, indexAddon.indexname, indexAddon.jsonConfig.get());
+                        ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
+                    } else if (isMainTypeIndexer(typeName) && indexAddon.doIndexing) {
+                        Indexer<?> constant = new Indexer<>(indexAddon);
+                        ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
+                    }
                 }
             }
 
@@ -117,8 +139,20 @@ public class ElasticsearchIndexAddon implements Addon {
             return typeName.startsWith(Searcher.class.getName()) && typeName.contains(">") && typeName.contains("<");
         }
 
+        private boolean isMainTypeIndexer(String typeName) {
+            return typeName.startsWith(Indexer.class.getName()) && typeName.contains(">") && typeName.contains("<");
+        }
+
         private boolean alreadyBound(Type requiredType) {
             return serviceLocator.getAllServices(requiredType).size() > 0;
         }
     }
+
+    public ElasticsearchIndexAddon doIndexing(boolean doIndexing) {
+        return withDoIndexing(doIndexing);
+    }
+    public ElasticsearchIndexAddon jsonConfig(JsonConfig jsonConfig) {
+        return withJsonConfig(jsonConfig);
+    }
+
 }
