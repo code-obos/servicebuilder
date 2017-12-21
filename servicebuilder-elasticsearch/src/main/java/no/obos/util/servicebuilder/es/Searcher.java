@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class Searcher<T> {
     private final Client client;
-    public final Class<T> indexedClass;
+    private final Class<T> indexedClass;
     private final String indexname;
     private final ObjectMapper objectMapper;
 

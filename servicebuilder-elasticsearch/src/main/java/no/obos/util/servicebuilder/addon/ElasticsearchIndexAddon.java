@@ -41,11 +41,7 @@ public class ElasticsearchIndexAddon implements Addon {
     public final boolean doIndexing;
 
     @Wither(AccessLevel.PRIVATE)
-    private final JsonConfig jsonConfig;
-
-
-
-
+    public final JsonConfig jsonConfig;
 
     private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null, false, JsonConfig.standard);
 
@@ -87,20 +83,14 @@ public class ElasticsearchIndexAddon implements Addon {
         return this.indexname == indexname ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
     }
 
-
-
     /**
      * Magic solution to inject senders based on generic message type. Uses hk2 just in time injection.
      * Basically, when hk2 does not find a candidate for injection among bound classes, it asks any just
      * in time injection resolvers if they have an implementation of the class.
-     * <p>
-     * Senders injected via this resolver is provided in a sender map given by the mq implementation addon
-     * (e.g. ActiveMqAddon). Thus the addon must bind the sender map.
      */
     static class SearcherIndexNameResolver implements JustInTimeInjectionResolver {
         @Inject
         ServiceLocator serviceLocator;
-
 
         @Override
         public boolean justInTimeResolution(Injectee failedInjectionPoint) {

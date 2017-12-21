@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.es;
+package es;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -13,6 +13,8 @@ import no.obos.util.servicebuilder.addon.ElasticsearchAddonMockImpl;
 import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
 import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
 import no.obos.util.servicebuilder.addon.ServerLogAddon;
+import no.obos.util.servicebuilder.es.Indexer;
+import no.obos.util.servicebuilder.es.Searcher;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.NodeValidationException;
 import org.junit.BeforeClass;
@@ -37,15 +39,15 @@ public class IndexerTest {
 
     @Test
     public void testValidConnectionBetweenClientAndServer() {
-        TestService.Payload p1 = new TestService.Payload("Balle", LocalDate.now().minusYears(1));
-        TestService.Payload p2 = new TestService.Payload("Puppe", LocalDate.now().plusYears(1));
-        TestService.Payload p3 = new TestService.Payload("Rumpe", LocalDate.now());
+        TestService.Payload p1 = new TestService.Payload("fieldname1", LocalDate.now().minusYears(1));
+        TestService.Payload p2 = new TestService.Payload("fieldname2", LocalDate.now().plusYears(1));
+        TestService.Payload p3 = new TestService.Payload("fieldname3", LocalDate.now());
 
         testServiceRunner.chain()
                 .call(Resource.class, it -> it.index(Lists.newArrayList(p1, p2, p3)))
                 .call(Resource.class, it -> {
                     Set<TestService.Payload> expected = ImmutableSet.of(p3);
-                    List<TestService.Payload> actual = it.searchTerm("Rumpe");
+                    List<TestService.Payload> actual = it.searchTerm("fieldname3");
 
                     assertEquals(expected, Sets.newHashSet(actual));
                 })
@@ -75,7 +77,7 @@ public class IndexerTest {
 //                )
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(ServerLogAddon.defaults)
-                .addon(ElasticsearchIndexAddon.defaults("balleIndex", TestService.Payload.class)
+                .addon(ElasticsearchIndexAddon.defaults("oneIndex", TestService.Payload.class)
                         .doIndexing(true)
                 )
                 .bind(ResourceImpl.class, Resource.class);

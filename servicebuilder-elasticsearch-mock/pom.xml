@@ -9,9 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>servicebuilder-elasticsearch</artifactId>
+    <artifactId>servicebuilder-elasticsearch-mock</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-core-addons</artifactId>
+        </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-test</artifactId>
@@ -20,7 +24,7 @@
 
         <dependency>
             <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-core-addons</artifactId>
+            <artifactId>servicebuilder-elasticsearch</artifactId>
         </dependency>
 
         <dependency>
@@ -39,6 +43,16 @@
         <dependency><!-- required by elasticsearch -->
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 </project>

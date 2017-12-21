@@ -1,5 +1,7 @@
 package no.obos.util.servicebuilder.es;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
@@ -15,8 +17,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,9 +32,9 @@ import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
 @AllArgsConstructor
 public class Indexer<T> {
     private final ElasticsearchIndexAddon indexAddon;
+
     final int bulkSize = 2000;
     final int bulkConcurrent = 5;
-
 
     public void index(String schema, List<T> rowTypes, Function<T, String> id) {
         Client client = indexAddon.elasticsearchAddon.getClient();
@@ -46,19 +46,15 @@ public class Indexer<T> {
             client.admin().indices().preparePutMapping(indexName).setType(indexName).setSource(schema, XContentType.JSON).get();
         } else {
             CreateIndexResponse createIndexResponse = client.admin().indices().prepareCreate(indexName).addMapping(indexName, schema, XContentType.JSON).get();
-
-            if (createIndexResponse.isShardsAcked()) {
-                //TODO: Stuff and stuff, like important stuff
-            }
         }
 
         if (! isIndexingRunning(client.admin(), indexName)) {
-            Map<String, Map<String, Object>> rows = transform(rowTypes, id);
+            Map<String, String> rows = transform(rowTypes, id);
 
             BulkProcessor bulkRequest = bulkProcessorSupplier(client, bulkSize, indexAddon.elasticsearchAddon.isUnitTest() ? 0 : bulkConcurrent).get();
             rows.entrySet()
                     .forEach(entry ->
-                            bulkRequest.add(createConverter(entry.getKey(), indexName, indexName).apply(entry.getKey(), entry.getValue()))
+                            bulkRequest.add(createConverter(indexName, indexName).apply(entry.getKey(), entry.getValue()))
                     );
 
 
@@ -83,40 +79,29 @@ public class Indexer<T> {
         return indicesStatsResponse.getTotal().getIndexing().getTotal().getIndexCurrent() > INTEGER_ZERO;
     }
 
-    private Map<String, Map<String, Object>> transform(List<T> types, Function<T, String> idGetter) {
-
+    private Map<String, String> transform(List<T> types, Function<T, String> idGetter) {
+        ObjectMapper objectMapper = indexAddon.jsonConfig.get();
         return types.stream()
                 .collect(Collectors
-                        .toMap(idGetter, this::transformToRow)
+                        .toMap(idGetter, transformToJson(objectMapper))
                 );
     }
 
-    private Map<String, Object> transformToRow(T type) {
-        try {
-            Map<String, Object> row = new HashMap<>();
-            Class<?> thisClass = Class.forName(type.getClass().getName());
-
-            for (Field field : thisClass.getDeclaredFields()) {
-                field.setAccessible(true);
-
-                Object fieldValue = field.get(type);
-                String fieldName = field.getName();
-
-                row.put(fieldName, fieldValue);
+    private Function<T, String> transformToJson(ObjectMapper objectMapper) {
+        return type -> {
+            try {
+                return objectMapper.writeValueAsString(type);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
             }
-            return row;
-
-
-        } catch (ClassNotFoundException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        };
     }
 
-    private static BiFunction<String, Map<String, Object>, IndexRequest> createConverter(String esFieldId, String indexName, String indextype) {
-        return (id, map) -> new IndexRequest().id(id)
+    private static BiFunction<String, String, IndexRequest> createConverter(String indexName, String indextype) {
+        return (id, json) -> new IndexRequest().id(id)
                 .index(indexName)
                 .type(indextype)
-                .source(map)
+                .source(json, XContentType.JSON)
                 ;
     }
 
@@ -142,7 +127,6 @@ public class Indexer<T> {
 
                 .setConcurrentRequests(bulkConcurrent)
                 .setFlushInterval(TimeValue.timeValueMinutes(30))
-                //                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .build();
     }
 

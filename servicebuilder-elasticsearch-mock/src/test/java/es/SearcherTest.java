@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder.es;
+package es;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +7,7 @@ import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.addon.*;
+import no.obos.util.servicebuilder.es.Searcher;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -27,7 +28,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.UnknownHostException;
 
-import static org.junit.Assert.assertEquals;
 
 @Slf4j
 public class SearcherTest {
@@ -41,8 +41,8 @@ public class SearcherTest {
                     Client client = it.getClient();
                     ClusterHealthResponse clusterHealthResponse = client.admin().cluster().health(new ClusterHealthRequest()).actionGet();
 
-                    assertEquals("test-search-api-5-local_junit", clusterHealthResponse.getClusterName());
-                    assertEquals(ClusterHealthStatus.GREEN, clusterHealthResponse.getStatus());
+                    Assert.assertEquals("test-search-api-5-local_junit", clusterHealthResponse.getClusterName());
+                    Assert.assertEquals(ClusterHealthStatus.GREEN, clusterHealthResponse.getStatus());
                     try {
                         client.explain(new ExplainRequest()).actionGet();
                         Assert.fail();
@@ -64,8 +64,8 @@ public class SearcherTest {
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(ServerLogAddon.defaults)
                 .addon(ElasticsearchAddonMockImpl.defaults)
-                .addon(ElasticsearchIndexAddon.defaults("balleIndex", TestService.Payload.class))
-                .addon(ElasticsearchIndexAddon.defaults("puppeIndex", String.class))
+                .addon(ElasticsearchIndexAddon.defaults("oneIndex", TestService.Payload.class))
+                .addon(ElasticsearchIndexAddon.defaults("anotherIndex", String.class))
                 .bind(ResourceImpl.class, Resource.class);
         testServiceRunner = TestServiceRunner.defaults(serviceConfig);
         TestServiceRunner.defaults(serviceConfig);

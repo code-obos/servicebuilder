@@ -61,7 +61,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", "test-search-api-5-local_junit")
-                .put("node.name", "balle")
+                .put("node.name", "elastic-client")
                 .build();
 
         InetAddress address = null;

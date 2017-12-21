@@ -9,7 +9,7 @@
     <parent>
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>6.0.1</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
 
     <prerequisites>
@@ -32,6 +32,7 @@
         <module>servicebuilder-activemq</module>
         <module>servicebuilder-addons</module>
         <module>servicebuilder-elasticsearch</module>
+        <module>servicebuilder-elasticsearch-mock</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -98,6 +99,11 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-elasticsearch</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-elasticsearch-mock</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

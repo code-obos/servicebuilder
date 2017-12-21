@@ -22,7 +22,6 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
         return exceptionUtil.handle(exception, cfg -> cfg
                 .status(exception.getResponse().getStatus())
                 .logLevel(LogLevel.WARN)
-                .logStackTrace(true)
                 .logger(log)
         );
     }
