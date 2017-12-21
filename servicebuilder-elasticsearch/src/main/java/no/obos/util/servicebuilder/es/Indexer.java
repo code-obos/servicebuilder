@@ -16,13 +16,14 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
 import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
@@ -35,7 +36,7 @@ public class Indexer<T> {
     final int bulkConcurrent = 5;
 
 
-    public void index(String idFieldName, String schema, List<T> rowTypes)  {
+    public void index(String schema, List<T> rowTypes, Function<T, String> id) {
         Client client = indexAddon.elasticsearchAddon.getClient();
         String indexName = indexAddon.indexname;
 
@@ -47,19 +48,19 @@ public class Indexer<T> {
             CreateIndexResponse createIndexResponse = client.admin().indices().prepareCreate(indexName).addMapping(indexName, schema, XContentType.JSON).get();
 
             if (createIndexResponse.isShardsAcked()) {
-
+                //TODO: Stuff and stuff, like important stuff
             }
         }
 
         if (! isIndexingRunning(client.admin(), indexName)) {
-            List<Map<String, Object>> rows = transform(rowTypes);
+            Map<String, Map<String, Object>> rows = transform(rowTypes, id);
 
             BulkProcessor bulkRequest = bulkProcessorSupplier(client, bulkSize, indexAddon.elasticsearchAddon.isUnitTest() ? 0 : bulkConcurrent).get();
-            for (Map<String, Object> row : rows) {
-                if (! row.isEmpty()) {
-                    bulkRequest.add(createConverter(idFieldName, indexName, indexName).apply(row));
-                }
-            }
+            rows.entrySet()
+                    .forEach(entry ->
+                            bulkRequest.add(createConverter(entry.getKey(), indexName, indexName).apply(entry.getKey(), entry.getValue()))
+                    );
+
 
             try {
                 boolean b = bulkRequest.awaitClose(60000, TimeUnit.SECONDS);
@@ -82,35 +83,37 @@ public class Indexer<T> {
         return indicesStatsResponse.getTotal().getIndexing().getTotal().getIndexCurrent() > INTEGER_ZERO;
     }
 
-    private List<Map<String, Object>> transform(List<T> types) {
+    private Map<String, Map<String, Object>> transform(List<T> types, Function<T, String> idGetter) {
 
-        List<Map<String, Object>> rows = new ArrayList<>();
-        types.forEach(type -> {
-            try {
-                Map<String, Object> row = new HashMap<>();
-                Class<?> thisClass = Class.forName(type.getClass().getName());
-
-                for (Field field : thisClass.getDeclaredFields()) {
-                    field.setAccessible(true);
-
-                    Object fieldValue = field.get(type);
-                    String fieldName = field.getName();
-
-                    row.put(fieldName, fieldValue);
-                }
-
-                rows.add(row);
-            } catch (ClassNotFoundException | IllegalAccessException e) {
-                log.error("Could not transform List<T> to Indexer preferred Map<String, Object> due to {}", e);
-            }
-        });
-
-        return rows;
+        return types.stream()
+                .collect(Collectors
+                        .toMap(idGetter, this::transformToRow)
+                );
     }
 
-    private static Function<Map<String, Object>, IndexRequest> createConverter(String esFieldId, String indexName, String indextype) {
-        return map -> new IndexRequest().id(map.get(esFieldId).toString())
-//                                .refresh(true)
+    private Map<String, Object> transformToRow(T type) {
+        try {
+            Map<String, Object> row = new HashMap<>();
+            Class<?> thisClass = Class.forName(type.getClass().getName());
+
+            for (Field field : thisClass.getDeclaredFields()) {
+                field.setAccessible(true);
+
+                Object fieldValue = field.get(type);
+                String fieldName = field.getName();
+
+                row.put(fieldName, fieldValue);
+            }
+            return row;
+
+
+        } catch (ClassNotFoundException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static BiFunction<String, Map<String, Object>, IndexRequest> createConverter(String esFieldId, String indexName, String indextype) {
+        return (id, map) -> new IndexRequest().id(id)
                 .index(indexName)
                 .type(indextype)
                 .source(map)
@@ -139,7 +142,7 @@ public class Indexer<T> {
 
                 .setConcurrentRequests(bulkConcurrent)
                 .setFlushInterval(TimeValue.timeValueMinutes(30))
-//                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
+                //                .setRefreshPolicy(WriteRequest.RefreshPolicy.IMMEDIATE)
                 .build();
     }
 

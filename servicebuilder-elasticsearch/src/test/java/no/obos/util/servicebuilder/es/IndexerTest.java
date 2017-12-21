@@ -138,7 +138,7 @@ public class IndexerTest {
                 throw new RuntimeException(e);
             }
 
-            indexer.index("string", schema, toIndex);
+            indexer.index(schema, toIndex, TestService.Payload::getString);
         }
     }
 }
