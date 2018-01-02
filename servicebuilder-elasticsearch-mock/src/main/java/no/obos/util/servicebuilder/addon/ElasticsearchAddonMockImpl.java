@@ -66,7 +66,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
 
         InetAddress address = null;
         try {
-            address = InetAddress.getLocalHost();
+            address = InetAddress.getByName("localhost");
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -96,7 +96,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
     private void deleteRecursively(Path path) {
 
         try {
-            if(Files.isDirectory(path)) {
+            if (Files.isDirectory(path)) {
                 Files.list(path)
                         .forEach(this::deleteRecursively);
             }
@@ -106,9 +106,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
         }
     }
 
-    private static Node elasticSearchTestNode(Path path) throws NodeValidationException, IOException {
-
-
+    private static Node elasticSearchTestNode(Path path) throws NodeValidationException {
         Node node = new MyNode(
                 Settings.builder()
                         .put("http.enabled", "true")
