@@ -26,12 +26,11 @@ public class WebAppAddon implements Addon {
 
     @Wither(AccessLevel.PRIVATE)
     public final String pathSpec;
-    @Wither(AccessLevel.PRIVATE)
-    public final int sessionTimeoutSeconds;
+
     @Wither(AccessLevel.PRIVATE)
     public final URI resourceUri;
 
-    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null);
+    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", null);
 
 
 
@@ -80,7 +79,6 @@ public class WebAppAddon implements Addon {
         webAppContext.setResourceBase(warUrlString);
         webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
         webAppContext.setParentLoaderPriority(true);
-        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
         jettyServer.addAppContext(webAppContext);
     }
 
@@ -88,9 +86,6 @@ public class WebAppAddon implements Addon {
         return withPathSpec(pathSpec);
     }
 
-    public WebAppAddon sessionTimeoutSeconds(int sessionTimeoutSeconds) {
-        return withSessionTimeoutSeconds(sessionTimeoutSeconds);
-    }
 
     public WebAppAddon resourceUri(URI resourceUri) {
         return withResourceUri(resourceUri);

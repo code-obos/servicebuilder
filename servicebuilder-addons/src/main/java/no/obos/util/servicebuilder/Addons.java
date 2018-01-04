@@ -18,9 +18,6 @@ public class Addons {
         return JerseyClientAddon.defaults(serviceDefinition);
     }
 
-    public static MetricsAddon metrics() {
-        return MetricsAddon.defaults;
-    }
 
     public static SwaggerAddon swagger() {
         return SwaggerAddon.defaults;
@@ -79,35 +76,6 @@ public class Addons {
         return QueryRunnerAddon.defaults;
     }
 
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static TokenServiceAddon tokenService() {
-        return TokenServiceAddon.defaults;
-    }
-
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static UserTokenFilterAddon userTokenFilter() {
-        return UserTokenFilterAddon.defaults;
-    }
-
-    /*
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-iam</artifactId>
-        </dependency>
-     */
-    public static ApplicationTokenFilterAddon applicationTokenFilter() {
-        return ApplicationTokenFilterAddon.defaults;
-    }
 
     /*
         <dependency>
@@ -147,7 +115,6 @@ public class Addons {
         return ServiceConfig.defaults(serviceDefinition)
                 .addon(SwaggerAddon.defaults)
                 .addon(CorsFilterAddon.defaults)
-                .addon(MetricsAddon.defaults)
                 .addon(ObosLogFilterAddon.defaults)
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(ServerLogAddon.defaults)

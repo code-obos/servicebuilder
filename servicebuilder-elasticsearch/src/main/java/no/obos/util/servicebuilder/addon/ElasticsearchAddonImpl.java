@@ -9,7 +9,7 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import java.net.InetAddress;
@@ -59,7 +59,9 @@ public class ElasticsearchAddonImpl implements ElasticsearchAddon {
             e.printStackTrace();
         }
 
-        return this.withClient(new PreBuiltTransportClient(settings).addTransportAddress(new InetSocketTransportAddress(address, coordinatorPort)));
+        return this.withClient(new PreBuiltTransportClient(settings)
+                .addTransportAddress(new TransportAddress(address, coordinatorPort))
+                );
     }
 
 

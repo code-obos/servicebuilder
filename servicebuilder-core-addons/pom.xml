@@ -19,20 +19,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>util-interfaces</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.metrics</groupId>
-            <artifactId>obos-metrics-servlet</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-jersey2-jaxrs</artifactId>
         </dependency>

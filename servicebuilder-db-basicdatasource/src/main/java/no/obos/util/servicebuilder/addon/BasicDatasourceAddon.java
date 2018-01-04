@@ -5,12 +5,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.sql.DataSource;

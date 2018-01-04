@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.ServiceConfig;
@@ -18,6 +17,7 @@ import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.ApiVersionUtil;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.jersey.client.ClientConfig;
 

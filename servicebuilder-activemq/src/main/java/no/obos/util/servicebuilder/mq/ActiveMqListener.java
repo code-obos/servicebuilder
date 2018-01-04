@@ -1,9 +1,9 @@
 package no.obos.util.servicebuilder.mq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnection;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.MDC;
 
 import javax.jms.JMSException;
@@ -78,7 +78,7 @@ public class ActiveMqListener implements MessageQueueListener {
         String requestId = UUID.randomUUID().toString();
         try {
             text = textMessage.getText();
-            if (StringUtils.isNotEmpty(message.getJMSCorrelationID())) {
+            if (! Strings.isNullOrEmpty(message.getJMSCorrelationID())) {
                 requestId = message.getJMSCorrelationID();
             }
 

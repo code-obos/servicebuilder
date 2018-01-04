@@ -4,11 +4,11 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
-import no.obos.metrics.ObosHealthCheckRegistry;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.mq.ActiveMqSender;
 import no.obos.util.servicebuilder.mq.MessageQueueSender;
+import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMqSenderAddon implements Addon {

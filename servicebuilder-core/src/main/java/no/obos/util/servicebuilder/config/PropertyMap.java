@@ -1,9 +1,15 @@
 package no.obos.util.servicebuilder.config;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import no.obos.util.servicebuilder.model.Constants;
+import no.obos.util.servicebuilder.util.ApiVersionUtil;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -47,6 +53,35 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
         for (String key : keys) {
             if (keyIsValid(key)) {
                 throw new RuntimeException("missing property: " + key);
+            }
+        }
+    }
+
+    public static PropertyMap fromJvmArgs() {
+        if (Strings.isNullOrEmpty(System.getenv(Constants.APPCONFIG_KEY))) {
+            throw new IllegalStateException("Set property file in argument " + Constants.APPCONFIG_KEY);
+        }
+
+        InputStream input = null;
+
+        try {
+            input = new FileInputStream(System.getenv(Constants.APPCONFIG_KEY));
+
+            // load a properties file
+            Properties prop = new Properties();
+            prop.load(input);
+            return empty.putAllProperties(prop);
+
+
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

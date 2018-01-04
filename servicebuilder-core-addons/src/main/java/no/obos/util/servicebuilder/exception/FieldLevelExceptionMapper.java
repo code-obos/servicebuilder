@@ -1,7 +1,6 @@
 package no.obos.util.servicebuilder.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.exception.FieldLevelValidationException;
 import no.obos.util.servicebuilder.model.LogLevel;
 
 import javax.inject.Inject;

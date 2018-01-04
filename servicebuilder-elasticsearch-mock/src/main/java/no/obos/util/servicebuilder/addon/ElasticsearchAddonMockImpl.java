@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.ServiceConfig;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.node.InternalSettingsPreparer;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeValidationException;
@@ -74,9 +74,7 @@ public class ElasticsearchAddonMockImpl implements ElasticsearchAddon {
                    .withPath(path)
                    .withClient(
                            new PreBuiltTransportClient(settings)
-                                   .addTransportAddress(
-                                           new InetSocketTransportAddress(address, 9311)
-                                   )
+                                   .addTransportAddress(new TransportAddress(address, 9311))
                    );
     }
 
