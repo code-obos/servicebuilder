@@ -31,12 +31,14 @@ import static org.apache.commons.lang3.math.NumberUtils.INTEGER_ZERO;
 @Slf4j
 @AllArgsConstructor
 public class Indexer<T> {
+
     private final ElasticsearchIndexAddon indexAddon;
 
-    final int bulkSize = 2000;
-    final int bulkConcurrent = 5;
-
     public void index(String schema, List<T> rowTypes, Function<T, String> id) {
+
+        int bulkSize = 2000;
+        int bulkConcurrent = 5;
+
         Client client = indexAddon.elasticsearchAddon.getClient();
         String indexName = indexAddon.indexname;
 
@@ -69,22 +71,18 @@ public class Indexer<T> {
     }
 
     private static boolean isIndexingRunning(AdminClient client, String indexName) {
-        IndicesStatsResponse indicesStatsResponse =
-                client
-                        .indices()
-                        .prepareStats(indexName)
-                        .all()
-                        .execute()
-                        .actionGet();
+        IndicesStatsResponse indicesStatsResponse = client.indices()
+                                                          .prepareStats(indexName)
+                                                          .all()
+                                                          .execute()
+                                                          .actionGet();
+
         return indicesStatsResponse.getTotal().getIndexing().getTotal().getIndexCurrent() > INTEGER_ZERO;
     }
 
     private Map<String, String> transform(List<T> types, Function<T, String> idGetter) {
         ObjectMapper objectMapper = indexAddon.jsonConfig.get();
-        return types.stream()
-                .collect(Collectors
-                        .toMap(idGetter, transformToJson(objectMapper))
-                );
+        return types.stream().collect(Collectors.toMap(idGetter, transformToJson(objectMapper)));
     }
 
     private Function<T, String> transformToJson(ObjectMapper objectMapper) {
@@ -99,10 +97,9 @@ public class Indexer<T> {
 
     private static BiFunction<String, String, IndexRequest> createConverter(String indexName, String indextype) {
         return (id, json) -> new IndexRequest().id(id)
-                .index(indexName)
-                .type(indextype)
-                .source(json, XContentType.JSON)
-                ;
+                                               .index(indexName)
+                                               .type(indextype)
+                                               .source(json, XContentType.JSON);
     }
 
     private static Supplier<BulkProcessor> bulkProcessorSupplier(Client client, int bulkSize, int bulkConcurrent) {
@@ -124,10 +121,8 @@ public class Indexer<T> {
             }
         })
                 .setBulkActions(bulkSize)
-
                 .setConcurrentRequests(bulkConcurrent)
                 .setFlushInterval(TimeValue.timeValueMinutes(30))
                 .build();
     }
-
 }
