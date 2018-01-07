@@ -7,15 +7,16 @@
     <properties>
         <lombok.version>1.16.18</lombok.version>
         <swagger.version>1.5.17</swagger.version>
-        <jackson.version>2.9.3</jackson.version>
-        <jax-rs.version>2.1</jax-rs.version>
+        <jackson.version>2.8.4</jackson.version>
+        <jax-rs.version>2.0</jax-rs.version>
         <slf4j.version>1.7.25</slf4j.version>
         <jetty.version>9.4.8.v20171121</jetty.version>
-        <jersey.version>2.26</jersey.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <activemq.version>5.15.2</activemq.version>
         <elasticsearch.version>6.1.1</elasticsearch.version>
+        <hk2.version>2.5.0-b32</hk2.version>
+        <jersey.version>2.25.1</jersey.version>
     </properties>
     <packaging>pom</packaging>
 
@@ -126,6 +127,11 @@
             </dependency>
 
             <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jdk8</artifactId>
                 <version>${jackson.version}</version>
@@ -225,6 +231,11 @@
             </dependency>
 
             <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.jersey.test-framework.providers</groupId>
                 <artifactId>jersey-test-framework-provider-inmemory</artifactId>
                 <version>${jersey.version}</version>
@@ -249,11 +260,16 @@
                 <artifactId>jersey-proxy-client</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.glassfish.jersey.inject</groupId>-->
+                <!--<artifactId>jersey-hk2</artifactId>-->
+                <!--<version>${jersey.version}</version>-->
+            <!--</dependency>-->
 
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-api</artifactId>
-                <version>2.4.0</version>
+                <version>${hk2.version}</version>
             </dependency>
 
             <dependency>
