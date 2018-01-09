@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.util.ApiVersionUtil;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 
 import java.io.FileInputStream;
@@ -45,7 +44,7 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
     }
 
     private boolean keyIsValid(String key) {
-        return ! properties.containsKey(key) || properties.get(key) == null || properties.get(key).trim().equals("");
+        return !properties.containsKey(key) || properties.get(key) == null || properties.get(key).trim().equals("");
     }
 
     @Override
@@ -58,14 +57,14 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
     }
 
     public static PropertyMap fromJvmArgs() {
-        if (Strings.isNullOrEmpty(System.getenv(Constants.APPCONFIG_KEY))) {
+        if (Strings.isNullOrEmpty(System.getProperty(Constants.APPCONFIG_KEY))) {
             throw new IllegalStateException("Set property file in argument " + Constants.APPCONFIG_KEY);
         }
 
         InputStream input = null;
 
         try {
-            input = new FileInputStream(System.getenv(Constants.APPCONFIG_KEY));
+            input = new FileInputStream(System.getProperty(Constants.APPCONFIG_KEY));
 
             // load a properties file
             Properties prop = new Properties();

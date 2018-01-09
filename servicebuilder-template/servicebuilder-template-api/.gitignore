@@ -1,0 +1,12 @@
+#Idea
+/.idea/
+/servicebuilder-template-api.iml
+
+#Eclipse
+/.classpath
+/.project
+/.settings/
+
+#Maven
+/target
+
