@@ -61,7 +61,7 @@ public class JerseyClientAddon implements Addon {
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
         String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
-        return new JerseyClientAddon(serviceDefinition, null, true, "api", null, true, true, true, null, apiVersion, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, null, apiVersion, null);
     }
 
 
