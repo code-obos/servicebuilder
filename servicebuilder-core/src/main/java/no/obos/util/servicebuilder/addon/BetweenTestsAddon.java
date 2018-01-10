@@ -1,4 +1,4 @@
-package no.obos.util.servicebuilder;
+package no.obos.util.servicebuilder.addon;
 
 import no.obos.util.servicebuilder.model.Addon;
 

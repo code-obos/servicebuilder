@@ -31,10 +31,6 @@
             <artifactId>servicebuilder-addons</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-db-jdbi</artifactId>
         </dependency>
@@ -42,6 +38,19 @@
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-db-h2</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 

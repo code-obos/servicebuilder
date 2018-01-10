@@ -6,8 +6,10 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
 import no.obos.util.template.Main;
+import no.obos.util.template.db.dao.TemplateDao;
 import no.obos.util.template.dto.TemplateDto;
 import no.obos.util.template.dto.TemplateNestedDto;
+import no.obos.util.template.model.Template;
 import no.obos.util.template.resources.TemplateResource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,14 @@ public class TemplateCrudForVariousBackends {
                 Main.jdbiConfig
                         .addon(Addons.h2InMemoryDatasource()
                                 .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, string VARCHAR, double DOUBLE, date DATE)")
+                        )
+                        .addon(Addons.jdbi()
+                                .dao(TemplateDao.class)
+                        ),
+                Main.elasticsearchConfig
+                        .addon(Addons.elasticsearchMock())
+                        .addon(Addons.elasticsearchIndex("templateIndex", Template.class)
+                                .doIndexing(true)
                         )
         );
     }

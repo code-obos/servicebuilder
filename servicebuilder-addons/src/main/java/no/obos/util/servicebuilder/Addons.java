@@ -107,9 +107,25 @@ public class Addons {
         return ElasticsearchAddonImpl.defaults;
     }
 
+    /*
+    <dependency>
+        <groupId>no.obos.util</groupId>
+        <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+    </dependency>
+    */
+    public static ElasticsearchAddonMockImpl elasticsearchMock() {
+        return ElasticsearchAddonMockImpl.defaults;
+    }
+    /*
+    <dependency>
+        <groupId>no.obos.util</groupId>
+        <artifactId>servicebuilder-elasticsearch</artifactId>
+    </dependency>
+    */
     public static ElasticsearchIndexAddon elasticsearchIndex(String indexName, Class<?> indexedType) {
         return ElasticsearchIndexAddon.defaults(indexName, indexedType);
     }
+
 
     public static ServiceConfig standardAddons(ServiceDefinition serviceDefinition) {
         return ServiceConfig.defaults(serviceDefinition)

@@ -49,6 +49,12 @@
         </dependency>
 
         <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>

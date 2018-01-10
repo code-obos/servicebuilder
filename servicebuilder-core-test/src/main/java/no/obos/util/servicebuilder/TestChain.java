@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
+import no.obos.util.servicebuilder.addon.BetweenTestsAddon;
 import no.obos.util.servicebuilder.addon.NamedAddon;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
