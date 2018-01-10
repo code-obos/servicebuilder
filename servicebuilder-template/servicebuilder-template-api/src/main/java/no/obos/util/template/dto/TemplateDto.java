@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @ApiModel
 public class TemplateDto {
     @ApiModelProperty(example = "42")
-    public final int id;
+    public final Integer id;
     @ApiModelProperty(example = "Banana")
     public final String string;
     @ApiModelProperty(example = "2000-02-29")

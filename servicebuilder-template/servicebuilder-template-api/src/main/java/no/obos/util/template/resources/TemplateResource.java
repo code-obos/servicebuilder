@@ -26,4 +26,7 @@ public interface TemplateResource {
     @Path("{id}")
     void updateTemplate(@PathParam("id") int id, TemplateDto payload);
 
+    @DELETE
+    @Path("{id}")
+    void delete(@PathParam("id") int id);
 }

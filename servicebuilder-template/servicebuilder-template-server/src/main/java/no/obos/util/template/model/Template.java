@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @ToString
 @EqualsAndHashCode
 public class Template {
-    public final int id;
+    public final Integer id;
     public final String string;
     public final LocalDate date;
     public final double aDouble;

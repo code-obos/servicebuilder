@@ -33,4 +33,9 @@ public class TemplateResourceImpl implements TemplateResource {
     public void updateTemplate(int id, TemplateDto payload) {
         controller.update(id, Template.ofDto(payload));
     }
+
+    @Override
+    public void delete(int i) {
+        controller.delete(i);
+    }
 }

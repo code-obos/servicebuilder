@@ -13,4 +13,6 @@ public interface TemplateController {
     Template create(Template payload);
 
     void update(int id, Template payload);
+
+    void delete(int i);
 }

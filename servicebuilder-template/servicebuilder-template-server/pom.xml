@@ -34,6 +34,15 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-jdbi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
