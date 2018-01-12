@@ -23,6 +23,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import javax.inject.Inject;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
@@ -81,7 +82,7 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
 
     private ElasticsearchIndexAddon withIndexname(String indexname2) {
         String indexname = indexname2.toLowerCase();
-        return this.indexname.equals(indexname) ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
+        return Objects.equals(this.indexname, indexname) ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
     }
 
     @Override
