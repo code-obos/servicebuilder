@@ -12,6 +12,7 @@ import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.addon.*;
 import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
+import no.obos.util.servicebuilder.es.options.IndexingOptions;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.NodeValidationException;
 import org.junit.BeforeClass;
@@ -65,13 +66,13 @@ public class IndexerTest {
         ServiceConfig serviceConfig = ServiceConfig
                 .defaults(ServiceDefinitionUtil.simple(Resource.class))
                 .addon(ElasticsearchAddonMockImpl.defaults)
-//                .addon(ElasticsearchAddonImpl.defaults
-//                        .coordinatorPort(9300)
-//                        .coordinatorUrl("127.0.0.1")
-//                        .clustername("test-search-api-5-local_jonas")
-//                        .clientname("banan")
-//                        .unitTest(true)
-//                )
+                //                .addon(ElasticsearchAddonImpl.defaults
+                //                        .coordinatorPort(9300)
+                //                        .coordinatorUrl("127.0.0.1")
+                //                        .clustername("test-search-api-5-local_jonas")
+                //                        .clientname("banan")
+                //                        .unitTest(true)
+                //                )
                 .addon(ExceptionMapperAddon.defaults)
                 .addon(ServerLogAddon.defaults)
                 .addon(ElasticsearchIndexAddon.defaults("oneIndex", TestService.Payload.class)
@@ -123,21 +124,25 @@ public class IndexerTest {
                 schema = jsonBuilder()
                         .startObject()
                         .startObject("properties")
-                            .startObject("date")
-                                .field("type", "date")
-                                .field("index", true)
-                            .endObject()
-                            .startObject("string")
-                                .field("type", "text")
-                                .field("index", true)
-                            .endObject()
+                        .startObject("date")
+                        .field("type", "date")
+                        .field("index", true)
+                        .endObject()
+                        .startObject("string")
+                        .field("type", "text")
+                        .field("index", true)
+                        .endObject()
                         .endObject()
                         .endObject().string();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
 
-            indexer.index(schema, toIndex, TestService.Payload::getString);
+            indexer.index(
+                    schema,
+                    toIndex,
+                    TestService.Payload::getString,
+                    IndexingOptions.DEFAULT.toBuilder().bulkConcurrent(0).build());
         }
     }
 }
