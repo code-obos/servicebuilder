@@ -4,7 +4,7 @@
     <appender name="STDOUT"
               class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date %level [%X{X-OBOS-REQUEST-ID}] %logger{36} %msg%n</pattern>
+            <pattern>%date %level [%X{X-REQUEST-ID}] %logger{36} %msg%n</pattern>
         </encoder>
     </appender>
 

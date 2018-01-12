@@ -10,7 +10,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import java.net.URISyntaxException;
 
-import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
+import static no.obos.util.servicebuilder.model.Constants.X_REQUEST_ID;
 
 class ActiveMqUtils {
 
@@ -22,7 +22,7 @@ class ActiveMqUtils {
             MessageProducer producer = session.createProducer(queue);
 
             TextMessage message = session.createTextMessage(text);
-            message.setJMSCorrelationID(MDC.get(X_OBOS_REQUEST_ID));
+            message.setJMSCorrelationID(MDC.get(X_REQUEST_ID));
 
             producer.send(message);
             session.commit();

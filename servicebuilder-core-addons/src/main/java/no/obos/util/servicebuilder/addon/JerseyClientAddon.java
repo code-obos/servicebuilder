@@ -53,15 +53,13 @@ public class JerseyClientAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean addApiVersionToPath;
     @Wither(AccessLevel.PRIVATE)
-    public final Supplier<String> appTokenIdSupplier;
-    @Wither(AccessLevel.PRIVATE)
     public final String apiVersion;
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
     public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
         String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
-        return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, null, apiVersion, null);
+        return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, apiVersion, null);
     }
 
 
@@ -82,27 +80,12 @@ public class JerseyClientAddon implements Addon {
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
-        Supplier<String> appTokenIdSupplier = null;
-        if (this.apptoken && this.appTokenIdSupplier == null) {
-            ApplicationTokenIdAddon appTokenIdSource = serviceConfig.addonInstance(ApplicationTokenIdAddon.class);
-            if (appTokenIdSource == null) {
-                throw new DependenceException(
-                        this.getClass(),
-                        ApplicationTokenIdAddon.class,
-                        "Missing application id source provider for jerseyclientAddon. "
-                                + "Either disable appliation token id usage (.apptoken(false)), "
-                                + "provide an appTokenIdSupplier manually (.withApplicationTokenIdSource(<something>) "
-                                + "or use an ApplicationTokenIdAddon (e.g. TokenServiceAddon)");
-            }
-            appTokenIdSupplier = appTokenIdSource.getApptokenIdSupplier();
-        }
         String clientAppName = serviceConfig.serviceDefinition.getName()
                 + ":"
                 + ApiVersionUtil.getApiVersion(serviceConfig.serviceDefinition.getClass());
         Client client = ClientGenerator.defaults(serviceDefinition)
                 .clientConfigBase(clientConfigBase)
                 .clientAppName(clientAppName)
-                .appTokenSupplier(appTokenIdSupplier)
                 .generate();
         StubGenerator stubGenerator = StubGenerator.defaults(client, uri)
                 .apiPath(apiPrefix);
@@ -110,7 +93,7 @@ public class JerseyClientAddon implements Addon {
         TargetGenerator targetGenerator = TargetGenerator.defaults(client, uri)
                 .throwExceptionForErrors(true);
 
-        return withAppTokenIdSupplier(appTokenIdSupplier).withRuntime(new Runtime(client, stubGenerator, targetGenerator));
+        return withRuntime(new Runtime(client, stubGenerator, targetGenerator));
     }
 
 

@@ -12,10 +12,10 @@ import java.io.IOException;
 @Priority(Priorities.HEADER_DECORATOR)
 public class RequestIdClientFilter implements ClientRequestFilter {
     @Override
-    public void filter(ClientRequestContext requestContext) throws IOException {
-        String requestId = MDC.get(Constants.X_OBOS_REQUEST_ID);
+    public void filter(ClientRequestContext requestContext) {
+        String requestId = MDC.get(Constants.X_REQUEST_ID);
         if (requestId != null) {
-            requestContext.getHeaders().putSingle(Constants.X_OBOS_REQUEST_ID, requestId);
+            requestContext.getHeaders().putSingle(Constants.X_REQUEST_ID, requestId);
         }
     }
 }

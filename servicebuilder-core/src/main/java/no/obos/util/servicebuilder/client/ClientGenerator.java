@@ -27,11 +27,9 @@ public class ClientGenerator {
     public final ServiceDefinition serviceDefinition;
     @Wither(AccessLevel.PRIVATE)
     public final String clientAppName;
-    @Wither(AccessLevel.PRIVATE)
-    public final Supplier<String> appTokenSupplier;
 
     public static ClientGenerator defaults(ServiceDefinition serviceDefinition) {
-        return new ClientGenerator(null, serviceDefinition, null, null);
+        return new ClientGenerator(null, serviceDefinition, null);
     }
 
     public Client generate() {
@@ -49,15 +47,6 @@ public class ClientGenerator {
         binders.add(binder -> binder.bind(mapper).to(ObjectMapper.class));
         if (! Strings.isNullOrEmpty(clientAppName)) {
             binders.add(binder -> binder.bind(clientAppName).to(String.class).named(ClientNameFilter.CLIENT_APPNAME));
-        }
-        if (appTokenSupplier != null) {
-            binders.add(binder -> binder
-                    .bind(appTokenSupplier)
-                    .to(new TypeLiteral<Supplier<String>>() {
-                    })
-                    .named(AppTokenClientFilter.APP_TOKEN_SUPPLIER_BIND_NAME)
-            );
-            clientConfig.register(AppTokenClientFilter.class);
         }
 
         clientConfig.register(new AbstractBinder() {
@@ -78,7 +67,4 @@ public class ClientGenerator {
         return withClientAppName(clientAppName);
     }
 
-    public ClientGenerator appTokenSupplier(Supplier<String> appTokenSupplier) {
-        return withAppTokenSupplier(appTokenSupplier);
-    }
 }

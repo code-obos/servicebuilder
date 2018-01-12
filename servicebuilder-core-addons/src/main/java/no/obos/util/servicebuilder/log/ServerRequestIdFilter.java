@@ -12,15 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
 
+import static no.obos.util.servicebuilder.model.Constants.X_REQUEST_ID;
+
 /**
- * Dette filteret logger servlet-requester som blir godtatt av Condition.accept. I tillegg legges X-OBOS-REQUEST-ID
- * i MDC slik at den kan logges ved å legge til %X{X-OBOS-REQUEST-ID} i logback.xml.
+ * Dette filteret logger servlet-requester som blir godtatt av Condition.accept. I tillegg legges X-REQUEST-ID
+ * i MDC slik at den kan logges ved å legge til %X{X-REQUEST-ID} i logback.xml.
  */
 public class ServerRequestIdFilter implements Filter {
-    public static final String X_OBOS_REQUEST_ID = "X-OBOS-REQUEST-ID";
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 
     @Override
@@ -28,7 +29,7 @@ public class ServerRequestIdFilter implements Filter {
             throws IOException, ServletException
     {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
-        String requestId = servletRequest.getHeader(X_OBOS_REQUEST_ID);
+        String requestId = servletRequest.getHeader(X_REQUEST_ID);
 
         if (requestId == null || requestId.isEmpty()) {
             requestId = UUID.randomUUID().toString();
@@ -36,12 +37,12 @@ public class ServerRequestIdFilter implements Filter {
 
         try {
 
-            MDC.put(X_OBOS_REQUEST_ID, requestId);
+            MDC.put(X_REQUEST_ID, requestId);
 
             chain.doFilter(request, response);
 
         } finally {
-            MDC.remove(X_OBOS_REQUEST_ID);
+            MDC.remove(X_REQUEST_ID);
         }
     }
 

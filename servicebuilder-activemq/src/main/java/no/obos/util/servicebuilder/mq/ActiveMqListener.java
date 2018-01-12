@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
+import static no.obos.util.servicebuilder.model.Constants.X_REQUEST_ID;
 
 
 @Slf4j
@@ -82,7 +82,7 @@ public class ActiveMqListener implements MessageQueueListener {
                 requestId = message.getJMSCorrelationID();
             }
 
-            MDC.put(X_OBOS_REQUEST_ID, requestId);
+            MDC.put(X_REQUEST_ID, requestId);
 
             log.info("Received message '{}'", text);
 
@@ -100,7 +100,7 @@ public class ActiveMqListener implements MessageQueueListener {
                 log.error("Failed to create error message", jmse);
             }
         } finally {
-            MDC.remove(X_OBOS_REQUEST_ID);
+            MDC.remove(X_REQUEST_ID);
         }
     }
 
