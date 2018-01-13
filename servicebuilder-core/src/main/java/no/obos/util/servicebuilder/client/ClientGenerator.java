@@ -7,9 +7,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JerseyConfig;
-import no.obos.util.servicebuilder.model.JsonConfig;
+import no.obos.util.servicebuilder.model.SerializationSpec;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
-import org.glassfish.hk2.api.TypeLiteral;
+import no.obos.util.servicebuilder.util.JsonUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 
@@ -17,7 +17,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientGenerator {
@@ -39,13 +38,13 @@ public class ClientGenerator {
         final List<JerseyConfig.Binder> binders = new ArrayList<>();
         binders.add(binder -> binder.bind(serviceDefinition).to(ServiceDefinition.class).named(SERVICE_DEFINITION_INJECTION));
 
-        JsonConfig jsonConfig = serviceDefinition.getJsonConfig();
-        ObjectMapper mapper = jsonConfig.get();
+        SerializationSpec serializationSpec = serviceDefinition.getSerializationSpec();
+        ObjectMapper mapper = JsonUtil.createObjectMapper(serializationSpec);
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
         clientConfig.register(provider);
         binders.add(binder -> binder.bind(mapper).to(ObjectMapper.class));
-        if (! Strings.isNullOrEmpty(clientAppName)) {
+        if (!Strings.isNullOrEmpty(clientAppName)) {
             binders.add(binder -> binder.bind(clientAppName).to(String.class).named(ClientNameFilter.CLIENT_APPNAME));
         }
 

@@ -10,8 +10,8 @@ public interface ServiceDefinition {
 
     List<Class> getResources();
 
-    default JsonConfig getJsonConfig() {
-        return JsonConfig.standard;
+    default SerializationSpec getSerializationSpec() {
+        return SerializationSpec.standard;
     }
 
 }

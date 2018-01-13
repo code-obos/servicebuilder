@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
+import no.obos.util.servicebuilder.util.JsonUtil;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
@@ -94,7 +95,7 @@ public class Indexer<T> {
     }
 
     private Map<String, String> transform(List<T> types, Function<T, String> idGetter) {
-        ObjectMapper objectMapper = indexAddon.jsonConfig.get();
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(indexAddon.serializationSpec);
         return types.stream().collect(Collectors.toMap(idGetter, transformToJson(objectMapper)));
     }
 

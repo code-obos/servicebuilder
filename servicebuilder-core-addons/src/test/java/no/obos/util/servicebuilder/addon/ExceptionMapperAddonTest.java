@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
@@ -7,6 +8,7 @@ import no.obos.util.servicebuilder.exception.HttpProblemException;
 import no.obos.util.servicebuilder.exception.UserMessageException;
 import no.obos.util.servicebuilder.model.LogLevel;
 import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.util.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -42,8 +44,9 @@ public class ExceptionMapperAddonTest {
 
         //then
         String actualJson = response.readEntity(String.class);
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
         ProblemResponse actual =
-                serviceConfig.serviceDefinition.getJsonConfig().get().readValue(actualJson, ProblemResponse.class);
+                objectMapper.readValue(actualJson, ProblemResponse.class);
         assertThat(actual.detail).isEqualTo("Boooom!");
         assertThat(actual.status).isEqualTo(421);
         assertThat(actual.suggestedUserMessageInDetail).isEqualTo(true);
@@ -73,8 +76,9 @@ public class ExceptionMapperAddonTest {
 
         //then
         String actualJson = response.readEntity(String.class);
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
         ProblemResponse actual =
-                serviceConfig.serviceDefinition.getJsonConfig().get().readValue(actualJson, ProblemResponse.class);
+                objectMapper.readValue(actualJson, ProblemResponse.class);
 
         assertThat(actual.incidentReferenceId).isNotEmpty();
         assertThat(actual.toBuilder().incidentReferenceId(null).build()).isEqualToComparingFieldByFieldRecursively(expected);

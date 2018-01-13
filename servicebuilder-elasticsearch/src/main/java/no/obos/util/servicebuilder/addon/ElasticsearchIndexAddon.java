@@ -1,5 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,8 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
 import no.obos.util.servicebuilder.exception.DependenceException;
-import no.obos.util.servicebuilder.model.JsonConfig;
+import no.obos.util.servicebuilder.model.SerializationSpec;
+import no.obos.util.servicebuilder.util.JsonUtil;
 import no.obos.util.servicebuilder.util.ObosHealthCheckRegistry;
 import org.elasticsearch.action.admin.indices.flush.FlushRequest;
 import org.elasticsearch.client.AdminClient;
@@ -43,9 +45,9 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
     public final boolean doIndexing;
 
     @Wither(AccessLevel.PRIVATE)
-    public final JsonConfig jsonConfig;
+    public final SerializationSpec serializationSpec;
 
-    private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null, false, JsonConfig.standard);
+    private static ElasticsearchIndexAddon defaults = new ElasticsearchIndexAddon(null, null, null, false, SerializationSpec.standard);
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
@@ -82,7 +84,7 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
 
     private ElasticsearchIndexAddon withIndexname(String indexname2) {
         String indexname = indexname2.toLowerCase();
-        return Objects.equals(this.indexname, indexname) ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
+        return Objects.equals(this.indexname, indexname) ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.serializationSpec);
     }
 
     @Override
@@ -119,7 +121,8 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
                 if (indexedType.getTypeName().equals(getIndexedTypeName(typeName))) {
                     Client client = indexAddon.elasticsearchAddon.getClient();
                     if (isMainTypeSearcher(typeName)) {
-                        Searcher<?> constant = new Searcher<>(client, indexedType, indexAddon.indexname, indexAddon.jsonConfig.get());
+                        ObjectMapper objectMapper = JsonUtil.createObjectMapper(indexAddon.serializationSpec);
+                        Searcher<?> constant = new Searcher<>(client, indexedType, indexAddon.indexname, objectMapper);
                         ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
                     } else if (isMainTypeIndexer(typeName) && indexAddon.doIndexing) {
                         Indexer<?> constant = new Indexer<>(indexAddon);
@@ -152,8 +155,8 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
         return withDoIndexing(doIndexing);
     }
 
-    public ElasticsearchIndexAddon jsonConfig(JsonConfig jsonConfig) {
-        return withJsonConfig(jsonConfig);
+    public ElasticsearchIndexAddon serializationSpec(SerializationSpec serializationSpec) {
+        return withSerializationSpec(serializationSpec);
     }
 
 }

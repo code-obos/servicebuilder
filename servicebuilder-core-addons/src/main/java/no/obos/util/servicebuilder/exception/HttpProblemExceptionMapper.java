@@ -28,7 +28,7 @@ public class HttpProblemExceptionMapper implements ExceptionMapper<HttpProblemEx
                             .reference(problem.incidentReferenceId)
                             .title(problem.title)
                             .type(problem.type)
-                            .context(problem.context)
+                            .context(problem.getContext())
                             .logStackTrace(exception.isLogStacktrace())
                             .logLevel(exception.getLogLevel())
                             .logger(log);

@@ -1,10 +1,11 @@
 package no.obos.util.servicebuilder.model;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiModel;
 import lombok.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.HashMap;
+import java.util.Map;
 
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -20,5 +21,9 @@ public class ProblemResponse {
     public final String incidentReferenceId;
     public final boolean suggestedUserMessageInDetail;
     @Singular("context")
-    public final ImmutableMap<String, String> context;
+    private final Map<String, String> context;
+
+    public Map<String, String> getContext() {
+        return new HashMap<>(context);
+    }
 }

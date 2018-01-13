@@ -1,9 +1,10 @@
 package no.obos.util.servicebuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import no.obos.util.servicebuilder.model.JsonConfig;
+import no.obos.util.servicebuilder.model.SerializationSpec;
 import no.obos.util.servicebuilder.model.ProblemResponse;
-import no.obos.util.servicebuilder.model.XmlConfig;
+import no.obos.util.servicebuilder.util.JsonUtil;
+import no.obos.util.servicebuilder.util.XmlUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -39,7 +40,7 @@ public class ProblemResponseParserTest {
 
     @Test
     public void serializeAndDeserializeJson() throws IOException {
-        ObjectMapper objectMapper = JsonConfig.standard.get();
+        ObjectMapper objectMapper = JsonUtil.createObjectMapper(SerializationSpec.standard);
         String jsonString = objectMapper.writeValueAsString(problemResponse);
 
         ProblemResponse value = objectMapper.readValue(jsonString, ProblemResponse.class);
@@ -48,7 +49,7 @@ public class ProblemResponseParserTest {
 
     @Test
     public void serializeAndDeserializeXml() throws IOException {
-        ObjectMapper xmlMapper = XmlConfig.standard.get();
+        ObjectMapper xmlMapper = XmlUtil.createObjectMapper(SerializationSpec.standard);
 
         String xmlString = xmlMapper.writeValueAsString(problemResponse);
 

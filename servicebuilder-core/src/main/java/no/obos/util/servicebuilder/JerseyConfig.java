@@ -5,6 +5,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import com.google.common.collect.Lists;
 import lombok.Getter;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.util.JsonUtil;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -23,7 +24,7 @@ public class JerseyConfig {
     private void registerServiceDefintion(ServiceDefinition serviceDefinition) {
         serviceDefinition.getResources().forEach(resourceConfig::register);
 
-        ObjectMapper mapper = serviceDefinition.getJsonConfig().get();
+        ObjectMapper mapper = JsonUtil.createObjectMapper(serviceDefinition.getSerializationSpec());
         JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
         provider.setMapper(mapper);
         resourceConfig.register(JacksonFeature.class);
