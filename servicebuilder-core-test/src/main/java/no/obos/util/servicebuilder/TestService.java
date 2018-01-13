@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.model.Version;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,6 +19,8 @@ import java.util.List;
 public class TestService implements ServiceDefinition {
 
     public static final String PATH = "path";
+    @Getter
+    final Version version = new Version(1, 0, 0);
 
 
     @Data
@@ -52,6 +56,7 @@ public class TestService implements ServiceDefinition {
     public String getName() {
         return "test";
     }
+
 
     @Override
     public List<Class> getResources() {

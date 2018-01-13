@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.model.Version;
 
 
 public class ServiceDefinitionUtil {
@@ -21,11 +22,12 @@ public class ServiceDefinitionUtil {
 
     @AllArgsConstructor
     public static class TestServiceDefinition implements ServiceDefinition {
-
         @Getter
         final String name;
         @Getter
         final ImmutableList<Class> resources;
+        @Getter
+        final Version version = new Version(1, 0, 0);
 
         TestServiceDefinition(ImmutableList<Class> resources) {
 

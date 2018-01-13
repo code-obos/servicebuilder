@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -27,19 +28,22 @@ public class ExceptionMapperAddonTest {
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
     @Test
-    public void userMessageException() {
+    public void userMessageException() throws IOException {
         //Given
         when(testService.get()).thenThrow(new UserMessageException("Boooom!", 421));
 
         //when
         Response response = testServiceRunner.oneShot((clientconfig, uri) ->
-                ClientBuilder.newClient(clientconfig).target(uri)
+                ClientBuilder.newClient(clientconfig)
+                        .target(uri)
                         .path(TestService.PATH)
                         .request()
                         .get());
 
         //then
-        ProblemResponse actual = response.readEntity(ProblemResponse.class);
+        String actualJson = response.readEntity(String.class);
+        ProblemResponse actual =
+                serviceConfig.serviceDefinition.getJsonConfig().get().readValue(actualJson, ProblemResponse.class);
         assertThat(actual.detail).isEqualTo("Boooom!");
         assertThat(actual.status).isEqualTo(421);
         assertThat(actual.suggestedUserMessageInDetail).isEqualTo(true);
@@ -47,7 +51,7 @@ public class ExceptionMapperAddonTest {
     }
 
     @Test
-    public void httpProblemException() {
+    public void httpProblemException() throws IOException {
         ProblemResponse expected = ProblemResponse.builder()
                 .context("eple", "banan")
                 .detail("farris")
@@ -68,7 +72,9 @@ public class ExceptionMapperAddonTest {
                         .get());
 
         //then
-        ProblemResponse actual = response.readEntity(ProblemResponse.class);
+        String actualJson = response.readEntity(String.class);
+        ProblemResponse actual =
+                serviceConfig.serviceDefinition.getJsonConfig().get().readValue(actualJson, ProblemResponse.class);
 
         assertThat(actual.incidentReferenceId).isNotEmpty();
         assertThat(actual.toBuilder().incidentReferenceId(null).build()).isEqualToComparingFieldByFieldRecursively(expected);

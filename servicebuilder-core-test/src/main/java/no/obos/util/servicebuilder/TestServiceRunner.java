@@ -119,6 +119,7 @@ public class TestServiceRunner implements TestServiceRunnerBase {
 
         ServiceConfig serviceConfigwithProps = serviceConfig.addPropertiesAndApplyToBindings(propertyMap);
         ServiceConfig serviceConfigWithContext = ServiceConfigInitializer.finalize(serviceConfigwithProps);
+
         JerseyConfig jerseyConfig = new JerseyConfig(serviceConfigWithContext.serviceDefinition)
                 .addRegistrators(serviceConfigWithContext.registrators)
                 .addBinders(serviceConfigWithContext.binders);
@@ -186,7 +187,6 @@ public class TestServiceRunner implements TestServiceRunnerBase {
             runner.stop();
         }
     }
-
 
 
     public TestServiceRunner clientConfigurator(Function<ClientGenerator, ClientGenerator> clientConfigurator) {

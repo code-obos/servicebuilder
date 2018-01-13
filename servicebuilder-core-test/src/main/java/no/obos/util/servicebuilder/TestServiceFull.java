@@ -2,22 +2,13 @@ package no.obos.util.servicebuilder;
 
 import com.google.common.collect.Lists;
 import io.swagger.annotations.Api;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Singular;
-import lombok.ToString;
+import lombok.*;
 import no.obos.util.servicebuilder.TestService.Payload;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.model.Version;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
@@ -33,6 +24,9 @@ public class TestServiceFull implements ServiceDefinition {
     public static final String PATH = "full";
 
     public static final String NAME = "test_service_full";
+
+    @Getter
+    final Version version = new Version(1, 0, 0);
 
 
     @Builder(toBuilder = true)

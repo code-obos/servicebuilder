@@ -6,8 +6,6 @@ import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestService.Resource;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.exception.DependenceException;
-import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -75,20 +73,5 @@ public class JerseyClientAddonTest {
         }
     }
 
-
-    @Test
-    public void dependent_on_tokenserviceaddon_if_apptoken_specified() {
-
-        ServiceConfig serviceConfig = TestService.config
-                .addon(JerseyClientAddon.defaults(TestService.instance));
-        try {
-            TestServiceRunner
-                    .defaults(serviceConfig)
-                    .oneShot(TestService.Resource.class, TestService.Resource::get);
-        } catch (DependenceException ex) {
-            assertThat(ex.independent).isEqualTo(ApplicationTokenIdAddon.class);
-            assertThat(ex.dependent).isEqualTo(JerseyClientAddon.class);
-        }
-    }
 }
 

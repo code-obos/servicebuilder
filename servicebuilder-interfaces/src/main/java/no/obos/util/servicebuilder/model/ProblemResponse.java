@@ -1,53 +1,24 @@
 package no.obos.util.servicebuilder.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.ApiModel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Singular;
-import lombok.ToString;
+import lombok.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Map;
 
+@Builder(toBuilder = true)
+@AllArgsConstructor
 @XmlRootElement
 @ToString
 @EqualsAndHashCode(of = "incidentReferenceId")
-@ApiModel(value = "ProblemResponse", description = "Returneres ved feil. Ment for programmerere. Bør ikke eksponeres til brukere")
+@ApiModel(value = "ProblemResponse", description = "Based on RFC7807 Problem Details for HTTP APIs")
 public class ProblemResponse {
-    public String type;
-    public String title;
-    public String detail;
-    public int status;
-    public String incidentReferenceId;
-    public boolean suggestedUserMessageInDetail;
-    public Map<String, String> context;
-
-    /**
-     * JAXB default constructor
-     */
-    @SuppressWarnings("unused")
-    private ProblemResponse() {
-    }
-
-    @JsonCreator
-    @Builder(toBuilder = true)
-    public ProblemResponse(
-            @JsonProperty("title") String title,
-            @JsonProperty("detail") String detail,
-            @JsonProperty("status") int status,
-            @JsonProperty("incidentReferenceId") String incidentReferenceId,
-            @JsonProperty("suggestedUserMessageInDetail") boolean suggestedUserMessageInDetail,
-            @JsonProperty("type") String type,
-            @Singular("context") @JsonProperty("context") Map<String, String> context)
-    {
-        this.title = title;
-        this.detail = detail;
-        this.status = status;
-        this.incidentReferenceId = incidentReferenceId;
-        this.suggestedUserMessageInDetail = suggestedUserMessageInDetail;
-        this.type = type;
-        this.context = context;
-    }
+    public final String type;
+    public final String title;
+    public final String detail;
+    public final int status;
+    public final String incidentReferenceId;
+    public final boolean suggestedUserMessageInDetail;
+    @Singular("context")
+    public final ImmutableMap<String, String> context;
 }

@@ -1,7 +1,6 @@
 package no.obos.util.servicebuilder.addon;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
@@ -11,8 +10,6 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.client.TargetGenerator;
-import no.obos.util.servicebuilder.exception.DependenceException;
-import no.obos.util.servicebuilder.interfaces.ApplicationTokenIdAddon;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
@@ -26,8 +23,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * Genererer klienter for en service med jersey klient-api og binder dem til context.
@@ -61,7 +56,6 @@ public class JerseyClientAddon implements Addon {
         String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
         return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, apiVersion, null);
     }
-
 
 
     @Override
@@ -101,7 +95,7 @@ public class JerseyClientAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
                     String serviceName = serviceDefinition.getName();
-                    if (! Strings.isNullOrEmpty(serviceName)) {
+                    if (!Strings.isNullOrEmpty(serviceName)) {
                         binder.bind(this).to(JerseyClientAddon.class).named(serviceName);
                         binder.bind(runtime.client).to(Client.class).named(serviceName);
                         binder.bindFactory(new WebTargetFactory(runtime.targetGenerator)).to(WebTarget.class).named(serviceName);
@@ -159,10 +153,6 @@ public class JerseyClientAddon implements Addon {
         @Override
         public void dispose(WebTarget instance) {
         }
-    }
-
-    public Set<Class<?>> initializeAfter() {
-        return ImmutableSet.of(ApplicationTokenIdAddon.class);
     }
 
 

@@ -1,31 +1,22 @@
 package no.obos.util.servicebuilder.log;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.log.model.LogParams;
 import no.obos.util.servicebuilder.log.model.LogRequest;
 import no.obos.util.servicebuilder.log.model.LogResponse;
 import no.obos.util.servicebuilder.model.Constants;
-import no.obos.util.servicebuilder.model.UibBruker;
 import no.obos.util.servicebuilder.util.FormatUtil;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.container.*;
 import javax.ws.rs.core.Context;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -36,15 +27,12 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
 
     final ServerLogger serverLogger;
 
-    final Provider<UibBruker> uibBrukerProvider;
-
     final static int MAX_ENTITY_READ = 4096;
 
     @Inject
-    public ServerLogFilter(@Context ResourceInfo resourceInfo, ServerLogger serverLogger, Provider<UibBruker> uibBrukerProvider) {
+    public ServerLogFilter(@Context ResourceInfo resourceInfo, ServerLogger serverLogger) {
         this.resourceInfo = resourceInfo;
         this.serverLogger = serverLogger;
-        this.uibBrukerProvider = uibBrukerProvider;
     }
 
     static String extractRequestEntity(ContainerRequestContext request) {
@@ -52,10 +40,15 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
             InputStream inputStreamOriginal = request.getEntityStream();
             BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStreamOriginal, MAX_ENTITY_READ);
             bufferedInputStream.mark(MAX_ENTITY_READ);
-            byte[] bytes = new byte[MAX_ENTITY_READ];
+            byte[] bytes = new byte[MAX_ENTITY_READ + 3];
             int read;
             try {
                 read = bufferedInputStream.read(bytes, 0, MAX_ENTITY_READ);
+                if(read == MAX_ENTITY_READ) {
+                    bytes[MAX_ENTITY_READ] = '.';
+                    bytes[MAX_ENTITY_READ + 1] = '.';
+                    bytes[MAX_ENTITY_READ + 2] = '.';
+                }
                 bufferedInputStream.reset();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -69,7 +62,7 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
 
 
     @Override
-    public void filter(ContainerRequestContext request) throws IOException {
+    public void filter(ContainerRequestContext request) {
         if (serverLogger.fastTrackFilters.stream().anyMatch(it -> it.test(request))) {
             return;
         }
@@ -79,7 +72,7 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
 
         LogParams logParams = serverLogger.LogParamsForCall(handlingClass, handlingMethod);
 
-        if (! logParams.enableLogging) {
+        if (!logParams.enableLogging) {
             return;
         }
 
@@ -88,19 +81,6 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
         LogRequest.LogRequestBuilder logRequest = LogRequest.builder();
 
         logRequest.uri(getUri(request));
-
-        UibBruker uibBruker = uibBrukerProvider.get();
-        if (uibBruker != null) {
-            List<String> bruker = Lists.newArrayList();
-            bruker.add(uibBruker.fornavn + " " + uibBruker.etternavn);
-            if (! Strings.isNullOrEmpty(uibBruker.adBrukernavn)) {
-                bruker.add(uibBruker.adBrukernavn);
-            }
-            if (! Strings.isNullOrEmpty(uibBruker.personid)) {
-                bruker.add(uibBruker.personid);
-            }
-            logRequest.user(Joiner.on(", ").join(bruker));
-        }
 
 
         String headerString = request.getHeaderString(Constants.CLIENT_APPNAME_HEADER);
@@ -114,7 +94,6 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
         }
 
 
-
         if (logParams.logRequestPayload) {
             logRequest.entity(extractRequestEntity(request));
         }
@@ -123,9 +102,7 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
     }
 
     @Override
-    public void filter(final ContainerRequestContext request, final ContainerResponseContext response)
-            throws IOException
-    {
+    public void filter(final ContainerRequestContext request, final ContainerResponseContext response) {
         if (serverLogger.fastTrackFilters.stream().anyMatch(it -> it.test(request))) {
             return;
         }
@@ -134,7 +111,7 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
         Method handlingMethod = resourceInfo.getResourceMethod();
         LogParams logParams = serverLogger.LogParamsForCall(handlingClass, handlingMethod);
 
-        if (! logParams.enableLogging) {
+        if (!logParams.enableLogging) {
             return;
         }
 

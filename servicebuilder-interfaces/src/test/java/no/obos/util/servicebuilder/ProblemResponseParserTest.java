@@ -1,16 +1,12 @@
 package no.obos.util.servicebuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.obos.util.servicebuilder.model.JsonConfig;
 import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.XmlConfig;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +20,7 @@ public class ProblemResponseParserTest {
     private ProblemResponse problemResponse;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Map<String, String> context = new HashMap<>();
         context.put("banos", "banos_val");
         //        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
@@ -43,7 +39,7 @@ public class ProblemResponseParserTest {
 
     @Test
     public void serializeAndDeserializeJson() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper = JsonConfig.standard.get();
         String jsonString = objectMapper.writeValueAsString(problemResponse);
 
         ProblemResponse value = objectMapper.readValue(jsonString, ProblemResponse.class);
@@ -51,16 +47,12 @@ public class ProblemResponseParserTest {
     }
 
     @Test
-    public void serializeAndDeserializeXML() throws JAXBException {
-        JAXBContext jc = JAXBContext.newInstance(ProblemResponse.class);
-        Marshaller marshaller = jc.createMarshaller();
-        Unmarshaller unmarshaller = jc.createUnmarshaller();
+    public void serializeAndDeserializeXml() throws IOException {
+        ObjectMapper xmlMapper = XmlConfig.standard.get();
 
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        marshaller.marshal(problemResponse, output);
-        ByteArrayInputStream input = new ByteArrayInputStream(output.toByteArray());
+        String xmlString = xmlMapper.writeValueAsString(problemResponse);
 
-        ProblemResponse unmarshal = (ProblemResponse) unmarshaller.unmarshal(input);
-        assertThat(unmarshal, is(equalTo(problemResponse)));
+        ProblemResponse value = xmlMapper.readValue(xmlString, ProblemResponse.class);
+        assertThat(value, is(equalTo(problemResponse)));
     }
 }

@@ -6,11 +6,12 @@ public interface ServiceDefinition {
 
     String getName();
 
+    Version getVersion();
+
     List<Class> getResources();
 
     default JsonConfig getJsonConfig() {
         return JsonConfig.standard;
     }
-
 
 }

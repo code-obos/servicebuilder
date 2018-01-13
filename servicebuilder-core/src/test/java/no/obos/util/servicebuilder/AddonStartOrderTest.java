@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
+import no.obos.util.servicebuilder.model.Version;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,6 +18,11 @@ public class AddonStartOrderTest {
         @Override
         public String getName() {
             return "testService";
+        }
+
+        @Override
+        public Version getVersion() {
+            return new Version(1,0,0);
         }
 
         @Override
