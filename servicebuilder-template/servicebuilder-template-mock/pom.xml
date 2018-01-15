@@ -9,49 +9,41 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>servicebuilder-template-server</artifactId>
-
     <packaging>jar</packaging>
+    <artifactId>servicebuilder-template-mock</artifactId>
+
     <dependencies>
         <dependency>
             <groupId>no.obos.util.template</groupId>
             <artifactId>servicebuilder-template-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>no.obos.util.template</groupId>
+            <artifactId>servicebuilder-template-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-test</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-core-addons</artifactId>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java8</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-addons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-db-jdbi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-db-h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-elasticsearch</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>no.obos.util</groupId>
-            <artifactId>servicebuilder-elasticsearch-mock</artifactId>
-            <scope>test</scope>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>0.14</version>
         </dependency>
     </dependencies>
 

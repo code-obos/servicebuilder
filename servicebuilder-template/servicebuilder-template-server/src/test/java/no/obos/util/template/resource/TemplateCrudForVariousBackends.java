@@ -35,7 +35,7 @@ public class TemplateCrudForVariousBackends {
                 Main.inMemoryConfig,
                 Main.jdbiConfig
                         .addon(Addons.h2InMemoryDatasource()
-                                .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, string VARCHAR, double DOUBLE, date DATE)")
+                                .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR, value DOUBLE, startDate DATE)")
                         )
                         .addon(Addons.jdbi()
                                 .dao(TemplateDao.class)
@@ -49,8 +49,8 @@ public class TemplateCrudForVariousBackends {
     }
 
     public static final TemplateDto ORIGINAL = TemplateDto.builder()
-            .string("Banan")
-            .nested(TemplateNestedDto.builder().aDouble(11.3).build())
+            .name("Banan")
+            .nested(TemplateNestedDto.builder().value(11.3).build())
             .build();
 
     @Test
@@ -96,8 +96,8 @@ public class TemplateCrudForVariousBackends {
                 .call(TemplateResource.class, resource -> {
                             TemplateDto template = resource.getTemplate(1);
                             mutated[0] = template.toBuilder()
-                                    .string("Eple")
-                                    .date(null)
+                                    .name("Eple")
+                                    .startDate(null)
                                     .build();
                             resource.updateTemplate(1, mutated[0]);
                         }

@@ -20,25 +20,25 @@ import java.time.format.DateTimeFormatter;
 @Getter
 public class TemplateDb {
     public final Integer id;
-    public final String string;
-    public final String date;
-    public final double myDouble;
+    public final String name;
+    public final String startDate;
+    public final double value;
 
 
     public static TemplateDb ofModel(Template from) {
         return builder()
-                .myDouble(from.aDouble)
-                .date(isoStringOfDate(from.date))
+                .value(from.value)
+                .startDate(isoStringOfDate(from.startDate))
                 .id(from.id)
-                .string(from.string)
+                .name(from.name)
                 .build();
     }
 
     public Template toModel() {
         return Template.builder()
-                .string(string)
-                .date(dateOfIsoString(date))
-                .aDouble(myDouble)
+                .name(name)
+                .startDate(dateOfIsoString(startDate))
+                .value(value)
                 .id(id)
                 .build();
     }
@@ -58,10 +58,10 @@ public class TemplateDb {
     public static class RowMapper implements ResultSetMapper<TemplateDb> {
         public TemplateDb map(int index, ResultSet r, StatementContext ctx) throws SQLException {
             return TemplateDb.builder()
-                    .string(r.getString("string"))
+                    .name(r.getString("name"))
                     .id(r.getInt("id"))
-                    .myDouble(r.getDouble("double"))
-                    .date(r.getString("date"))
+                    .value(r.getDouble("value"))
+                    .startDate(r.getString("startDate"))
                     .build();
         }
     }

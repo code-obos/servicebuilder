@@ -15,28 +15,28 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 public class Template {
     public final Integer id;
-    public final String string;
-    public final LocalDate date;
-    public final double aDouble;
+    public final String name;
+    public final LocalDate startDate;
+    public final double value;
 
     public TemplateDto toDto() {
         return TemplateDto.builder()
                 .id(id)
-                .string(string)
+                .name(name)
                 .nested(TemplateNestedDto.builder()
-                        .aDouble(aDouble)
+                        .value(value)
                         .build()
                 )
-                .date(date)
+                .startDate(startDate)
                 .build();
     }
 
     public static Template ofDto(TemplateDto dto) {
         return builder()
                 .id(dto.id)
-                .aDouble(dto.nested.aDouble)
-                .date(dto.date)
-                .string(dto.string)
+                .value(dto.nested.value)
+                .startDate(dto.startDate)
+                .name(dto.name)
                 .build();
     }
 }

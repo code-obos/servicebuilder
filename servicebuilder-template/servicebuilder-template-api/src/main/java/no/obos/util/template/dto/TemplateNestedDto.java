@@ -14,5 +14,5 @@ import lombok.ToString;
 @ApiModel
 public class TemplateNestedDto {
     @ApiModelProperty(example = "4.2")
-    public final double aDouble;
+    public final double value;
 }

@@ -24,6 +24,11 @@
                 <artifactId>servicebuilder-template-server</artifactId>
                 <version>${servicebuilder.version}</version>
             </dependency>
+            <dependency>
+                <groupId>no.obos.util.template</groupId>
+                <artifactId>servicebuilder-template-mock</artifactId>
+                <version>${servicebuilder.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -31,6 +36,7 @@
     <modules>
         <module>servicebuilder-template-api</module>
         <module>servicebuilder-template-server</module>
+        <module>servicebuilder-template-mock</module>
     </modules>
 
 </project>

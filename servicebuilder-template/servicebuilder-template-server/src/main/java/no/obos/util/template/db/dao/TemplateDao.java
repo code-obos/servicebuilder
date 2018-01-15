@@ -12,14 +12,14 @@ public interface TemplateDao {
         @SqlQuery("SELECT * FROM template WHERE id = :id")
         TemplateDb select(@Bind("id") int id);
 
-        @SqlQuery("SELECT * FROM template ORDER BY date")
+        @SqlQuery("SELECT * FROM template ORDER BY startDate")
         List<TemplateDb> selectAll();
 
         @GetGeneratedKeys
-        @SqlUpdate("INSERT INTO template(string, double, date) VALUES (:string, :myDouble, :date)")
+        @SqlUpdate("INSERT INTO template(name, value, startDate) VALUES (:name, :value, :startDate)")
         int insert(@BindBean TemplateDb toInsert);
 
-        @SqlUpdate("UPDATE template SET string = :string, double = :myDouble, date = :date WHERE id = :updateId")
+        @SqlUpdate("UPDATE template SET name = :name, value = :value, startDate = :startDate WHERE id = :updateId")
         void update(@Bind("updateId") int id, @BindBean TemplateDb toInsert);
 
         @SqlUpdate("DELETE FROM template WHERE id = :id")

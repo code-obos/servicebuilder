@@ -19,8 +19,8 @@ public class TemplateDto {
     @ApiModelProperty(example = "42")
     public final Integer id;
     @ApiModelProperty(example = "Banana")
-    public final String string;
+    public final String name;
     @ApiModelProperty(example = "2000-02-29")
-    public final LocalDate date;
+    public final LocalDate startDate;
     public final TemplateNestedDto nested;
 }

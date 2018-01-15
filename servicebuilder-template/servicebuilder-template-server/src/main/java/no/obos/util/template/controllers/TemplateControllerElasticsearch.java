@@ -37,7 +37,7 @@ public class TemplateControllerElasticsearch implements TemplateController {
                     .field("type", "date")
                     .field("index", true)
                     .endObject()
-                    .startObject("string")
+                    .startObject("name")
                     .field("type", "text")
                     .field("index", true)
                     .endObject()
