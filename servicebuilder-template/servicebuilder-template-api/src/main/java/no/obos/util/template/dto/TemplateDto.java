@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Builder(toBuilder = true)
@@ -18,6 +20,8 @@ import java.time.LocalDate;
 public class TemplateDto {
     @ApiModelProperty(example = "42")
     public final Integer id;
+    @Size(min = 4, max = 10)
+    @NotNull
     @ApiModelProperty(example = "Banana")
     public final String name;
     @ApiModelProperty(example = "2000-02-29")

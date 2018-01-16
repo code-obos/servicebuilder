@@ -3,6 +3,8 @@ package no.obos.util.template.resources;
 import io.swagger.annotations.Api;
 import no.obos.util.template.dto.TemplateDto;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -17,10 +19,10 @@ public interface TemplateResource {
 
     @GET
     @Path("{id}")
-    TemplateDto getTemplate(@PathParam("id") int id);
+    TemplateDto getTemplate(@Min(0) @PathParam("id") int id);
 
     @POST
-    int createTemplate(TemplateDto payload);
+    int createTemplate(@Valid TemplateDto payload);
 
     @PUT
     @Path("{id}")

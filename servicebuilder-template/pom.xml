@@ -32,6 +32,47 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <!-- __MARKER_START__ : Everything from line with marker start to marker end is excluded from prototype -->
+            <plugin>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>create-from-project</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <artifactId>maven-archetype-plugin</artifactId>
+                <version>3.0.1</version>
+                <configuration>
+                    <propertyFile>archetype.properties</propertyFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>install</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>mvn</executable>
+                    <workingDirectory>target/generated-sources/archetype</workingDirectory>
+                    <arguments>
+                        <argument>install</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            <!-- __MARKER_END__ : Everything from line with marker start to marker end is excluded from prototype -->
+        </plugins>
+    </build>
 
     <modules>
         <module>servicebuilder-template-api</module>

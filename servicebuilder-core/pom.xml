@@ -51,6 +51,10 @@
             <artifactId>jersey-server</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-bean-validation</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
         </dependency>
@@ -69,10 +73,6 @@
             <groupId>org.glassfish.jersey.ext</groupId>
             <artifactId>jersey-proxy-client</artifactId>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.glassfish.jersey.inject</groupId>-->
-        <!--<artifactId>jersey-hk2</artifactId>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
