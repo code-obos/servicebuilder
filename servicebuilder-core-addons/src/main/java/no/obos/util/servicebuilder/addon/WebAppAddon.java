@@ -36,9 +36,8 @@ public class WebAppAddon implements Addon {
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        properties.failIfNotPresent(CONFIG_KEY_RESOURCE_URL);
         try {
-            return this.resourceUri(new URI(properties.get(CONFIG_KEY_RESOURCE_URL)));
+            return this.resourceUri(new URI(properties.requireWithFallback(CONFIG_KEY_RESOURCE_URL, resourceUri==null?null:resourceUri.toString())));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }

@@ -27,10 +27,9 @@ public class SwaggerAddon implements Addon {
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        properties.failIfNotPresent(CONFIG_KEY_API_BASEURL);
         return this
-                .apiBasePath(properties.get(CONFIG_KEY_API_BASEURL))
-                .apiVersion(properties.get(Constants.CONFIG_KEY_SERVICE_VERSION));
+                .apiBasePath(properties.requireWithFallback(CONFIG_KEY_API_BASEURL, apiBasePath))
+                .apiVersion(properties.getWithFallback(Constants.CONFIG_KEY_SERVICE_VERSION,apiVersion));
     }
 
     @Override

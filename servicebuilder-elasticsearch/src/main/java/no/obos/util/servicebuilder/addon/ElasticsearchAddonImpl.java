@@ -67,18 +67,12 @@ public class ElasticsearchAddonImpl implements ElasticsearchAddon {
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
-        properties.failIfNotPresent(
-                CLUSTER_NAME,
-                CLUSTER_NAME_CLIENT,
-                CLUSTER_COORDINATOR_URL,
-                CLUSTER_COORDINATOR_PORT
-        );
 
         return this
-                .clustername(properties.get(CLUSTER_NAME))
-                .clientname(properties.get(CLUSTER_NAME_CLIENT))
-                .coordinatorUrl(properties.get(CLUSTER_COORDINATOR_URL))
-                .coordinatorPort(Integer.parseInt(properties.get(CLUSTER_COORDINATOR_PORT)))
+                .clustername(properties.requireWithFallback(CLUSTER_NAME, clustername))
+                .clientname(properties.requireWithFallback(CLUSTER_NAME_CLIENT, clientname))
+                .coordinatorUrl(properties.requireWithFallback(CLUSTER_COORDINATOR_URL, coordinatorUrl))
+                .coordinatorPort(Integer.parseInt(properties.requireWithFallback(CLUSTER_COORDINATOR_PORT, String.valueOf(coordinatorPort))))
                 ;
     }
 

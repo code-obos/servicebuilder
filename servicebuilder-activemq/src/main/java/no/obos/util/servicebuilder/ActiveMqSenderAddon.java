@@ -80,11 +80,11 @@ public class ActiveMqSenderAddon implements Addon {
         );
 
         return this
-                .url(properties.get(prefix + CONFIG_KEY_URL))
-                .user(properties.get(prefix + CONFIG_KEY_USER))
-                .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
-                .queue(properties.get(prefix + CONFIG_KEY_QUEUE))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
+                .url(properties.requireWithFallback(prefix + CONFIG_KEY_URL, url))
+                .user(properties.requireWithFallback(prefix + CONFIG_KEY_USER, user))
+                .password(properties.requireWithFallback(prefix + CONFIG_KEY_PASSWORD, password))
+                .queue(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE, queue))
+                .queueEntriesGrace(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_GRACE, String.valueOf(queueEntriesGrace))))
                 ;
     }
 

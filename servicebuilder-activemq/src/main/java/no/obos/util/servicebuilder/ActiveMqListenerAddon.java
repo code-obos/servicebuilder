@@ -104,24 +104,14 @@ public class ActiveMqListenerAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         String prefix = Strings.isNullOrEmpty(name) ? "" : name + ".";
 
-        properties.failIfNotPresent(
-                prefix + CONFIG_KEY_URL,
-                prefix + CONFIG_KEY_USER,
-                prefix + CONFIG_KEY_PASSWORD,
-                prefix + CONFIG_KEY_QUEUE_INPUT,
-                prefix + CONFIG_KEY_QUEUE_ERROR,
-                prefix + CONFIG_KEY_ENTRIES_MAX,
-                prefix + CONFIG_KEY_ENTRIES_GRACE
-        );
-
         return this
-                .url(properties.get(prefix + CONFIG_KEY_URL))
-                .user(properties.get(prefix + CONFIG_KEY_USER))
-                .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
-                .queueInput(properties.get(prefix + CONFIG_KEY_QUEUE_INPUT))
-                .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR))
-                .queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
+                .url(properties.requireWithFallback(prefix + CONFIG_KEY_URL, url))
+                .user(properties.requireWithFallback(prefix + CONFIG_KEY_USER, user))
+                .password(properties.requireWithFallback(prefix + CONFIG_KEY_PASSWORD, password))
+                .queueInput(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE_INPUT, queueInput))
+                .queueError(properties.requireWithFallback(prefix + CONFIG_KEY_QUEUE_ERROR, queueError))
+                .queueEntriesMax(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_MAX, String.valueOf(queueEntriesMax))))
+                .queueEntriesGrace(Integer.parseInt(properties.requireWithFallback(prefix + CONFIG_KEY_ENTRIES_GRACE, String.valueOf(queueEntriesGrace))))
                 ;
     }
 

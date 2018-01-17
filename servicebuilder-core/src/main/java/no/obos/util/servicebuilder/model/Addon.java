@@ -10,6 +10,7 @@ import java.util.Set;
 public interface Addon {
     /**
      * Lets addon access application properties. Should return a clone of the addon with new configuration based on properties, or this if no property changes.
+     * As a matter of convention, proprties have priority over configuration in code
      * <p>
      * runs before initialize, addToJerseyConfig and addToJettyServer
      */

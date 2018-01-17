@@ -62,9 +62,9 @@ public class JerseyClientAddon implements Addon {
     public Addon withProperties(PropertyProvider properties) {
         String name = serviceDefinition.getName();
         String prefix = name + ".";
-        properties.failIfNotPresent(prefix + CONFIG_KEY_URL);
 
-        URI uri = URI.create(properties.get(prefix + CONFIG_KEY_URL));
+        String url = properties.requireWithFallback(prefix + CONFIG_KEY_URL, uri==null?null:uri.toString());
+        URI uri = URI.create(url);
         if (addApiVersionToPath) {
             uri = UriBuilder.fromUri(uri).path("s" + apiVersion).build();
         }
