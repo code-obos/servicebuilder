@@ -1,6 +1,5 @@
 package no.obos.util.servicebuilder.config;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import no.obos.util.servicebuilder.model.Constants;
@@ -11,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
+
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 public class PropertyMap extends RecursiveExpansionPropertyProvider {
     public final ImmutableMap<String, String> properties;
@@ -56,8 +57,9 @@ public class PropertyMap extends RecursiveExpansionPropertyProvider {
         }
     }
 
+
     public static PropertyMap fromJvmArgs() {
-        if (Strings.isNullOrEmpty(System.getProperty(Constants.APPCONFIG_KEY))) {
+        if (isNullOrEmpty(System.getProperty(Constants.APPCONFIG_KEY))) {
             throw new IllegalStateException("Set property file in argument " + Constants.APPCONFIG_KEY);
         }
 

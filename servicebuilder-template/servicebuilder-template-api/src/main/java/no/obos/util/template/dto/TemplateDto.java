@@ -20,7 +20,7 @@ import java.time.LocalDate;
 public class TemplateDto {
     @ApiModelProperty(example = "42")
     public final Integer id;
-    @Size(min = 4, max = 10)
+    @Size(min = 4, max = 20)
     @NotNull
     @ApiModelProperty(example = "Banana")
     public final String name;
