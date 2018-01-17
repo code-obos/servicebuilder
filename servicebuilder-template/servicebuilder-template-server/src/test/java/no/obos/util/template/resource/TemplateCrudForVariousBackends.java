@@ -5,8 +5,9 @@ import no.obos.util.servicebuilder.Addons;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
-import no.obos.util.template.Main;
-import no.obos.util.template.db.dao.TemplateDao;
+import no.obos.util.template.controllers.TemplateController;
+import no.obos.util.template.controllers.TemplateControllerElasticsearch;
+import no.obos.util.template.controllers.TemplateControllerInMemory;
 import no.obos.util.template.dto.TemplateDto;
 import no.obos.util.template.dto.TemplateNestedDto;
 import no.obos.util.template.model.Template;
@@ -15,8 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.inject.Singleton;
 import java.util.Collection;
 
+import static no.obos.util.template.Main.commonConfig;
+import static no.obos.util.template.Main.mainConfig;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(Parameterized.class)
@@ -32,21 +36,18 @@ public class TemplateCrudForVariousBackends {
     @Parameterized.Parameters
     public static Collection<ServiceConfig> data() {
         return Lists.newArrayList(
-                Main.inMemoryConfig,
-                Main.jdbiConfig
-                        .addon(Addons.h2InMemoryDatasource()
-                                .script("CREATE TABLE template (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR, value DOUBLE, startDate DATE)")
-                        )
-                        .addon(Addons.jdbi()
-                                .dao(TemplateDao.class)
-                        ),
-                Main.elasticsearchConfig
+                commonConfig
+                        .bind(binder -> binder.bind(TemplateControllerInMemory.class).to(TemplateController.class).in(Singleton.class))
+                , mainConfig
+                , commonConfig
+                        .bind(binder -> binder.bind(TemplateControllerElasticsearch.class).to(TemplateController.class).in(Singleton.class))
                         .addon(Addons.elasticsearchMock())
                         .addon(Addons.elasticsearchIndex("templateIndex", Template.class)
                                 .doIndexing(true)
                         )
         );
     }
+
 
     public static final TemplateDto ORIGINAL = TemplateDto.builder()
             .name("Banan")

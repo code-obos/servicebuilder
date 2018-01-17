@@ -17,6 +17,11 @@
             <groupId>no.obos.util.template</groupId>
             <artifactId>servicebuilder-template-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>no.obos.util.template</groupId>
+            <artifactId>servicebuilder-template-mock</artifactId>
+        </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-core-addons</artifactId>
@@ -37,7 +42,6 @@
         <dependency>
             <groupId>no.obos.util</groupId>
             <artifactId>servicebuilder-db-h2</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>no.obos.util</groupId>

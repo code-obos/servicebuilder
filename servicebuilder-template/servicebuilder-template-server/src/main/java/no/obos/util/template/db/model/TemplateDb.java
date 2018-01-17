@@ -1,10 +1,7 @@
 package no.obos.util.template.db.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 import no.obos.util.template.model.Template;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.tweak.ResultSetMapper;
@@ -18,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 @ToString
 @AllArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class TemplateDb {
     public final Integer id;
     public final String name;

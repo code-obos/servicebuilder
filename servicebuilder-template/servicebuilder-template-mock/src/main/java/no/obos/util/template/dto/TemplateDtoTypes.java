@@ -14,6 +14,7 @@ public class TemplateDtoTypes {
                 .startDate(FakerUtil.dateBetween(faker, "2014-01-02", "2017-05-07"))
                 .name(faker.name().fullName())
                 .id(faker.number().numberBetween(0, 5000000))
+                .nested(TemplateNestedDtoTypes.bigly(random))
                 .build();
     }
 
@@ -23,6 +24,7 @@ public class TemplateDtoTypes {
                 .startDate(FakerUtil.dateBetween(faker, "2018-01-02", "2020-05-07"))
                 .name(faker.name().fullName())
                 .id(faker.number().numberBetween(0, 5000000))
+                .nested(TemplateNestedDtoTypes.small(random))
                 .build();
     }
 
