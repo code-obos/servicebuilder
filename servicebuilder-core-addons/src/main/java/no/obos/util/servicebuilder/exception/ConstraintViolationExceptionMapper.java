@@ -2,7 +2,7 @@ package no.obos.util.servicebuilder.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.NoLogging;
+import no.obos.util.servicebuilder.model.NoValidationLogging;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -44,7 +44,7 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
     private String errorMessage(ConstraintViolation<?> error) {
         Set<Class<? extends Payload>> payload = error.getConstraintDescriptor().getPayload();
 
-        if (payload.contains(NoLogging.class)) {
+        if (payload.contains(NoValidationLogging.class)) {
             return error.getPropertyPath().toString() + ", " + error.getMessage();
         } else {
             return error.getPropertyPath().toString() + ", " + error.getMessage() + ", was: " + error.getInvalidValue();
