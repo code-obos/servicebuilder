@@ -22,7 +22,7 @@ public final class JsonUtil {
                 case PRETTY_PRINT:
                     underConstruction = underConstruction.enable(SerializationFeature.INDENT_OUTPUT);
                     break;
-                case TOLERATE_UNKNOWN_FIELDS:
+                case TOLERATE_UNRECOGNIZED_FIELDS:
                     underConstruction = underConstruction.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                     break;
                 case TOLERATE_MISSING_FIELDS:

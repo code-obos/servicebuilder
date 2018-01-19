@@ -7,7 +7,7 @@ import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.HttpResponseMetaData;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 import no.obos.util.servicebuilder.exception.ExternalResourceNotFoundException;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.model.ServiceDefinition;
 import no.obos.util.servicebuilder.util.FormatUtil;
 
@@ -73,16 +73,16 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
                 body = buffer.lines().collect(Collectors.joining("\n"));
             }
             try {
-                ProblemResponse problem = mapper.readValue(body, ProblemResponse.class);
+                HttpProblem problem = mapper.readValue(body, HttpProblem.class);
                 if (problemWasParsed(problem)) {
-                    builder.problemResponse(problem)
+                    builder.httpProblem(problem)
                             .incidentReferenceId(problem.incidentReferenceId);
                 }
             } catch (JsonParseException | JsonMappingException e) {
                 //ignore
             }
 
-            if (builder.build().problemResponse == null) {
+            if (builder.build().httpProblem == null) {
                 builder.response(body);
             }
         }
@@ -90,7 +90,7 @@ public class ClientErrorResponseFilter implements ClientResponseFilter {
         return builder.build();
     }
 
-    private boolean problemWasParsed(ProblemResponse problem) {
+    private boolean problemWasParsed(HttpProblem problem) {
         return problem != null
                 && problem.incidentReferenceId != null;
     }

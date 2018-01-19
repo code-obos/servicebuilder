@@ -1,8 +1,8 @@
 package no.obos.util.servicebuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.model.SerializationSpec;
-import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.util.JsonUtil;
 import no.obos.util.servicebuilder.util.XmlUtil;
 import org.junit.Before;
@@ -16,16 +16,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ProblemResponseParserTest {
+public class HttpProblemParserTest {
 
-    private ProblemResponse problemResponse;
+    private HttpProblem httpProblem;
 
     @Before
     public void setUp() {
         Map<String, String> context = new HashMap<>();
         context.put("banos", "banos_val");
-        //        problemResponse = new ProblemResponse("title", "detail", 1, "refId", true, "about:null", context);
-        problemResponse = ProblemResponse.builder()
+        httpProblem = HttpProblem.builder()
                 .title("title")
                 .detail("detail")
                 .context("banos_key", "banos_val")
@@ -35,25 +34,24 @@ public class ProblemResponseParserTest {
                 .status(403)
                 .type("about:null")
                 .build();
-        //                ("title", "detail", 1, "refId", true, "about:null", context);
     }
 
     @Test
     public void serializeAndDeserializeJson() throws IOException {
         ObjectMapper objectMapper = JsonUtil.createObjectMapper(SerializationSpec.standard);
-        String jsonString = objectMapper.writeValueAsString(problemResponse);
+        String jsonString = objectMapper.writeValueAsString(httpProblem);
 
-        ProblemResponse value = objectMapper.readValue(jsonString, ProblemResponse.class);
-        assertThat(value, is(equalTo(problemResponse)));
+        HttpProblem value = objectMapper.readValue(jsonString, HttpProblem.class);
+        assertThat(value, is(equalTo(httpProblem)));
     }
 
     @Test
     public void serializeAndDeserializeXml() throws IOException {
         ObjectMapper xmlMapper = XmlUtil.createObjectMapper(SerializationSpec.standard);
 
-        String xmlString = xmlMapper.writeValueAsString(problemResponse);
+        String xmlString = xmlMapper.writeValueAsString(httpProblem);
 
-        ProblemResponse value = xmlMapper.readValue(xmlString, ProblemResponse.class);
-        assertThat(value, is(equalTo(problemResponse)));
+        HttpProblem value = xmlMapper.readValue(xmlString, HttpProblem.class);
+        assertThat(value, is(equalTo(httpProblem)));
     }
 }

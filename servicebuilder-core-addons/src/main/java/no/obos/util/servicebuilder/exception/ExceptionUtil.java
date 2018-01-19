@@ -6,8 +6,8 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
 import no.obos.util.servicebuilder.model.ExceptionDescription;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.util.LogUtil;
 
 import javax.inject.Inject;
@@ -102,7 +102,7 @@ public class ExceptionUtil {
     }
 
     public Response problemDescriptionToReponse(ExceptionDescription problem) {
-        ProblemResponse problemResponse = ProblemResponse.builder()
+        HttpProblem httpProblem = HttpProblem.builder()
                 .title(problem.title)
                 .detail(problem.detail)
                 .status(problem.status)
@@ -111,10 +111,10 @@ public class ExceptionUtil {
                 .incidentReferenceId(problem.reference)
                 .build();
         if (problem.context != null) {
-            problemResponse = problemResponse.toBuilder().context(problem.context).build();
+            httpProblem = httpProblem.toBuilder().context(problem.context).build();
         }
         String mediaType = getMediaType();
-        return Response.status(problem.status).type(mediaType).entity(problemResponse).build();
+        return Response.status(problem.status).type(mediaType).entity(httpProblem).build();
     }
 
     public void logProblem(ExceptionDescription problem) {
@@ -162,9 +162,8 @@ public class ExceptionUtil {
 
         if (headers != null) {
             Joiner joiner = Joiner.on(", ").skipNulls();
-            headers.getRequestHeaders().entrySet().forEach(entry -> {
-                String headerName = entry.getKey();
-                String headerValue = joiner.join(entry.getValue());
+            headers.getRequestHeaders().forEach((headerName, value) -> {
+                String headerValue = joiner.join(value);
                 sb.append(String.format("  Header: %s = %s\n", headerName, headerValue));
             });
         }

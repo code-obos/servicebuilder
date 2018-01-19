@@ -10,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class SerializationSpec {
     public static final String PRETTY_PRINT = "PRETTY_PRINT";
-    public static final String TOLERATE_UNKNOWN_FIELDS = "TOLERATE_UNKNOWN_FIELDS";
+    public static final String TOLERATE_UNRECOGNIZED_FIELDS = "TOLERATE_UNRECOGNIZED_FIELDS";
     public static final String TOLERATE_MISSING_FIELDS = "TOLERATE_MISSING_FIELDS";
     public static final String ISO_DATES = "ISO_DATES";
     public static final String GUAVA_TYPES = "GUAVA_TYPES";
@@ -28,7 +28,7 @@ public class SerializationSpec {
     public final static SerializationSpec standard = create(
             PRETTY_PRINT,
             TOLERATE_MISSING_FIELDS,
-            TOLERATE_UNKNOWN_FIELDS,
+            TOLERATE_UNRECOGNIZED_FIELDS,
             ISO_DATES,
             GUAVA_TYPES);
 

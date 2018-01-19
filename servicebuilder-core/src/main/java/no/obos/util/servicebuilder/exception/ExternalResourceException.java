@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
@@ -31,8 +31,8 @@ public class ExternalResourceException extends WebApplicationException {
         ret = ret + "Target: " + metaData.targetName;
         if (metaData.httpResponseMetaData != null) {
             ret += ", Status: " + metaData.httpResponseMetaData.status;
-            if (metaData.httpResponseMetaData.problemResponse != null) {
-                ret += ", Detail: " + metaData.httpResponseMetaData.problemResponse.detail;
+            if (metaData.httpResponseMetaData.httpProblem != null) {
+                ret += ", Detail: " + metaData.httpResponseMetaData.httpProblem.detail;
             } else if (metaData.httpResponseMetaData.response != null) {
                 ret += ", Response: " + responseAsSingleLine(metaData.httpResponseMetaData.response);
             }
@@ -72,7 +72,7 @@ public class ExternalResourceException extends WebApplicationException {
         @Singular
         public final ImmutableMap<String, String> headers;
         public final int status;
-        public final ProblemResponse problemResponse;
+        public final HttpProblem httpProblem;
         public final String response;
         public final String incidentReferenceId;
     }

@@ -1,7 +1,7 @@
 package no.obos.util.servicebuilder.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -20,7 +20,7 @@ public class HttpProblemExceptionMapper implements ExceptionMapper<HttpProblemEx
     public Response toResponse(HttpProblemException exception) {
 
         return exceptionUtil.handle(exception, cfg -> {
-                    ProblemResponse problem = exception.getProblemResponse();
+                    HttpProblem problem = exception.getHttpProblem();
                     return cfg
                             .status(problem.status)
                             .detail(problem.detail)

@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.util.FormatUtil;
 
 import javax.inject.Inject;
@@ -88,10 +88,10 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
 
         lines.add("Status: " + meta.status);
 
-        if (meta.problemResponse != null) {
-            lines.add("ProblemResponse:");
-            List<String> problemResponseLines = problemResponseToLogLines(meta.problemResponse);
-            lines.addAll(FormatUtil.indentLines(problemResponseLines, INDENTATION));
+        if (meta.httpProblem != null) {
+            lines.add("HttpProblem:");
+            List<String> httpProblemLines = httpProblemToLogLines(meta.httpProblem);
+            lines.addAll(FormatUtil.indentLines(httpProblemLines, INDENTATION));
         } else if (!Strings.isNullOrEmpty(meta.response)) {
             lines.add("Body:");
             List<String> bodyLines = Splitter.on("\n").splitToList(meta.response);
@@ -108,7 +108,7 @@ public class ExternalResourceExceptionMapper implements ExceptionMapper<External
         return lines;
     }
 
-    private List<String> problemResponseToLogLines(ProblemResponse problem) {
+    private List<String> httpProblemToLogLines(HttpProblem problem) {
         List<String> lines = Lists.newArrayList();
 
         if (Strings.isNullOrEmpty(problem.type) && !"about:blank".equals(problem.type)) {

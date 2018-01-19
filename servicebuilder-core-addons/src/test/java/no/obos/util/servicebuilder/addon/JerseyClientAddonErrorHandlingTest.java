@@ -8,7 +8,7 @@ import no.obos.util.servicebuilder.client.ClientGenerator;
 import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -43,7 +43,7 @@ public class JerseyClientAddonErrorHandlingTest {
                     .oneShot(Resource.class, Resource::get);
             Assert.fail();
         } catch (ExternalResourceException actual) {
-            String incidentReferenceId = actual.getMetaData().httpResponseMetaData.problemResponse.incidentReferenceId;
+            String incidentReferenceId = actual.getMetaData().httpResponseMetaData.httpProblem.incidentReferenceId;
             assertThat(incidentReferenceId).isNotEmpty();
             assertThat(actual.getMetaData()).isEqualToComparingFieldByFieldRecursively(
                     MetaData.builder()
@@ -55,7 +55,7 @@ public class JerseyClientAddonErrorHandlingTest {
                                     .build()
                             )
                             .httpResponseMetaData(ExternalResourceException.HttpResponseMetaData.builder()
-                                    .problemResponse(ProblemResponse.builder()
+                                    .httpProblem(HttpProblem.builder()
                                             .title("Internal Server Error")
                                             .detail("Det har oppstått en intern feil")
                                             .incidentReferenceId(incidentReferenceId)

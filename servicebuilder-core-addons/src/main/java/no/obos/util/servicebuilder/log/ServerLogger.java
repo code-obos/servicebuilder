@@ -13,7 +13,7 @@ import no.obos.util.servicebuilder.annotations.LogResponseEntity;
 import no.obos.util.servicebuilder.log.model.LogParams;
 import no.obos.util.servicebuilder.log.model.LogRequest;
 import no.obos.util.servicebuilder.log.model.LogResponse;
-import no.obos.util.servicebuilder.model.ProblemResponse;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.util.AnnotationUtil;
 import no.obos.util.servicebuilder.util.LogUtil;
 
@@ -95,7 +95,7 @@ public class ServerLogger {
             );
         }
         if (logParams.logResponseEntity && logResponse.entity != null) {
-            if (! (logResponse.entity instanceof ProblemResponse)) {
+            if (! (logResponse.entity instanceof HttpProblem)) {
                 entries.add("Entity: " + logResponse.entity.toString());
             }
         }

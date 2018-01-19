@@ -6,8 +6,8 @@ import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
 import no.obos.util.servicebuilder.exception.HttpProblemException;
 import no.obos.util.servicebuilder.exception.UserMessageException;
+import no.obos.util.servicebuilder.model.HttpProblem;
 import no.obos.util.servicebuilder.model.LogLevel;
-import no.obos.util.servicebuilder.model.ProblemResponse;
 import no.obos.util.servicebuilder.util.JsonUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,8 +45,8 @@ public class ExceptionMapperAddonTest {
         //then
         String actualJson = response.readEntity(String.class);
         ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
-        ProblemResponse actual =
-                objectMapper.readValue(actualJson, ProblemResponse.class);
+        HttpProblem actual =
+                objectMapper.readValue(actualJson, HttpProblem.class);
         assertThat(actual.detail).isEqualTo("Boooom!");
         assertThat(actual.status).isEqualTo(421);
         assertThat(actual.suggestedUserMessageInDetail).isEqualTo(true);
@@ -55,7 +55,7 @@ public class ExceptionMapperAddonTest {
 
     @Test
     public void httpProblemException() throws IOException {
-        ProblemResponse expected = ProblemResponse.builder()
+        HttpProblem expected = HttpProblem.builder()
                 .context("eple", "banan")
                 .detail("farris")
                 .status(599)
@@ -77,8 +77,8 @@ public class ExceptionMapperAddonTest {
         //then
         String actualJson = response.readEntity(String.class);
         ObjectMapper objectMapper = JsonUtil.createObjectMapper(serviceConfig.serviceDefinition.getSerializationSpec());
-        ProblemResponse actual =
-                objectMapper.readValue(actualJson, ProblemResponse.class);
+        HttpProblem actual =
+                objectMapper.readValue(actualJson, HttpProblem.class);
 
         assertThat(actual.incidentReferenceId).isNotEmpty();
         assertThat(actual.toBuilder().incidentReferenceId(null).build()).isEqualToComparingFieldByFieldRecursively(expected);

@@ -12,8 +12,8 @@ import java.util.Map;
 @XmlRootElement
 @ToString
 @EqualsAndHashCode(of = "incidentReferenceId")
-@ApiModel(value = "ProblemResponse", description = "Based on RFC7807 Problem Details for HTTP APIs")
-public class ProblemResponse {
+@ApiModel(value = "HttpProblem", description = "Based on RFC7807 Problem Details for HTTP APIs")
+public class HttpProblem {
     public final String type;
     public final String title;
     public final String detail;
