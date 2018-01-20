@@ -9,7 +9,7 @@ import no.obos.util.servicebuilder.model.Addon;
  * Verdier gitt i konfiurasjon (origin, methods, headers) er fallbackverdier.
  */
 public class CorsFilterAddon implements Addon {
-    public static CorsFilterAddon defaults = new CorsFilterAddon();
+    public static CorsFilterAddon corsFilterAddon = new CorsFilterAddon();
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {

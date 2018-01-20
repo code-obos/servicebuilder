@@ -26,6 +26,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
+import static no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon.elasticsearchIndexAddon;
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.junit.Assert.assertEquals;
 
@@ -58,23 +61,16 @@ public class IndexerTest {
     }
 
     @BeforeClass
-    public static void setup() throws NodeValidationException, IOException {
+    public static void setup() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         ServiceConfig serviceConfig = ServiceConfig
                 .defaults(ServiceDefinitionUtil.simple(Resource.class))
                 .addon(ElasticsearchAddonMockImpl.defaults)
-//                .addon(ElasticsearchAddonImpl.defaults
-//                        .coordinatorPort(9300)
-//                        .coordinatorUrl("127.0.0.1")
-//                        .clustername("test-search-api-5-local_jonas")
-//                        .clientname("banan")
-//                        .unitTest(true)
-//                )
-                .addon(ExceptionMapperAddon.defaults)
-                .addon(ServerLogAddon.defaults)
-                .addon(ElasticsearchIndexAddon.defaults("oneIndex", TestService.Payload.class)
+                .addon(exceptionMapperAddon)
+                .addon(serverLogAddon)
+                .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class)
                         .doIndexing(true)
                 )
                 .bind(ResourceImpl.class, Resource.class);

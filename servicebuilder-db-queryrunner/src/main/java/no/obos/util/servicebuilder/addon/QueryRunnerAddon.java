@@ -21,7 +21,7 @@ public class QueryRunnerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     QueryRunner queryRunner;
 
-    public static final QueryRunnerAddon defaults =
+    public static final QueryRunnerAddon queryRunnerAddon =
             new QueryRunnerAddon(null, null);
 
     @Override

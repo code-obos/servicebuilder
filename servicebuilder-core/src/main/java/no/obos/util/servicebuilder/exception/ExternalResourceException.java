@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
 import no.obos.util.servicebuilder.model.HttpProblem;
+import no.obos.util.servicebuilder.model.Version;
 
 import javax.ws.rs.WebApplicationException;
 import java.util.List;
@@ -51,6 +52,7 @@ public class ExternalResourceException extends WebApplicationException {
     @ToString
     public static class MetaData {
         public final String targetName;
+        public final Version targetVersion;
         public final Boolean gotAnswer;
         public final HttpRequestMetaData httpRequestMetaData;
         public final HttpResponseMetaData httpResponseMetaData;

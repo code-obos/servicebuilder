@@ -14,6 +14,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.client.WebTarget;
 
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -31,13 +33,13 @@ public class JerseyClientAddonMultiServiceTest {
 
             TestServiceRunner.defaults(
                     outerServiceConfig
-                            .addon(JerseyClientAddon.defaults(ServiceDefinitionUtil.simple(NESTED_NAME1, Nested1.class))
+                            .addon(jerseyClientAddon(ServiceDefinitionUtil.simple(NESTED_NAME1, Nested1.class))
                                     .clientConfigBase(nestedRuntime1.clientConfig)
                                     .apptoken(false)
                                     .apiPrefix(null)
                                     .uri(nestedRuntime1.uri)
                             )
-                            .addon(JerseyClientAddon.defaults(ServiceDefinitionUtil.simple(NESTED_NAME2, Nested2.class))
+                            .addon(jerseyClientAddon(ServiceDefinitionUtil.simple(NESTED_NAME2, Nested2.class))
                                     .clientConfigBase(nestedRuntime2.clientConfig)
                                     .apptoken(false)
                                     .apiPrefix(null)
@@ -64,17 +66,17 @@ public class JerseyClientAddonMultiServiceTest {
 
     TestServiceRunner nestedTestService1 = TestServiceRunner.defaults(
             ServiceConfig.defaults(ServiceDefinitionUtil.simple(NESTED_NAME1, Nested1.class))
-                    .addon(ExceptionMapperAddon.defaults)
+                    .addon(exceptionMapperAddon)
                     .bind(nestedMock1, Nested1.class)
     );
     TestServiceRunner nestedTestService2 = TestServiceRunner.defaults(
             ServiceConfig.defaults(ServiceDefinitionUtil.simple(NESTED_NAME2, Nested2.class))
-                    .addon(ExceptionMapperAddon.defaults)
+                    .addon(exceptionMapperAddon)
                     .bind(nestedMock2, Nested2.class)
     );
 
     ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", Outer.class))
-            .addon(ExceptionMapperAddon.defaults)
+            .addon(exceptionMapperAddon)
             .bind(OuterImpl.class, Outer.class);
 
 

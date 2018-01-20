@@ -52,7 +52,7 @@ public class JerseyClientAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final Runtime runtime;
 
-    public static JerseyClientAddon defaults(ServiceDefinition serviceDefinition) {
+    public static JerseyClientAddon jerseyClientAddon(ServiceDefinition serviceDefinition) {
         String apiVersion = ApiVersionUtil.getApiVersion(serviceDefinition.getClass());
         return new JerseyClientAddon(serviceDefinition, null, false, "api", null, true, true, true, apiVersion, null);
     }

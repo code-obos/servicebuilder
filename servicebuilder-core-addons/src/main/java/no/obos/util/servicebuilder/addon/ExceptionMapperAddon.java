@@ -31,7 +31,7 @@ public class ExceptionMapperAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableMap<Class<?>, Boolean> stacktraceConfig;
 
-    public static ExceptionMapperAddon defaults = new ExceptionMapperAddon(
+    public static ExceptionMapperAddon exceptionMapperAddon = new ExceptionMapperAddon(
             ImmutableMap.<Class<?>, Boolean>builder()
                     .put(Throwable.class, true)
                     .put(NotFoundException.class, false)

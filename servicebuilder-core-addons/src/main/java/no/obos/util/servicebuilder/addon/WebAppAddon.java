@@ -30,7 +30,7 @@ public class WebAppAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final URI resourceUri;
 
-    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", null);
+    public static WebAppAddon webAppAddon = new WebAppAddon("/webapp/*", null);
 
 
 

@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import javax.ws.rs.core.Response;
 
+import static no.obos.util.servicebuilder.addon.SwaggerAddon.swaggerAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SwaggerAddonTest extends AddonTestBase {
@@ -14,7 +15,7 @@ public class SwaggerAddonTest extends AddonTestBase {
     public void serves_swagger() {
 
         ServiceConfig serviceConfig = TestService.config
-                .addon(SwaggerAddon.defaults);
+                .addon(swaggerAddon);
         Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("api.baseurl", "ape")
                 .oneShot(target -> target

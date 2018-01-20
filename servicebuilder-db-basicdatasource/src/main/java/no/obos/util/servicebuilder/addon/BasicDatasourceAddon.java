@@ -49,7 +49,7 @@ public class BasicDatasourceAddon implements DataSourceAddon {
     @Wither(AccessLevel.PRIVATE)
     public final DataSource dataSource;
 
-    public static BasicDatasourceAddon defaults = new BasicDatasourceAddon(null, null, null, null, null, "select 1", true, null);
+    public static BasicDatasourceAddon basicDatasourceAddon = new BasicDatasourceAddon(null, null, null, null, null, "select 1", true, null);
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {

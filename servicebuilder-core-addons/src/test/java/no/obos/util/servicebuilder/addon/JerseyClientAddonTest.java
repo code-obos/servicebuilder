@@ -17,6 +17,8 @@ import java.time.LocalDate;
 
 import static no.obos.util.servicebuilder.TestService.Payload;
 import static no.obos.util.servicebuilder.TestService.instance;
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.JerseyClientAddon.jerseyClientAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +35,7 @@ public class JerseyClientAddonTest {
         Payload actual =
                 nestedTestService.oneShot((clientconfig, uri) -> TestServiceRunner.defaults(
                         outerServiceConfig
-                                .addon(JerseyClientAddon.defaults(TestService.instance)
+                                .addon(jerseyClientAddon(TestService.instance)
                                         .clientConfigBase(clientconfig)
                                         .apiPrefix(null)
                                         .apptoken(false)
@@ -50,7 +52,7 @@ public class JerseyClientAddonTest {
     );
 
     ServiceConfig outerServiceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple("outer", OuterResource.class))
-            .addon(ExceptionMapperAddon.defaults)
+            .addon(exceptionMapperAddon)
             .bind(OuterResourceImpl.class, OuterResource.class);
 
 

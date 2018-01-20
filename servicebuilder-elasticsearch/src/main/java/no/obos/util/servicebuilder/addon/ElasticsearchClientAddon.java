@@ -16,7 +16,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
-public class ElasticsearchAddonImpl implements ElasticsearchAddon {
+public class ElasticsearchClientAddon implements ElasticsearchAddon {
 
     public static final String CLUSTER_NAME = "es.cluster.name";
     public static final String CLUSTER_NAME_CLIENT = "es.cluster.clientname";
@@ -41,11 +41,11 @@ public class ElasticsearchAddonImpl implements ElasticsearchAddon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean unitTest;
 
-    public static ElasticsearchAddonImpl defaults = new ElasticsearchAddonImpl(null, null, null, null, 0, false);
+    public static ElasticsearchClientAddon elasticsearchClientAddon = new ElasticsearchClientAddon(null, null, null, null, 0, false);
 
 
     @Override
-    public ElasticsearchAddonImpl initialize(ServiceConfig serviceConfig) {
+    public ElasticsearchClientAddon initialize(ServiceConfig serviceConfig) {
 
         Settings settings = Settings.builder()
                 .put("cluster.name", clustername)
@@ -76,25 +76,25 @@ public class ElasticsearchAddonImpl implements ElasticsearchAddon {
                 ;
     }
 
-    public ElasticsearchAddonImpl clustername(String clustername) {
+    public ElasticsearchClientAddon clustername(String clustername) {
         return withClustername(clustername);
     }
 
 
-    public ElasticsearchAddonImpl clientname(String clientname) {
+    public ElasticsearchClientAddon clientname(String clientname) {
         return withClientname(clientname);
     }
 
 
-    public ElasticsearchAddonImpl coordinatorUrl(String coordinatorUrl) {
+    public ElasticsearchClientAddon coordinatorUrl(String coordinatorUrl) {
         return withCoordinatorUrl(coordinatorUrl);
     }
 
-    public ElasticsearchAddonImpl coordinatorPort(int coordinatorPort) {
+    public ElasticsearchClientAddon coordinatorPort(int coordinatorPort) {
         return withCoordinatorPort(coordinatorPort);
     }
 
-    public ElasticsearchAddonImpl unitTest(boolean unitTest) {
+    public ElasticsearchClientAddon unitTest(boolean unitTest) {
         return withUnitTest(unitTest);
     }
 }

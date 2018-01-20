@@ -9,6 +9,7 @@ import no.obos.util.servicebuilder.client.StubGenerator;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.exception.ExternalResourceException.MetaData;
 import no.obos.util.servicebuilder.model.HttpProblem;
+import no.obos.util.servicebuilder.model.Version;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import java.net.URI;
 
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,7 +28,7 @@ public class JerseyClientAddonErrorHandlingTest {
     Resource resource = mock(Resource.class);
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
             ServiceConfig.defaults(TestService.instance)
-                    .addon(ExceptionMapperAddon.defaults
+                    .addon(exceptionMapperAddon
                             .stacktraceConfig(RuntimeException.class, false)
                     )
                     .bind(resource, Resource.class)
@@ -70,6 +72,7 @@ public class JerseyClientAddonErrorHandlingTest {
                                     .build()
                             )
                             .targetName("test")
+                            .targetVersion(new Version(1, 0, 0))
             );
         }
     }

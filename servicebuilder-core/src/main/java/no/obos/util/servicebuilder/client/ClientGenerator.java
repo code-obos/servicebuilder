@@ -23,6 +23,7 @@ public class ClientGenerator {
     public static final String SERVICE_DEFINITION_INJECTION = "servicedefinition";
     @Wither(AccessLevel.PRIVATE)
     public final ClientConfig clientConfigBase;
+    @Wither(AccessLevel.PRIVATE)
     public final ServiceDefinition serviceDefinition;
     @Wither(AccessLevel.PRIVATE)
     public final String clientAppName;
@@ -64,6 +65,10 @@ public class ClientGenerator {
 
     public ClientGenerator clientAppName(String clientAppName) {
         return withClientAppName(clientAppName);
+    }
+
+    public ClientGenerator serviceDefinition(ServiceDefinition serviceDefinition) {
+        return this.withServiceDefinition(serviceDefinition);
     }
 
 }

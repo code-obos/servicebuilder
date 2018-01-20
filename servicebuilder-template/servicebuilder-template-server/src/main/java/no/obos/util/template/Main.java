@@ -10,9 +10,11 @@ import no.obos.util.template.db.dao.TemplateDao;
 import no.obos.util.template.resources.TemplateResource;
 import no.obos.util.template.resources.TemplateResourceImpl;
 
+import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
+
 public class Main {
     public final static ServiceConfig commonConfig = Addons.standardAddons(TemplateDefinition.instance)
-            .addon(WebAppAddon.defaults)
+            .addon(webAppAddon)
             .bind(TemplateResourceImpl.class, TemplateResource.class);
 
 

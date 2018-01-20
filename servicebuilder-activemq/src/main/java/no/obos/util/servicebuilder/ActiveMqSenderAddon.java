@@ -39,7 +39,7 @@ public class ActiveMqSenderAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final boolean registerHealthcheck;
 
-    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
+    public static ActiveMqSenderAddon activeMqSenderAddon = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
 
 
     @Override

@@ -17,6 +17,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,7 +27,7 @@ public class ExceptionMapperAddonTest {
     TestService.Resource testService = mock(TestService.Resource.class);
     ServiceConfig serviceConfig = ServiceConfig.defaults(TestService.instance)
             .bind(testService, TestService.Resource.class)
-            .addon(ExceptionMapperAddon.defaults.stacktraceConfig(RuntimeException.class, false));
+            .addon(exceptionMapperAddon.stacktraceConfig(RuntimeException.class, false));
     TestServiceRunner testServiceRunner = TestServiceRunner.defaults(serviceConfig);
 
     @Test

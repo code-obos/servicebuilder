@@ -63,7 +63,7 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
         });
     }
 
-    public static ElasticsearchIndexAddon defaults(String indexName, Class indexedType) {
+    public static ElasticsearchIndexAddon elasticsearchIndexAddon(String indexName, Class indexedType) {
         return defaults.withIndexname(indexName)
                 .withIndexedType(indexedType);
     }
@@ -79,7 +79,7 @@ public class ElasticsearchIndexAddon implements BetweenTestsAddon {
 
     @Override
     public Set<Class<?>> initializeAfter() {
-        return ImmutableSet.of(ElasticsearchAddonImpl.class);
+        return ImmutableSet.of(ElasticsearchClientAddon.class);
     }
 
     private ElasticsearchIndexAddon withIndexname(String indexname2) {

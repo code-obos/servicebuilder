@@ -28,6 +28,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.UnknownHostException;
 
+import static no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon.elasticsearchIndexAddon;
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.ServerLogAddon.serverLogAddon;
+
 
 @Slf4j
 public class SearcherTest {
@@ -55,17 +59,17 @@ public class SearcherTest {
     }
 
     @BeforeClass
-    public static void setup() throws NodeValidationException, UnknownHostException {
+    public static void setup() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
         ServiceConfig serviceConfig = ServiceConfig
                 .defaults(ServiceDefinitionUtil.simple(Resource.class))
-                .addon(ExceptionMapperAddon.defaults)
-                .addon(ServerLogAddon.defaults)
+                .addon(exceptionMapperAddon)
+                .addon(serverLogAddon)
                 .addon(ElasticsearchAddonMockImpl.defaults)
-                .addon(ElasticsearchIndexAddon.defaults("oneIndex", TestService.Payload.class))
-                .addon(ElasticsearchIndexAddon.defaults("anotherIndex", String.class))
+                .addon(elasticsearchIndexAddon("oneIndex", TestService.Payload.class))
+                .addon(elasticsearchIndexAddon("anotherIndex", String.class))
                 .bind(ResourceImpl.class, Resource.class);
         testServiceRunner = TestServiceRunner.defaults(serviceConfig);
         TestServiceRunner.defaults(serviceConfig);

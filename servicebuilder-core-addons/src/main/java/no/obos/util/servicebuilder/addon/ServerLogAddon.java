@@ -28,15 +28,13 @@ public class ServerLogAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final LogParams logParams;
 
-    public static final ServerLogAddon defaults = new ServerLogAddon(LogParams.defaults);
+    public static final ServerLogAddon serverLogAddon = new ServerLogAddon(LogParams.defaults);
 
 
 
     public void addToJerseyConfig(JerseyConfig serviceConfig) {
         ServerLogger serverLogger = new ServerLogger(fastTrackFilters, logParams);
-        serviceConfig.addBinder(binder -> {
-            binder.bind(serverLogger).to(ServerLogger.class);
-        });
+        serviceConfig.addBinder(binder -> binder.bind(serverLogger).to(ServerLogger.class));
         serviceConfig.addRegistations(registrator ->
                 registrator
                         .register(ServerLogFilter.class)

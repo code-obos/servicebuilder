@@ -28,7 +28,7 @@ public class JdbiAddon implements NamedAddon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Class<?>> daos;
 
-    public static final JdbiAddon defaults =
+    public static final JdbiAddon jdbiAddon =
             new JdbiAddon(null, null, ImmutableList.of());
 
     @Override

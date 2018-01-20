@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 
 import java.io.File;
 
+import static no.obos.util.servicebuilder.addon.WebAppAddon.webAppAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WebAppAddonTest extends AddonTestBase {
@@ -17,7 +18,7 @@ public class WebAppAddonTest extends AddonTestBase {
     public void serves_from_classpath() {
 
         ServiceConfig serviceConfig = TestService.config
-                .addon(WebAppAddon.defaults);
+                .addon(webAppAddon);
         Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("webapp.resource.url", "classpath:webapp")
                 .oneShot(target -> target
@@ -41,7 +42,7 @@ public class WebAppAddonTest extends AddonTestBase {
         }
 
         ServiceConfig serviceConfig = TestService.config
-                .addon(WebAppAddon.defaults);
+                .addon(webAppAddon);
         Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
                 .property("webapp.resource.url", webAppDirLocation)
                 .oneShot(target -> target

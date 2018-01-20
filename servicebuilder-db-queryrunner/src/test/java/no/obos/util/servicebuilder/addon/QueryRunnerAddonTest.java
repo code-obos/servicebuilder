@@ -14,19 +14,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.sql.SQLException;
 
+import static no.obos.util.servicebuilder.addon.ExceptionMapperAddon.exceptionMapperAddon;
+import static no.obos.util.servicebuilder.addon.H2InMemoryDatasourceAddon.h2InMemoryDatasourceAddon;
+import static no.obos.util.servicebuilder.addon.QueryRunnerAddon.queryRunnerAddon;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QueryRunnerAddonTest {
 
     final ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
-            .addon(ExceptionMapperAddon.defaults)
-            .addon(H2InMemoryDatasourceAddon.defaults
+            .addon(exceptionMapperAddon)
+            .addon(h2InMemoryDatasourceAddon
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
                     .insert("testable", 101, "'Per'")
                     .insert("testable", 303, "'Espen'")
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
-            .addon(QueryRunnerAddon.defaults);
+            .addon(queryRunnerAddon);
 
     @Test
     public void runsWithQueryRunner() {

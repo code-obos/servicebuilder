@@ -23,7 +23,7 @@ public class SwaggerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final String apiVersion;
 
-    public static SwaggerAddon defaults = new SwaggerAddon(null, null);
+    public static SwaggerAddon swaggerAddon = new SwaggerAddon(null, null);
 
     @Override
     public Addon withProperties(PropertyProvider properties) {

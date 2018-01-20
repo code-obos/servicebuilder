@@ -40,7 +40,7 @@ public class H2InMemoryDatasourceAddon implements DataSourceAddon {
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<String> scripts;
 
-    public static H2InMemoryDatasourceAddon defaults = new H2InMemoryDatasourceAddon(null, null, true, ImmutableList.of());
+    public static H2InMemoryDatasourceAddon h2InMemoryDatasourceAddon = new H2InMemoryDatasourceAddon(null, null, true, ImmutableList.of());
 
     @Override
     public Addon initialize(ServiceConfig serviceConfig) {
