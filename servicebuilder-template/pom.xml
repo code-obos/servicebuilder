@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- __MARKER_START__ : Everything from line with marker start to marker end is excluded from prototype -->
+    <parent>
+        <artifactId>servicebuilder</artifactId>
+        <groupId>no.obos.util</groupId>
+        <version>8.0.0-SNAPSHOT</version>
+    </parent>
+    <!-- __MARKER_END__ : Everything from line with marker start to marker end is excluded from prototype -->
+
+    <!-- __MARKER_DELETE_LINE__ : This line will be filtered from prototype generation
+
+    <parent>
+        <groupId>no.obos.common</groupId>
+        <artifactId>obos-common-pom</artifactId>
+        <version>7.0.4</version>
+    </parent>
+
+    __MARKER_DELETE_LINE__ : This line will be filtered from prototype generation -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <packaging>pom</packaging>
+    <groupId>no.obos.util.template</groupId>
+    <artifactId>servicebuilder-template</artifactId>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>no.obos.util.template</groupId>
+                <artifactId>servicebuilder-template-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util.template</groupId>
+                <artifactId>servicebuilder-template-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util.template</groupId>
+                <artifactId>servicebuilder-template-mock</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    <!-- __MARKER_START__ : Everything from line with marker start to marker end is excluded from prototype -->
+    <profiles>
+        <profile>
+            <id>archetype</id>
+            <activation>
+                <property>
+                    <name>archetype</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>create-from-project</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <artifactId>maven-archetype-plugin</artifactId>
+                        <version>3.0.1</version>
+                        <configuration>
+                            <propertyFile>archetype.properties</propertyFile>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>install</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <executable>mvn</executable>
+                            <workingDirectory>target/generated-sources/archetype</workingDirectory>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    <!-- __MARKER_END__ : Everything from line with marker start to marker end is excluded from prototype -->
+    <modules>
+        <module>servicebuilder-template-api</module>
+        <module>servicebuilder-template-server</module>
+        <module>servicebuilder-template-mock</module>
+    </modules>
+
+</project>

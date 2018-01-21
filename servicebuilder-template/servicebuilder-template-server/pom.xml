@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>no.obos.util.template</groupId>
+        <artifactId>servicebuilder-template</artifactId>
+        <version>8.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>servicebuilder-template-server</artifactId>
+
+    <packaging>jar</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>no.obos.util.template</groupId>
+            <artifactId>servicebuilder-template-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>no.obos.util.template</groupId>
+            <artifactId>servicebuilder-template-mock</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-core-addons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-addons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-core-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-jdbi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-db-h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-elasticsearch</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.obos.util</groupId>
+            <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>

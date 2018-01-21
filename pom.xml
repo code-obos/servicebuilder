@@ -33,6 +33,7 @@
         <module>servicebuilder-addons</module>
         <module>servicebuilder-elasticsearch</module>
         <module>servicebuilder-elasticsearch-mock</module>
+        <module>servicebuilder-template</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -104,6 +105,11 @@
             <dependency>
                 <groupId>no.obos.util</groupId>
                 <artifactId>servicebuilder-elasticsearch-mock</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>no.obos.util</groupId>
+                <artifactId>servicebuilder-template</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
