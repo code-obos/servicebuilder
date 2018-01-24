@@ -10,6 +10,7 @@ import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.AppIdWhiteList;
 import no.obos.util.servicebuilder.annotations.AppTokenRequired;
+import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.AnnotationUtil;
 
 import javax.annotation.Priority;
@@ -20,7 +21,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +30,8 @@ import java.util.UUID;
 @AllArgsConstructor(onConstructor = @__({@Inject}))
 public class ApplicationTokenFilter implements ContainerRequestFilter {
 
-    public static final String APPTOKENID_HEADER = "X-OBOS-APPTOKENID";
+    @Deprecated
+    public static final String APPTOKENID_HEADER = Constants.APPTOKENID_HEADER;
 
     private final ApplicationTokenAccessValidator applicationTokenAccessValidator;
     final ApplicationTokenFilterAddon configuration;
@@ -39,67 +40,61 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
     final private ResourceInfo resourceInfo;
 
     @Override
-    public void filter(ContainerRequestContext requestContext) throws IOException {
+    public void filter(ContainerRequestContext requestContext) {
         if (alwaysAccept(requestContext)) {
             return;
         }
 
-        String apptokenid = requestContext.getHeaderString(APPTOKENID_HEADER);
+        String apptokenid = requestContext.getHeaderString(Constants.APPTOKENID_HEADER);
+
         if (apptokenid == null || apptokenid.trim().isEmpty()) {
             handleErrorNoAppToken(requestContext);
         } else {
-            ApplicationToken token = tokenServiceClient.getApptokenById(apptokenid);
-            TokenCheckResult result = applicationTokenAccessValidator.checkApplicationToken(token);
+            TokenCheckResult result = applicationTokenAccessValidator.checkApplicationTokenId(apptokenid);
+
             if (result != TokenCheckResult.AUTHORIZED) {
                 handleErrorUnauthorized(requestContext, apptokenid, result);
-            } else if (! isAllowedToCallEndpoint(token)) {
-                handleErrorUnauthorizedForEndpoint(requestContext, apptokenid, result);
+            } else if (! isAllowedToCallEndpoint(tokenServiceClient.getApptokenById(apptokenid))) {
+                handleErrorUnauthorizedForEndpoint(requestContext, apptokenid);
             }
         }
     }
 
     private boolean isAllowedToCallEndpoint(ApplicationToken token) {
         AppIdWhiteList annotation = AnnotationUtil.getAnnotation(AppIdWhiteList.class, resourceInfo.getResourceMethod());
-        int app = Integer.parseInt(token.getApplicationId());
 
         return Optional.ofNullable(annotation)
                 .map(AppIdWhiteList::value)
-                .map(allowedIds ->
-                        Arrays.stream(allowedIds)
-                                .anyMatch(it -> app == it)
-                )
+                .map(allowedAppIds -> {
+                    int tokenAppId = Integer.parseInt(token.getApplicationId());
+                    return Arrays.stream(allowedAppIds)
+                            .anyMatch(appId -> tokenAppId == appId);
+                })
                 .orElse(true);
     }
 
-    private void handleErrorUnauthorizedForEndpoint(ContainerRequestContext requestContext, String apptokenid, TokenCheckResult result) {
-        String feilref = UUID.randomUUID().toString();
-        String msg = "Apptokenid '" + apptokenid + "' is UNAUTHORIZED for this endpoint";
-        log.warn(msg);
-        ProblemResponse problemResponse = new ProblemResponse("ERROR", msg, Status.UNAUTHORIZED.getStatusCode(), feilref);
-        Response response = Response.status(Status.UNAUTHORIZED).entity(problemResponse).build();
-        requestContext.abortWith(response);
+    private void handleErrorUnauthorizedForEndpoint(ContainerRequestContext requestContext, String apptokenid) {
+        handleUnauthorized(requestContext, "Apptokenid '" + apptokenid + "' is UNAUTHORIZED for this endpoint");
     }
 
     private void handleErrorUnauthorized(ContainerRequestContext requestContext, String apptokenid, TokenCheckResult result) {
-        String feilref = UUID.randomUUID().toString();
-        String msg = "Apptokenid '" + apptokenid + "' is " + result;
-        log.warn(msg);
-        ProblemResponse problemResponse = new ProblemResponse("ERROR", msg, Status.UNAUTHORIZED.getStatusCode(), feilref);
-        Response response = Response.status(Status.UNAUTHORIZED).entity(problemResponse).build();
-        requestContext.abortWith(response);
+        handleUnauthorized(requestContext, "Apptokenid '" + apptokenid + "' is " + result);
     }
 
     private void handleErrorNoAppToken(ContainerRequestContext requestContext) {
-        String feilref = UUID.randomUUID().toString();
-        String msg = "Header (" + APPTOKENID_HEADER + ") for application token ID is missing";
+        handleUnauthorized(requestContext, "Header (" + Constants.APPTOKENID_HEADER + ") for application token ID is missing");
+    }
+
+    private static void handleUnauthorized(ContainerRequestContext requestContext, String msg) {
         log.warn(msg);
-        ProblemResponse problemResponse = new ProblemResponse("ERROR", msg, Status.UNAUTHORIZED.getStatusCode(), feilref);
-        Response response = Response.status(Status.UNAUTHORIZED).entity(problemResponse).build();
-        requestContext.abortWith(response);
+        requestContext.abortWith(Response
+                .status(Status.UNAUTHORIZED)
+                .entity(new ProblemResponse("ERROR", msg, Status.UNAUTHORIZED.getStatusCode(), UUID.randomUUID().toString()))
+                .build());
     }
 
     public boolean alwaysAccept(ContainerRequestContext requestContext) {
-        String aboslutePath = requestContext.getUriInfo().getAbsolutePath().toString();
+        String absolutePath = requestContext.getUriInfo().getAbsolutePath().toString();
         String requestMethod = requestContext.getMethod();
 
         AppTokenRequired methodAnnotation = resourceInfo.getResourceMethod() != null
@@ -115,7 +110,7 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
             annotationFasttrack = ! classAnnotation.value();
         }
 
-        return aboslutePath.contains("swagger") ||
+        return absolutePath.contains("swagger") ||
                 "OPTIONS".equals(requestMethod) ||
                 configuration.fasttrackFilter.test(requestContext) ||
                 annotationFasttrack;
