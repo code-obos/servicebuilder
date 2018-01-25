@@ -48,7 +48,12 @@ public class ElasticsearchIndexAddon implements Addon {
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
         Client client = elasticsearchAddon.getClient();
-        ObosHealthCheckRegistry.registerElasticSearchClusterCheck("Indexer: ", getClusterName(client), indexname, client.admin().cluster());
+        String clusterName = getClusterName(client);
+        ObosHealthCheckRegistry.registerElasticSearchClusterCheck(
+                "Elasticsearch Indexer " + clusterName + "/" + indexname,
+                clusterName,
+                indexname,
+                client.admin().cluster());
     }
 
     @Override
@@ -108,7 +113,7 @@ public class ElasticsearchIndexAddon implements Addon {
                 Class<?> indexedType = indexAddon.indexedType;
                 if (indexedType.getTypeName().equals(getIndexedTypeName(typeName))) {
                     Client client = indexAddon.elasticsearchAddon.getClient();
-                    if(isMainTypeSearcher(typeName)) {
+                    if (isMainTypeSearcher(typeName)) {
                         Searcher<?> constant = new Searcher<>(client, indexedType, indexAddon.indexname, indexAddon.jsonConfig.get());
                         ServiceLocatorUtilities.addOneConstant(serviceLocator, constant, null, requiredType);
                     } else if (isMainTypeIndexer(typeName) && indexAddon.doIndexing) {
@@ -141,6 +146,7 @@ public class ElasticsearchIndexAddon implements Addon {
     public ElasticsearchIndexAddon doIndexing(boolean doIndexing) {
         return withDoIndexing(doIndexing);
     }
+
     public ElasticsearchIndexAddon jsonConfig(JsonConfig jsonConfig) {
         return withJsonConfig(jsonConfig);
     }
