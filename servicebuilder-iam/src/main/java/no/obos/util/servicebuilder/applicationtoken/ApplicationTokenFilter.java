@@ -53,14 +53,27 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         if (apptokenid == null || apptokenid.trim().isEmpty()) {
             handleErrorNoAppToken(requestContext);
         } else {
-            TokenCheckResult result = applicationTokenAccessValidator.checkApplicationTokenId(apptokenid);
+            TokenCheckResult result = checkAppTokenAndWhitelist(apptokenid);
 
-            if (result != AUTHORIZED && (result != UNAUTHORIZED || isNotInWhiteList(getApplicationId(apptokenid)))) {
+            if (result != AUTHORIZED) {
                 handleErrorUnauthorized(requestContext, apptokenid, result);
-            } else if (isNotAllowedToCallEndpointIfOtherwiseAuthorized(getApplicationId(apptokenid))) {
-                handleErrorUnauthorized(requestContext, apptokenid, UNAUTHORIZED);
             }
         }
+    }
+
+    private TokenCheckResult checkAppTokenAndWhitelist(String apptokenid) {
+        TokenCheckResult result = applicationTokenAccessValidator.checkApplicationTokenId(apptokenid);
+        return adjustForWhitelist(result, getApplicationId(apptokenid));
+    }
+
+    private TokenCheckResult adjustForWhitelist(TokenCheckResult result, Integer applicationId) {
+        if (result == UNAUTHORIZED && isInWhitelist(applicationId)) {
+            return AUTHORIZED;
+        }
+        if (result == AUTHORIZED && isExclusiveWhitelist() && ! isInWhitelist(applicationId)) {
+            return UNAUTHORIZED;
+        }
+        return result;
     }
 
     private Integer getApplicationId(String apptokenid) {
@@ -70,24 +83,21 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
                 .orElse(null);
     }
 
-    private boolean isNotAllowedToCallEndpointIfOtherwiseAuthorized(Integer applicationId) {
-        return whiteListIsPresentAndExclusive() && isNotInWhiteList(applicationId);
-    }
-
-    private Boolean whiteListIsPresentAndExclusive() {
+    private Boolean isExclusiveWhitelist() {
         return Optional.ofNullable(getWhiteListAnnotation())
                 .map(AppIdWhiteList::exclusive)
                 .orElse(false);
     }
 
-    private boolean isNotInWhiteList(Integer applicationId) {
-        return applicationId == null
-                || Optional.ofNullable(getWhiteListAnnotation())
+    private boolean isInWhitelist(Integer applicationId) {
+        if (applicationId == null) {
+            return false;
+        }
+        return Optional.ofNullable(getWhiteListAnnotation())
                 .map(AppIdWhiteList::value)
                 .map(Arrays::stream)
-                .map(whiteListAppIds ->
-                        whiteListAppIds.noneMatch(whiteListedAppId -> applicationId == whiteListedAppId))
-                .orElse(true);
+                .map(whiteListAppIds -> whiteListAppIds.anyMatch(whiteListedAppId -> applicationId == whiteListedAppId))
+                .orElse(false);
     }
 
     private AppIdWhiteList getWhiteListAnnotation() {
