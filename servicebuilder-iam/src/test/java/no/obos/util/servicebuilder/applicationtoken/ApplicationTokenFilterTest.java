@@ -52,7 +52,11 @@ public class ApplicationTokenFilterTest {
         }
 
         @AppIdWhiteList(APP_ID_WHITELISTED)
-        public static void annotated() {
+        public static void annotatedExclusive() {
+        }
+
+        @AppIdWhiteList(value = APP_ID_WHITELISTED, exclusive = false)
+        public static void annotatedNonExclusive() {
         }
     }
 
@@ -100,6 +104,7 @@ public class ApplicationTokenFilterTest {
     public void filter_apptokenId_authorized() throws Exception {
         ContainerRequestContext requestContext = createRequestContextMock();
         when(requestContext.getHeaderString(Constants.APPTOKENID_HEADER)).thenReturn(APPTOKEN_ID);
+        when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_WHITELISTED));
         when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
                 .thenReturn(TokenCheckResult.AUTHORIZED);
 
@@ -112,6 +117,7 @@ public class ApplicationTokenFilterTest {
     public void filter_apptokenId_unauthorized() throws Exception {
         ContainerRequestContext requestContext = createRequestContextMock();
         when(requestContext.getHeaderString(Constants.APPTOKENID_HEADER)).thenReturn(APPTOKEN_ID);
+        when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_WHITELISTED));
         when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
                 .thenReturn(TokenCheckResult.UNAUTHORIZED);
 
@@ -127,7 +133,7 @@ public class ApplicationTokenFilterTest {
         when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
                 .thenReturn(TokenCheckResult.AUTHORIZED);
         when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_WHITELISTED));
-        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotated"));
+        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotatedExclusive"));
 
         requestFilter.filter(requestContext);
 
@@ -135,22 +141,50 @@ public class ApplicationTokenFilterTest {
     }
 
     @Test
-    public void filter_apptokenId_authorized_notWhitelisted() throws Exception {
+    public void filter_apptokenId_unauthorized_whitelisted() throws Exception {
+        ContainerRequestContext requestContext = createRequestContextMock();
+        when(requestContext.getHeaderString(Constants.APPTOKENID_HEADER)).thenReturn(APPTOKEN_ID);
+        when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
+                .thenReturn(TokenCheckResult.UNAUTHORIZED);
+        when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_WHITELISTED));
+        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotatedExclusive"));
+
+        requestFilter.filter(requestContext);
+
+        verify(requestContext, never()).abortWith(any());
+    }
+
+    @Test
+    public void filter_apptokenId_authorized_notWhitelisted_exclusive() throws Exception {
         ContainerRequestContext requestContext = createRequestContextMock();
         when(requestContext.getHeaderString(Constants.APPTOKENID_HEADER)).thenReturn(APPTOKEN_ID);
         when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
                 .thenReturn(TokenCheckResult.AUTHORIZED);
         when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_NOT_WHITELISTED));
-        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotated"));
+        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotatedExclusive"));
 
         requestFilter.filter(requestContext);
 
         verify(requestContext).abortWith(any());
     }
 
-    private static ApplicationToken createApplicationToken(int appIdWhitelisted) {
+    @Test
+    public void filter_apptokenId_authorized_notWhitelisted_nonExclusive() throws Exception {
+        ContainerRequestContext requestContext = createRequestContextMock();
+        when(requestContext.getHeaderString(Constants.APPTOKENID_HEADER)).thenReturn(APPTOKEN_ID);
+        when(applicationTokenAccessValidator.checkApplicationTokenId(APPTOKEN_ID))
+                .thenReturn(TokenCheckResult.AUTHORIZED);
+        when(tokenServiceClient.getApptokenById(APPTOKEN_ID)).thenReturn(createApplicationToken(APP_ID_NOT_WHITELISTED));
+        when(resourceInfo.getResourceMethod()).thenReturn(Resource.class.getMethod("annotatedNonExclusive"));
+
+        requestFilter.filter(requestContext);
+
+        verify(requestContext, never()).abortWith(any());
+    }
+
+    private static ApplicationToken createApplicationToken(int applicationId) {
         ApplicationToken token = new ApplicationToken();
-        token.setApplicationId(String.valueOf(appIdWhitelisted));
+        token.setApplicationId(String.valueOf(applicationId));
         return token;
     }
 

@@ -100,7 +100,7 @@ public class ApplicationTokenAddonTest {
             getTestServiceRunner(VALID, ResourceFineGrained.class, mock(ResourceFineGrained.class))
                     .oneShotVoid(ResourceFineGrained.class, ResourceFineGrained::get);
         } catch (ExternalResourceException e) {
-            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED for this endpoint");
+            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED");
         }
     }
 
@@ -120,7 +120,7 @@ public class ApplicationTokenAddonTest {
             getTestServiceRunner(VALID, ResourceFineGrained.class, mock(ResourceFineGrained.class))
                     .oneShotVoid(ResourceFineGrained.class, ResourceFineGrained::get);
         } catch (ExternalResourceException e) {
-            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED for this endpoint");
+            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED");
         }
     }
 
@@ -178,7 +178,7 @@ public class ApplicationTokenAddonTest {
             getTestServiceRunner(VALID, ResourceSuperFineGrained.class, mock(ResourceSuperFineGrained.class))
                     .oneShotVoid(ResourceSuperFineGrained.class, ResourceSuperFineGrained::get);
         } catch (ExternalResourceException e) {
-            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED for this endpoint");
+            checkError(e, UNAUTHORIZED_401, "Apptokenid '" + VALID + "' is UNAUTHORIZED");
         }
     }
 
