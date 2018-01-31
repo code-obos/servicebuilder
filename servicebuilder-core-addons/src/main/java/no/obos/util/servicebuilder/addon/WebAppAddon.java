@@ -6,10 +6,12 @@ import lombok.experimental.Wither;
 import no.obos.util.servicebuilder.JettyServer;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.model.PropertyProvider;
+import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,10 +32,10 @@ public class WebAppAddon implements Addon {
     public final int sessionTimeoutSeconds;
     @Wither(AccessLevel.PRIVATE)
     public final URI resourceUri;
+    @Wither(AccessLevel.PRIVATE)
+    public final String notFoundPath;
 
-    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null);
-
-
+    public static WebAppAddon defaults = new WebAppAddon("/webapp/*", 28800, null, null);
 
     @Override
     public Addon withProperties(PropertyProvider properties) {
@@ -44,7 +46,6 @@ public class WebAppAddon implements Addon {
             throw new RuntimeException(e);
         }
     }
-
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
@@ -81,6 +82,13 @@ public class WebAppAddon implements Addon {
         webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
         webAppContext.setParentLoaderPriority(true);
         webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
+
+        if (notFoundPath != null) {
+            ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
+            errorHandler.addErrorPage(Response.Status.NOT_FOUND.getStatusCode(), notFoundPath);
+            webAppContext.setErrorHandler(errorHandler);
+        }
+
         jettyServer.addAppContext(webAppContext);
     }
 
@@ -94,5 +102,12 @@ public class WebAppAddon implements Addon {
 
     public WebAppAddon resourceUri(URI resourceUri) {
         return withResourceUri(resourceUri);
+    }
+
+    /**
+     * Must start with a slash
+     */
+    public WebAppAddon notFoundPath(String path) {
+        return withNotFoundPath(path);
     }
 }
