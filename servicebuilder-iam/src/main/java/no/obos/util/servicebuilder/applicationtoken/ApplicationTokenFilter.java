@@ -25,6 +25,9 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
+import static no.obos.iam.access.TokenCheckResult.AUTHORIZED;
+import static no.obos.iam.access.TokenCheckResult.UNAUTHORIZED;
+
 @Priority(Priorities.AUTHENTICATION)
 @Slf4j
 @AllArgsConstructor(onConstructor = @__({@Inject}))
@@ -50,31 +53,55 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         if (apptokenid == null || apptokenid.trim().isEmpty()) {
             handleErrorNoAppToken(requestContext);
         } else {
-            TokenCheckResult result = applicationTokenAccessValidator.checkApplicationTokenId(apptokenid);
+            TokenCheckResult result = checkAppTokenAndWhitelist(apptokenid);
 
-            if (result != TokenCheckResult.AUTHORIZED) {
+            if (result != AUTHORIZED) {
                 handleErrorUnauthorized(requestContext, apptokenid, result);
-            } else if (! isAllowedToCallEndpoint(tokenServiceClient.getApptokenById(apptokenid))) {
-                handleErrorUnauthorizedForEndpoint(requestContext, apptokenid);
             }
         }
     }
 
-    private boolean isAllowedToCallEndpoint(ApplicationToken token) {
-        AppIdWhiteList annotation = AnnotationUtil.getAnnotation(AppIdWhiteList.class, resourceInfo.getResourceMethod());
-
-        return Optional.ofNullable(annotation)
-                .map(AppIdWhiteList::value)
-                .map(allowedAppIds -> {
-                    int tokenAppId = Integer.parseInt(token.getApplicationId());
-                    return Arrays.stream(allowedAppIds)
-                            .anyMatch(appId -> tokenAppId == appId);
-                })
-                .orElse(true);
+    private TokenCheckResult checkAppTokenAndWhitelist(String apptokenid) {
+        TokenCheckResult result = applicationTokenAccessValidator.checkApplicationTokenId(apptokenid);
+        return adjustForWhitelist(result, getApplicationId(apptokenid));
     }
 
-    private void handleErrorUnauthorizedForEndpoint(ContainerRequestContext requestContext, String apptokenid) {
-        handleUnauthorized(requestContext, "Apptokenid '" + apptokenid + "' is UNAUTHORIZED for this endpoint");
+    private TokenCheckResult adjustForWhitelist(TokenCheckResult result, Integer applicationId) {
+        if (result == UNAUTHORIZED && isInWhitelist(applicationId)) {
+            return AUTHORIZED;
+        }
+        if (result == AUTHORIZED && isExclusiveWhitelist() && ! isInWhitelist(applicationId)) {
+            return UNAUTHORIZED;
+        }
+        return result;
+    }
+
+    private Integer getApplicationId(String apptokenid) {
+        return Optional.ofNullable(tokenServiceClient.getApptokenById(apptokenid))
+                .map(ApplicationToken::getApplicationId)
+                .map(Integer::parseInt)
+                .orElse(null);
+    }
+
+    private Boolean isExclusiveWhitelist() {
+        return Optional.ofNullable(getWhiteListAnnotation())
+                .map(AppIdWhiteList::exclusive)
+                .orElse(false);
+    }
+
+    private boolean isInWhitelist(Integer applicationId) {
+        if (applicationId == null) {
+            return false;
+        }
+        return Optional.ofNullable(getWhiteListAnnotation())
+                .map(AppIdWhiteList::value)
+                .map(Arrays::stream)
+                .map(whiteListAppIds -> whiteListAppIds.anyMatch(whiteListedAppId -> applicationId == whiteListedAppId))
+                .orElse(false);
+    }
+
+    private AppIdWhiteList getWhiteListAnnotation() {
+        return AnnotationUtil.getAnnotation(AppIdWhiteList.class, resourceInfo.getResourceMethod());
     }
 
     private void handleErrorUnauthorized(ContainerRequestContext requestContext, String apptokenid, TokenCheckResult result) {
