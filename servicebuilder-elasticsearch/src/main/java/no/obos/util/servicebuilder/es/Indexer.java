@@ -21,8 +21,6 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
-
 @Slf4j
 @AllArgsConstructor
 public class Indexer<T> {
@@ -70,29 +68,53 @@ public class Indexer<T> {
             Function<T, String> idMapper,
             IndexingOptions options)
     {
-        prepareIndexing(schema);
-
         if (! isIndexingRunning()) {
+            prepareIndexing(schema);
             performIndexing(documentsIterator, idMapper, options);
         }
     }
 
+    public boolean indexExists() {
+        return getIndicesAdminClient()
+                .prepareExists(indexAddon.indexname)
+                .get()
+                .isExists();
+    }
+
+    public String getClusterName() {
+        return ElasticsearchUtil.getClusterName(getClient());
+    }
+
+    public String getIndexName() {
+        return indexAddon.indexname;
+    }
+
     private void prepareIndexing(String schema) {
-        if (indicesExists()) {
-            getIndicesAdminClient()
-                    .preparePutMapping(indexAddon.indexname)
-                    .setType(indexAddon.indexname)
-                    .setSource(schema, XContentType.JSON)
-                    .get();
+        if (indexExists()) {
+            prepareUpdateIndex(schema);
         } else {
-            getIndicesAdminClient()
-                    .prepareCreate(indexAddon.indexname)
-                    .addMapping(indexAddon.indexname, schema, XContentType.JSON)
-                    .get();
+            prepareCreateIndex(schema);
         }
     }
 
+    private void prepareUpdateIndex(String schema) {
+        getIndicesAdminClient()
+                .preparePutMapping(indexAddon.indexname)
+                .setType(indexAddon.indexname)
+                .setSource(schema, XContentType.JSON)
+                .get();
+    }
+
+    private void prepareCreateIndex(String schema) {
+        getIndicesAdminClient()
+                .prepareCreate(indexAddon.indexname)
+                .addMapping(indexAddon.indexname, schema, XContentType.JSON)
+                .get();
+    }
+
     private void performIndexing(Iterator<T> documentsIterator, Function<T, String> idMapper, IndexingOptions options) {
+        log.info("Starting bulk request on index {} on cluster {}", indexAddon.indexname, getClusterName());
+
         BulkProcessor bulkProcessor = createBulkProcessor(options);
         ObjectMapper objectMapper = indexAddon.jsonConfig.get();
 
@@ -105,7 +127,8 @@ public class Indexer<T> {
 
         try {
             boolean completed = bulkProcessor.awaitClose(60000, TimeUnit.SECONDS);
-            log.debug("BulkRequest completed: {}", completed);
+            log.info("Bulk request on index {} on cluster {} completed: {}",
+                    indexAddon.indexname, getClusterName(), completed);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -122,25 +145,26 @@ public class Indexer<T> {
     }
 
     private BulkProcessor createBulkProcessor(IndexingOptions options) {
-        String clusterName = getClusterName(getClient());
+        String clusterName = getClusterName();
         return BulkProcessor.builder(
                 getClient(),
                 new BulkProcessor.Listener() {
                     @Override
                     public void beforeBulk(long executionId, BulkRequest request) {
-                        log.debug("Going to add person data to new bulk composed of {} actions on cluster {}",
-                                request.numberOfActions(), clusterName);
+                        log.debug("Going to add data to new bulk composed of {} actions on index {} on cluster {}",
+                                request.numberOfActions(), indexAddon.indexname, clusterName);
                     }
 
                     @Override
                     public void afterBulk(long executionId, BulkRequest request, BulkResponse response) {
-                        log.debug("Executed bulk composed of {} actions on cluster {}",
-                                request.numberOfActions(), clusterName);
+                        log.debug("Executed bulk composed of {} actions on index {} on cluster {}",
+                                request.numberOfActions(), indexAddon.indexname, clusterName);
                     }
 
                     @Override
                     public void afterBulk(long executionId, BulkRequest request, Throwable failure) {
-                        log.error("Error executing bulk on cluster {}", failure, clusterName);
+                        log.error("Error executing bulk on index {} on cluster {}",
+                                indexAddon.indexname, clusterName, failure);
                     }
                 })
                 .setBulkActions(options.getBulkSize())
@@ -157,14 +181,11 @@ public class Indexer<T> {
                 .source(json, XContentType.JSON);
     }
 
-    private boolean indicesExists() {
-        return getIndicesAdminClient()
-                .prepareExists(indexAddon.indexname)
-                .get()
-                .isExists();
+    private boolean isIndexingRunning() {
+        return indexExists() && numberOfCurrentIndexOperations() > 0;
     }
 
-    private boolean isIndexingRunning() {
+    private long numberOfCurrentIndexOperations() {
         IndicesStatsResponse indicesStatsResponse = getAdminClient()
                 .indices()
                 .prepareStats(indexAddon.indexname)
@@ -175,7 +196,7 @@ public class Indexer<T> {
                 .getTotal()
                 .getIndexing()
                 .getTotal()
-                .getIndexCurrent() > 0;
+                .getIndexCurrent();
     }
 
     private IndicesAdminClient getIndicesAdminClient() {
