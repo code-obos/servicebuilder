@@ -27,14 +27,14 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
 
     @Inject
     ApplicationTokenFilterAddon.Configuration configuration;
-    
+
     @Context
     private UriInfo uriInfo;
 
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         log.debug("Request headers: {}", requestContext.getHeaders());
-        
+
         if (allwaysAccept(requestContext)) {
             return;
         }

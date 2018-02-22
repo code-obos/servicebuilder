@@ -1,30 +1,23 @@
 package no.obos.util.servicebuilder;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.config.AppConfig;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
-
 import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Legger inn applikasjonsfilter. Avhenger av at TokenServiceAddon er lagt til.
  */
 @AllArgsConstructor
 public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
+
     public static final String ACCEPTED_APP_IDS = "apptoken.accepted.app.ids";
     public static final Predicate<ContainerRequestContext> DEFAULT_FASTTRACK_FILTER = it -> false;
     public final Configuration configuration;
@@ -34,13 +27,9 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
                 .fasttrackFilter(DEFAULT_FASTTRACK_FILTER);
     }
 
-    public static void configFromAppConfig(AppConfig appConfig, ApplicationTokenFilterAddon.Configuration.ConfigurationBuilder configBuilder) {
+    public static void configFromAppConfig(AppConfig appConfig, Configuration.ConfigurationBuilder configBuilder) {
         appConfig.failIfNotPresent(ACCEPTED_APP_IDS);
-        ArrayList<String> acceptedIdStrings = Lists.newArrayList(appConfig.get(ACCEPTED_APP_IDS).split(","));
-        List<Integer> acceptedIds = acceptedIdStrings.stream()
-                .map(Integer::valueOf)
-                .collect(toList());
-        configBuilder.acceptedAppIds(ImmutableList.copyOf(acceptedIds));
+        configBuilder.acceptedAppIds(appConfig.get(ACCEPTED_APP_IDS).trim());
     }
 
     @Override
@@ -64,7 +53,7 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         public ApplicationTokenAccessValidator provide() {
             ApplicationTokenAccessValidator applicationTokenAccessValidator = new ApplicationTokenAccessValidator();
             applicationTokenAccessValidator.setTokenServiceClient(tokenServiceClient);
-            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds.stream().map(Object::toString).collect(Collectors.toList()));
+            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds);
             return applicationTokenAccessValidator;
         }
 
@@ -74,12 +63,14 @@ public class ApplicationTokenFilterAddon extends ServiceAddonEmptyDefaults {
         }
     }
 
+
     @Builder
     @AllArgsConstructor
     public static class Configuration {
-        public final ImmutableList<Integer> acceptedAppIds;
+        public final String acceptedAppIds;
         public final Predicate<ContainerRequestContext> fasttrackFilter;
     }
+
 
     //Det etterfølgende er generisk kode som er vanskelig å flytte ut i egne klasser pga generics. Kopier mellom addons.
     @AllArgsConstructor
