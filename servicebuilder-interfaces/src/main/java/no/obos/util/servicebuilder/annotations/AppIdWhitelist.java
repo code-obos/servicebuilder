@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
-public @interface AppIdWhiteList {
+public @interface AppIdWhitelist {
 
     /**
      * Array av appIds for applikasjoner som godtas av endepunktet.
