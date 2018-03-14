@@ -9,6 +9,8 @@ public @interface AppIdWhitelist {
 
     /**
      * Array av appIds for applikasjoner som godtas av endepunktet.
+     * <p>
+     * Verdier må deklareres i én av to properties. Se ApplicationTokenFilterAddon.
      */
     int[] value();
 
