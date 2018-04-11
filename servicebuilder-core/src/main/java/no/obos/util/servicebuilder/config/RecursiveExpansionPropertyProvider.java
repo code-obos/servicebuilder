@@ -20,19 +20,19 @@ public abstract class RecursiveExpansionPropertyProvider implements PropertyProv
             throw new AppConfigException("Loop in variable expansion. Offending key: " + key + " previous values: " + alreadyExpanded);
         }
         alreadyExpanded.add(key);
-        if (propertyProvider.getNoExpansion(key) == null) {
+        String valueUnexpanded = getValueUnexpanded(propertyProvider, key);
+        if (valueUnexpanded == null) {
             throw new AppConfigException("Missing value when expanding variable. Path: " + alreadyExpanded);
         }
-        String valueUnexpanded = propertyProvider.getNoExpansion(key);
-        String result = "";
+        StringBuilder result = new StringBuilder();
         String leftToParse = valueUnexpanded;
         while (leftToParse.length() != 0) {
             int tokenBegin = leftToParse.indexOf("${");
             if (tokenBegin == - 1) {
-                result += leftToParse;
+                result.append(leftToParse);
                 leftToParse = "";
             } else {
-                result += leftToParse.substring(0, tokenBegin);
+                result.append(leftToParse.substring(0, tokenBegin));
                 String fromVariableStart = leftToParse.substring(tokenBegin + 2);
                 int tokenEnd = fromVariableStart.indexOf('}');
                 if (tokenEnd == - 1) {
@@ -40,11 +40,23 @@ public abstract class RecursiveExpansionPropertyProvider implements PropertyProv
                 } else {
                     leftToParse = fromVariableStart.substring(tokenEnd + 1);
                     String nestedKey = fromVariableStart.substring(0, tokenEnd);
-                    result += getWithExpandedPropertiesRecursor(propertyProvider, nestedKey, new ArrayList<>(alreadyExpanded));
+                    result.append(getWithExpandedPropertiesRecursor(propertyProvider, nestedKey, new ArrayList<>(alreadyExpanded)));
                 }
             }
         }
-        return result;
+        return result.toString();
+    }
+
+    private String getValueUnexpanded(RecursiveExpansionPropertyProvider propertyProvider, String key) {
+        String property = System.getProperty(key);
+        if (property != null) {
+            return property;
+        }
+        String env = System.getenv(key);
+        if (env != null) {
+            return env;
+        }
+        return propertyProvider.getNoExpansion(key);
     }
 
 }
