@@ -6,6 +6,7 @@ import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
+import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
 import no.obos.util.servicebuilder.annotations.AppIdWhiteList;
@@ -77,10 +78,14 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
     }
 
     private Integer getApplicationId(String apptokenid) {
-        return Optional.ofNullable(tokenServiceClient.getApptokenById(apptokenid))
-                .map(ApplicationToken::getApplicationId)
-                .map(Integer::parseInt)
-                .orElse(null);
+        try {
+            return Optional.ofNullable(tokenServiceClient.getApptokenById(apptokenid))
+                    .map(ApplicationToken::getApplicationId)
+                    .map(Integer::parseInt)
+                    .orElse(null);
+        } catch (TokenServiceClientException e) {
+            return null;
+        }
     }
 
     private Boolean isExclusiveWhitelist() {
