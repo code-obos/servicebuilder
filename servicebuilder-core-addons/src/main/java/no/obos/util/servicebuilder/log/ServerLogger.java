@@ -51,7 +51,7 @@ public class ServerLogger {
 
         LogResponseEntity logResponseEntity = AnnotationUtil.getAnnotation(LogResponseEntity.class, method);
         if (logResponseEntity != null) {
-            ret = ret.logRequestPayload(logResponseEntity.value());
+            ret = ret.logResponseEntity(logResponseEntity.value());
         }
         return ret;
 
