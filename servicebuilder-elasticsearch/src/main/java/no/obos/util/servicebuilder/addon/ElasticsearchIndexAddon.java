@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import static no.obos.util.servicebuilder.es.ElasticsearchUtil.getClusterName;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ElasticsearchIndexAddon implements Addon {
@@ -80,12 +81,12 @@ public class ElasticsearchIndexAddon implements Addon {
 
     @Override
     public Set<Class<?>> initializeAfter() {
-        return ImmutableSet.of(ElasticsearchAddonImpl.class);
+        return ImmutableSet.of(ElasticsearchAddon.class);
     }
 
     private ElasticsearchIndexAddon withIndexname(String indexname2) {
         String indexname = indexname2.toLowerCase();
-        return this.indexname == indexname ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
+        return equalsIgnoreCase(this.indexname, indexname) ? this : new ElasticsearchIndexAddon(indexname, this.indexedType, this.elasticsearchAddon, this.doIndexing, this.jsonConfig);
     }
 
     /**

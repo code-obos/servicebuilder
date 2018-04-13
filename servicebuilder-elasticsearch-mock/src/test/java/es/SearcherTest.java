@@ -6,27 +6,26 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.*;
-import no.obos.util.servicebuilder.es.Searcher;
+import no.obos.util.servicebuilder.addon.ElasticsearchAddon;
+import no.obos.util.servicebuilder.addon.ElasticsearchAddonMockImpl;
+import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
+import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.addon.ServerLogAddon;
 import org.elasticsearch.action.ActionRequestValidationException;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.explain.ExplainRequest;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.cluster.health.ClusterHealthStatus;
-import org.elasticsearch.node.NodeValidationException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.UnknownHostException;
 
 
 @Slf4j
@@ -55,10 +54,7 @@ public class SearcherTest {
     }
 
     @BeforeClass
-    public static void setup() throws NodeValidationException, UnknownHostException {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-
+    public static void setup() {
         ServiceConfig serviceConfig = ServiceConfig
                 .defaults(ServiceDefinitionUtil.simple(Resource.class))
                 .addon(ExceptionMapperAddon.defaults)
@@ -68,7 +64,6 @@ public class SearcherTest {
                 .addon(ElasticsearchIndexAddon.defaults("anotherIndex", String.class))
                 .bind(ResourceImpl.class, Resource.class);
         testServiceRunner = TestServiceRunner.defaults(serviceConfig);
-        TestServiceRunner.defaults(serviceConfig);
     }
 
     @Api
@@ -81,11 +76,6 @@ public class SearcherTest {
 
 
     public static class ResourceImpl implements Resource {
-        @Inject
-        Searcher<TestService.Payload> searcher1;
-        @Inject
-        Searcher<String> searcher2;
-
         @Override
         public Response get() {
             return Response.ok().build();

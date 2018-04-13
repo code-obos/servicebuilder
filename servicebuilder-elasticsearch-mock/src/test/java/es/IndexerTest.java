@@ -9,17 +9,24 @@ import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestService;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.addon.*;
+import no.obos.util.servicebuilder.addon.ElasticsearchAddonMockImpl;
+import no.obos.util.servicebuilder.addon.ElasticsearchIndexAddon;
+import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
+import no.obos.util.servicebuilder.addon.ServerLogAddon;
 import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.NodeValidationException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -58,7 +65,7 @@ public class IndexerTest {
     }
 
     @BeforeClass
-    public static void setup() throws NodeValidationException, IOException {
+    public static void setup() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
