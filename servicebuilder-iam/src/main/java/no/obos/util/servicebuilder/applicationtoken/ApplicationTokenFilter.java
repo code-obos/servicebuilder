@@ -1,6 +1,8 @@
 package no.obos.util.servicebuilder.applicationtoken;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
@@ -22,6 +24,8 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
+import java.security.Principal;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,6 +64,8 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
                 handleErrorUnauthorized(requestContext, apptokenid, result);
             }
         }
+
+        requestContext.setSecurityContext(new AutentiseringsContext(getApplicationToken(apptokenid)));
     }
 
     private TokenCheckResult checkAppTokenAndWhitelist(String apptokenid) {
@@ -77,15 +83,19 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         return result;
     }
 
-    private Integer getApplicationId(String apptokenid) {
+    private ApplicationToken getApplicationToken(String apptokenid) {
         try {
-            return Optional.ofNullable(tokenServiceClient.getApptokenById(apptokenid))
-                    .map(ApplicationToken::getApplicationId)
-                    .map(Integer::parseInt)
-                    .orElse(null);
+            return tokenServiceClient.getApptokenById(apptokenid);
         } catch (TokenServiceClientException e) {
             return null;
         }
+    }
+
+    private Integer getApplicationId(String apptokenid) {
+        return Optional.ofNullable(getApplicationToken(apptokenid))
+                .map(ApplicationToken::getApplicationId)
+                .map(Integer::parseInt)
+                .orElse(null);
     }
 
     private Boolean isExclusiveWhitelist() {
@@ -146,6 +156,35 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
                 "OPTIONS".equals(requestMethod) ||
                 configuration.fasttrackFilter.test(requestContext) ||
                 annotationFasttrack;
+    }
+
+    @Value
+    @Builder(toBuilder = true)
+    @AllArgsConstructor
+    public static class AutentiseringsContext implements SecurityContext {
+
+        ApplicationToken applicationToken;
+
+        @Override
+        public Principal getUserPrincipal() {
+            return new ApplicationPrincipal(applicationToken);
+        }
+
+        @Override
+        public boolean isUserInRole(String role) {
+            return false;
+        }
+
+        @Override
+        public boolean isSecure() {
+            return false;
+        }
+
+        @Override
+        public String getAuthenticationScheme() {
+            return SecurityContext.BASIC_AUTH;
+        }
+
     }
 }
 
