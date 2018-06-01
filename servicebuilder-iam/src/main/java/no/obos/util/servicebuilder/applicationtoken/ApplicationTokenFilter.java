@@ -62,10 +62,10 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
 
             if (result != AUTHORIZED) {
                 handleErrorUnauthorized(requestContext, apptokenid, result);
+            } else {
+                requestContext.setSecurityContext(new AutentiseringsContext(getApplicationToken(apptokenid)));
             }
         }
-
-        requestContext.setSecurityContext(new AutentiseringsContext(getApplicationToken(apptokenid)));
     }
 
     private TokenCheckResult checkAppTokenAndWhitelist(String apptokenid) {
