@@ -15,7 +15,6 @@ import no.obos.util.servicebuilder.addon.ExceptionMapperAddon;
 import no.obos.util.servicebuilder.addon.ServerLogAddon;
 import no.obos.util.servicebuilder.es.Indexer;
 import no.obos.util.servicebuilder.es.Searcher;
-import no.obos.util.servicebuilder.es.options.IndexingOptions;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -148,8 +147,7 @@ public class IndexerTest {
             indexer.index(
                     schema,
                     toIndex,
-                    TestService.Payload::getString,
-                    IndexingOptions.DEFAULT.toBuilder().bulkConcurrent(0).build());
+                    TestService.Payload::getString);
         }
     }
 }
