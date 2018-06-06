@@ -16,7 +16,6 @@ public class SwaggerAddonTest extends AddonTestBase {
         ServiceConfig serviceConfig = TestService.config
                 .addon(SwaggerAddon.defaults);
         Response call = testServiceRunnerJettyWithDefaults(serviceConfig)
-                .property("api.baseurl", "ape")
                 .oneShot(target -> target
                         .path("api")
                         .path("swagger.json")
@@ -24,7 +23,7 @@ public class SwaggerAddonTest extends AddonTestBase {
                         .get()
                 );
         //language=JSON
-        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"\"},\"basePath\":\"ape\",\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"schema\":{\"$ref\":\"#/definitions/Payload\"},\"headers\":{}}}}}},\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}}";
+        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"\"},\"basePath\":\"/test/v1.0/api/\",\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"schema\":{\"$ref\":\"#/definitions/Payload\"},\"headers\":{}}}}}},\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}}";
         assertThat(call.readEntity(String.class)).isEqualToIgnoringWhitespace(expected);
     }
 
