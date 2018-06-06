@@ -7,4 +7,6 @@ public final class Constants {
     public static final String X_OBOS_REQUEST_ID = "X-OBOS-REQUEST-ID";
     public static final String APPCONFIG_KEY = "SERVICE_CONFIG";
     public static final String CONFIG_KEY_SERVICE_VERSION = "service.version";
+    public static final String CONFIG_KEY_SERVICE_VERSION_MAJOR = "service.version.major";
+    public static final String CONFIG_KEY_SERVICE_VERSION_MINOR = "service.version.minor";
 }
