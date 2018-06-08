@@ -1,10 +1,7 @@
 package no.obos.util.servicebuilder.util;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.reflect.ClassPath;
-import com.google.common.reflect.ClassPath.ClassInfo;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -18,10 +15,6 @@ import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 
 public class ClassPathUtil {
-
-    public static Set<ClassInfo> getTopLevelClassesRecursive(String packageName) throws IOException {
-        return ClassPath.from(ClassLoader.getSystemClassLoader()).getTopLevelClassesRecursive(packageName);
-    }
 
     public static <T extends Annotation> Set<T> findDeclaredAnnotations(Class<?> clazz, Class<T> annotationClass) {
         ImmutableSet.Builder<T> builder = ImmutableSet.builder();

@@ -2,7 +2,6 @@ package no.obos.util.servicebuilder.addon;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.reflect.ClassPath.ClassInfo;
 import io.swagger.jaxrs.ext.SwaggerExtensions;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,10 +24,9 @@ import org.glassfish.hk2.api.Factory;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -51,7 +49,6 @@ public class ApplicationTokenFilterAddon implements Addon {
      * {@link #CONFIG_KEY_ACCEPTED_APP_IDS}, ellers overflødig.
      */
     public static final String CONFIG_KEY_RESOURCE_WHITELISTED_APP_IDS = "apptoken.resource.whitelisted.app.ids";
-    public static final ImmutableSet<String> DEFAULT_PROJECT_PACKAGE_NAMES = ImmutableSet.of("no.obos");
 
     @Wither(AccessLevel.PRIVATE)
     public final boolean requireAppTokenByDefault;
@@ -65,11 +62,8 @@ public class ApplicationTokenFilterAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final Predicate<ContainerRequestContext> fasttrackFilter;
 
-    @Wither(AccessLevel.PRIVATE)
-    public final Set<String> projectPackageNames;
-
     public static ApplicationTokenFilterAddon defaults =
-            new ApplicationTokenFilterAddon(true, true, "", it -> false, DEFAULT_PROJECT_PACKAGE_NAMES, null);
+            new ApplicationTokenFilterAddon(true, true, "", it -> false, null);
 
     /**
      * Deleted after initialization.
@@ -87,8 +81,7 @@ public class ApplicationTokenFilterAddon implements Addon {
         }
 
         if (properties != null) {
-            Set<Class> exceptClasses = findJerseyClientResourceClasses(serviceConfig);
-            checkAppIdWhitelists(getAppIdWhitelists(projectPackageNames, exceptClasses));
+            checkAppIdWhitelists(getAppIdWhitelists(serviceConfig.serviceDefinition.getResources()));
             properties = null;
         } else {
             log.warn("Could not perform check for whitelists. Property provider is null.");
@@ -153,13 +146,9 @@ public class ApplicationTokenFilterAddon implements Addon {
         return withFasttrackFilter(fasttrackFilter);
     }
 
-    public ApplicationTokenFilterAddon projectPackageNames(Set<String> projectPackageNames) {
-        return withProjectPackageNames(projectPackageNames);
-    }
-
     @Override
     public Set<Class<?>> initializeAfter() {
-        return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class, JerseyClientAddon.class);
+        return ImmutableSet.of(SwaggerAddon.class, TokenServiceAddon.class);
     }
 
     void checkAppIdWhitelists(Set<AppIdWhitelist> appIdWhitelists) {
@@ -204,10 +193,8 @@ public class ApplicationTokenFilterAddon implements Addon {
     }
 
     private Set<Integer> getResourceWhitelistedAppIds(Set<Integer> appIdsInWhitelists) {
-        Set<Integer> resourceWhitelistedAppIds;
         properties.failIfNotPresent(CONFIG_KEY_RESOURCE_WHITELISTED_APP_IDS);
-        resourceWhitelistedAppIds = convertToAppIds(properties.get(CONFIG_KEY_RESOURCE_WHITELISTED_APP_IDS));
-
+        Set<Integer> resourceWhitelistedAppIds = convertToAppIds(properties.get(CONFIG_KEY_RESOURCE_WHITELISTED_APP_IDS));
         Set<Integer> appIdsNotUsedInWhitelist = Sets.difference(resourceWhitelistedAppIds, appIdsInWhitelists);
 
         if (! appIdsNotUsedInWhitelist.isEmpty()) {
@@ -219,37 +206,16 @@ public class ApplicationTokenFilterAddon implements Addon {
         return resourceWhitelistedAppIds;
     }
 
-    private static Set<AppIdWhitelist> getAppIdWhitelists(Set<String> packageNames, Set<Class> exceptClasses) {
-        return packageNames.stream()
-                .map(ApplicationTokenFilterAddon::getTopLevelClassesRecursive)
-                .flatMap(Collection::stream)
-                .map(ApplicationTokenFilterAddon::loadClass)
-                .filter(Objects::nonNull)
-                .filter(clazz -> ! exceptClasses.contains(clazz))
+    private static Set<AppIdWhitelist> getAppIdWhitelists(List<Class> classes) {
+        return classes.stream()
                 .map(ApplicationTokenFilterAddon::getAppIdWhitelists)
                 .flatMap(Collection::stream)
                 .collect(toSet());
     }
 
-    private static Set<ClassInfo> getTopLevelClassesRecursive(String packageName) {
-        try {
-            return ClassPathUtil.getTopLevelClassesRecursive(packageName);
-        } catch (IOException e) {
-            throw new AppConfigException(e);
-        }
-    }
-
-    private static Class<?> loadClass(ClassInfo classInfo) {
-        try {
-            return classInfo.load();
-        } catch (NoClassDefFoundError error) {
-            return null;
-        }
-    }
-
-    private static Set<AppIdWhitelist> getAppIdWhitelists(Class<?> classInfo) {
-        return Optional.ofNullable(classInfo)
-                .map(clazz -> ClassPathUtil.findDeclaredAnnotations(clazz, AppIdWhitelist.class))
+    private static Set<AppIdWhitelist> getAppIdWhitelists(Class<?> clazz) {
+        return Optional.ofNullable(clazz)
+                .map(cl -> ClassPathUtil.findDeclaredAnnotations(cl, AppIdWhitelist.class))
                 .orElse(emptySet());
     }
 
@@ -261,10 +227,4 @@ public class ApplicationTokenFilterAddon implements Addon {
                 .collect(toSet());
     }
 
-    private Set<Class> findJerseyClientResourceClasses(ServiceConfig serviceConfig) {
-        return serviceConfig.addonInstances(JerseyClientAddon.class).stream()
-                .map(jerseyClientAddon -> jerseyClientAddon.serviceDefinition)
-                .flatMap(serviceDefinition -> serviceDefinition.getResources().stream())
-                .collect(toSet());
-    }
 }
