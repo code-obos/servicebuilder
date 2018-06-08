@@ -25,3 +25,11 @@ The code is tailored specific for our needs, it is dependent on our libraries an
 ###### New features
 * Added annotation for fine grained application token id handling on resource and specific endpoints.
 * Added elasticsearch client addon
+
+## Version 8
+###### Breaking changes
+* Removed apiBasePath from SwaggerAddon.
+* Updated ApplicationTokenFilterAddon to require all whitelisted app ids in property file.
+###### New features
+* Added support for overriding basepath with the header X-Forwarded-Path in SwaggerAddon.
+* Added support for iterators in ElasticsearchIndexAddon.
