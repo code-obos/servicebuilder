@@ -5,7 +5,7 @@ import no.obos.iam.access.TokenCheckResult;
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
-import no.obos.util.servicebuilder.annotations.AppIdWhiteList;
+import no.obos.util.servicebuilder.annotations.AppIdWhitelist;
 import no.obos.util.servicebuilder.model.Constants;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,11 +51,11 @@ public class ApplicationTokenFilterTest {
         public static void unannotated() {
         }
 
-        @AppIdWhiteList(APP_ID_WHITELISTED)
+        @AppIdWhitelist(APP_ID_WHITELISTED)
         public static void annotatedExclusive() {
         }
 
-        @AppIdWhiteList(value = APP_ID_WHITELISTED, exclusive = false)
+        @AppIdWhitelist(value = APP_ID_WHITELISTED, exclusive = false)
         public static void annotatedNonExclusive() {
         }
     }

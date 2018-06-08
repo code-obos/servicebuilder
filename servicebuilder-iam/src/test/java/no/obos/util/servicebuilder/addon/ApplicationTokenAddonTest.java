@@ -6,7 +6,7 @@ import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import no.obos.util.servicebuilder.annotations.AppIdWhiteList;
+import no.obos.util.servicebuilder.annotations.AppIdWhitelist;
 import no.obos.util.servicebuilder.exception.ExternalResourceException;
 import no.obos.util.servicebuilder.model.Constants;
 import org.junit.Assert;
@@ -78,10 +78,10 @@ public class ApplicationTokenAddonTest {
 
     @Api
     @Path("kaka")
-    @AppIdWhiteList({AUTHORIZED2_INT, AUTHORIZED3_INT})
+    @AppIdWhitelist({AUTHORIZED2_INT, AUTHORIZED3_INT})
     public interface ResourceFineGrained {
         @GET
-        @AppIdWhiteList({AUTHORIZED2_INT})
+        @AppIdWhitelist({AUTHORIZED2_INT})
         @Produces(MediaType.APPLICATION_JSON)
         void get();
 
@@ -144,7 +144,7 @@ public class ApplicationTokenAddonTest {
     @Path("mele")
     public interface ResourceSuperFineGrained {
         @GET
-        @AppIdWhiteList({AUTHORIZED2_INT})
+        @AppIdWhitelist({AUTHORIZED2_INT})
         @Produces(MediaType.APPLICATION_JSON)
         void get();
 

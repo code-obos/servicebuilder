@@ -5,10 +5,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Inherited
-public @interface AppIdWhiteList {
+public @interface AppIdWhitelist {
 
     /**
      * Array av appIds for applikasjoner som godtas av endepunktet.
+     * <p>
+     * Verdier må deklareres i én av to properties. Se ApplicationTokenFilterAddon.
      */
     int[] value();
 

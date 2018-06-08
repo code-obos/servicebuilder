@@ -11,7 +11,7 @@ import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.iam.tokenservice.TokenServiceClientException;
 import no.obos.util.model.ProblemResponse;
 import no.obos.util.servicebuilder.addon.ApplicationTokenFilterAddon;
-import no.obos.util.servicebuilder.annotations.AppIdWhiteList;
+import no.obos.util.servicebuilder.annotations.AppIdWhitelist;
 import no.obos.util.servicebuilder.annotations.AppTokenRequired;
 import no.obos.util.servicebuilder.model.Constants;
 import no.obos.util.servicebuilder.util.AnnotationUtil;
@@ -99,8 +99,8 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
     }
 
     private Boolean isExclusiveWhitelist() {
-        return Optional.ofNullable(getWhiteListAnnotation())
-                .map(AppIdWhiteList::exclusive)
+        return Optional.ofNullable(getWhitelistAnnotation())
+                .map(AppIdWhitelist::exclusive)
                 .orElse(false);
     }
 
@@ -108,15 +108,15 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
         if (applicationId == null) {
             return false;
         }
-        return Optional.ofNullable(getWhiteListAnnotation())
-                .map(AppIdWhiteList::value)
+        return Optional.ofNullable(getWhitelistAnnotation())
+                .map(AppIdWhitelist::value)
                 .map(Arrays::stream)
-                .map(whiteListAppIds -> whiteListAppIds.anyMatch(whiteListedAppId -> applicationId == whiteListedAppId))
+                .map(whitelistAppIds -> whitelistAppIds.anyMatch(whitelistedAppId -> applicationId == whitelistedAppId))
                 .orElse(false);
     }
 
-    private AppIdWhiteList getWhiteListAnnotation() {
-        return AnnotationUtil.getAnnotation(AppIdWhiteList.class, resourceInfo.getResourceMethod());
+    private AppIdWhitelist getWhitelistAnnotation() {
+        return AnnotationUtil.getAnnotation(AppIdWhitelist.class, resourceInfo.getResourceMethod());
     }
 
     private void handleErrorUnauthorized(ContainerRequestContext requestContext, String apptokenid, TokenCheckResult result) {
