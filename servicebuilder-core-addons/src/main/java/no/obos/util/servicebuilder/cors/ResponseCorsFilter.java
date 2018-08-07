@@ -6,6 +6,7 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
 
+@Deprecated
 public class ResponseCorsFilter implements ContainerResponseFilter {
 
     public static final String ORIGIN = "Origin";

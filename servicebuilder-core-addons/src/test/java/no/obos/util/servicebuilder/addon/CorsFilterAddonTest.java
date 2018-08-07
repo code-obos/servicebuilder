@@ -7,7 +7,7 @@ import org.junit.Test;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import static no.obos.util.servicebuilder.cors.ResponseCorsFilter.ALLOW_CREDENTIALS;
+import static no.obos.util.servicebuilder.cors.CorsFilter.ALLOW_CREDENTIALS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CorsFilterAddonTest extends AddonTestBase {
