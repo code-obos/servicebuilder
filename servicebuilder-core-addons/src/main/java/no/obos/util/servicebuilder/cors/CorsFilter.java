@@ -10,15 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class CorsFilter implements Filter {
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD;
+import static com.google.common.net.HttpHeaders.ORIGIN;
 
-    public static final String ORIGIN = "Origin";
-    public static final String REQUEST_METHOD = "Access-Control-Request-Method";
-    public static final String REQUEST_HEADERS = "Access-Control-Request-Headers";
-    public static final String ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    public static final String ALLOW_METHODS = "Access-Control-Allow-Methods";
-    public static final String ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    public static final String ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+public class CorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
@@ -31,10 +31,10 @@ public class CorsFilter implements Filter {
         if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
             HttpServletResponse httpResponse = (HttpServletResponse) response;
-            httpResponse.addHeader(ALLOW_ORIGIN, httpRequest.getHeader(ORIGIN));
-            httpResponse.addHeader(ALLOW_METHODS, httpRequest.getHeader(REQUEST_METHOD));
-            httpResponse.addHeader(ALLOW_HEADERS, httpRequest.getHeader(REQUEST_HEADERS));
-            httpResponse.addHeader(ALLOW_CREDENTIALS, "true");
+            httpResponse.addHeader(ACCESS_CONTROL_ALLOW_ORIGIN, httpRequest.getHeader(ORIGIN));
+            httpResponse.addHeader(ACCESS_CONTROL_ALLOW_METHODS, httpRequest.getHeader(ACCESS_CONTROL_REQUEST_METHOD));
+            httpResponse.addHeader(ACCESS_CONTROL_ALLOW_HEADERS, httpRequest.getHeader(ACCESS_CONTROL_REQUEST_HEADERS));
+            httpResponse.addHeader(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         }
 
         chain.doFilter(request, response);
