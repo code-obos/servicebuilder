@@ -7,7 +7,7 @@ import org.junit.Test;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import static no.obos.util.servicebuilder.cors.ResponseCorsFilter.ALLOW_CREDENTIALS;
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CorsFilterAddonTest extends AddonTestBase {
@@ -25,7 +25,7 @@ public class CorsFilterAddonTest extends AddonTestBase {
                         .options()
                 );
         MultivaluedMap<String, Object> headers = call.getHeaders();
-        assertThat(headers.getFirst(ALLOW_CREDENTIALS)).isEqualTo("true");
+        assertThat(headers.getFirst(ACCESS_CONTROL_ALLOW_CREDENTIALS)).isEqualTo("true");
     }
 
 }
