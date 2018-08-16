@@ -14,6 +14,7 @@ import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.annotations.AppIdWhitelist;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
+import no.obos.util.servicebuilder.applicationtoken.NumericAppIdApplicationTokenAccessValidator;
 import no.obos.util.servicebuilder.applicationtoken.SwaggerImplicitAppTokenHeader;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
@@ -112,21 +113,18 @@ public class ApplicationTokenFilterAddon implements Addon {
     }
 
     @AllArgsConstructor(onConstructor = @__({@Inject}))
-    private static class ApplicationTokenAccessValidatorFactory implements Factory<ApplicationTokenAccessValidator> {
+    private static class ApplicationTokenAccessValidatorFactory implements Factory<NumericAppIdApplicationTokenAccessValidator> {
 
         final TokenServiceClient tokenServiceClient;
         final ApplicationTokenFilterAddon configuration;
 
         @Override
-        public ApplicationTokenAccessValidator provide() {
-            ApplicationTokenAccessValidator applicationTokenAccessValidator = new ApplicationTokenAccessValidator();
-            applicationTokenAccessValidator.setTokenServiceClient(tokenServiceClient);
-            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds);
-            return applicationTokenAccessValidator;
+        public NumericAppIdApplicationTokenAccessValidator provide() {
+            return new NumericAppIdApplicationTokenAccessValidator(tokenServiceClient, configuration.acceptedAppIds);
         }
 
         @Override
-        public void dispose(ApplicationTokenAccessValidator instance) {
+        public void dispose(NumericAppIdApplicationTokenAccessValidator instance) {
         }
     }
 
