@@ -34,7 +34,7 @@ public class ApplicationTokenFilterTest {
     private static final int APP_ID_NOT_WHITELISTED = 987654321;
 
     @Mock
-    private ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    private NumericAppIdApplicationTokenAccessValidator applicationTokenAccessValidator;
     @Mock
     private TokenServiceClient tokenServiceClient;
     @Mock

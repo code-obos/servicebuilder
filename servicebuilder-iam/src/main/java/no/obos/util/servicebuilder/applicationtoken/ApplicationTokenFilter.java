@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.access.TokenCheckResult;
 import no.obos.iam.tokenservice.ApplicationToken;
 import no.obos.iam.tokenservice.TokenServiceClient;
@@ -41,7 +40,7 @@ public class ApplicationTokenFilter implements ContainerRequestFilter {
     @Deprecated
     public static final String APPTOKENID_HEADER = Constants.APPTOKENID_HEADER;
 
-    private final ApplicationTokenAccessValidator applicationTokenAccessValidator;
+    private final NumericAppIdApplicationTokenAccessValidator applicationTokenAccessValidator;
     final ApplicationTokenFilterAddon configuration;
     private final TokenServiceClient tokenServiceClient;
 

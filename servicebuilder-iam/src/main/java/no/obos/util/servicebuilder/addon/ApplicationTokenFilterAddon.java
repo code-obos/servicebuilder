@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.config.AppConfigException;
 import no.obos.util.servicebuilder.JerseyConfig;
@@ -103,7 +102,7 @@ public class ApplicationTokenFilterAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> registrator.register(ApplicationTokenFilter.class));
         jerseyConfig.addBinder(binder -> {
-            binder.bindFactory(ApplicationTokenAccessValidatorFactory.class).to(ApplicationTokenAccessValidator.class);
+            binder.bindFactory(ApplicationTokenAccessValidatorFactory.class).to(NumericAppIdApplicationTokenAccessValidator.class);
             binder.bind(this).to(ApplicationTokenFilterAddon.class);
         });
 
