@@ -7,13 +7,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.Wither;
 import lombok.extern.slf4j.Slf4j;
-import no.obos.iam.access.ApplicationTokenAccessValidator;
 import no.obos.iam.tokenservice.TokenServiceClient;
 import no.obos.util.config.AppConfigException;
 import no.obos.util.servicebuilder.JerseyConfig;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.annotations.AppIdWhitelist;
 import no.obos.util.servicebuilder.applicationtoken.ApplicationTokenFilter;
+import no.obos.util.servicebuilder.applicationtoken.NumericAppIdApplicationTokenAccessValidator;
 import no.obos.util.servicebuilder.applicationtoken.SwaggerImplicitAppTokenHeader;
 import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
@@ -102,7 +102,7 @@ public class ApplicationTokenFilterAddon implements Addon {
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addRegistations(registrator -> registrator.register(ApplicationTokenFilter.class));
         jerseyConfig.addBinder(binder -> {
-            binder.bindFactory(ApplicationTokenAccessValidatorFactory.class).to(ApplicationTokenAccessValidator.class);
+            binder.bindFactory(ApplicationTokenAccessValidatorFactory.class).to(NumericAppIdApplicationTokenAccessValidator.class);
             binder.bind(this).to(ApplicationTokenFilterAddon.class);
         });
 
@@ -112,21 +112,18 @@ public class ApplicationTokenFilterAddon implements Addon {
     }
 
     @AllArgsConstructor(onConstructor = @__({@Inject}))
-    private static class ApplicationTokenAccessValidatorFactory implements Factory<ApplicationTokenAccessValidator> {
+    private static class ApplicationTokenAccessValidatorFactory implements Factory<NumericAppIdApplicationTokenAccessValidator> {
 
         final TokenServiceClient tokenServiceClient;
         final ApplicationTokenFilterAddon configuration;
 
         @Override
-        public ApplicationTokenAccessValidator provide() {
-            ApplicationTokenAccessValidator applicationTokenAccessValidator = new ApplicationTokenAccessValidator();
-            applicationTokenAccessValidator.setTokenServiceClient(tokenServiceClient);
-            applicationTokenAccessValidator.setAcceptedAppIds(configuration.acceptedAppIds);
-            return applicationTokenAccessValidator;
+        public NumericAppIdApplicationTokenAccessValidator provide() {
+            return new NumericAppIdApplicationTokenAccessValidator(tokenServiceClient, configuration.acceptedAppIds);
         }
 
         @Override
-        public void dispose(ApplicationTokenAccessValidator instance) {
+        public void dispose(NumericAppIdApplicationTokenAccessValidator instance) {
         }
     }
 
