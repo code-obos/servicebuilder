@@ -156,7 +156,7 @@ public class Indexer<T> {
     private void prepareCreateIndex(String mappings, String settings) {
         getIndicesAdminClient()
                 .prepareCreate(indexAddon.indexname)
-                .setSettings(indexAddon.indexname, settings, XContentType.JSON)
+                .setSettings(settings, XContentType.JSON)
                 .addMapping(indexAddon.indexname, mappings, XContentType.JSON)
                 .get();
     }
