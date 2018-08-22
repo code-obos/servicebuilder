@@ -30,23 +30,39 @@ public class Indexer<T> {
     /**
      * Samme som {@link Indexer#index(String, Iterable, Function, IndexingOptions)} med standard-options.
      */
-    public void index(String schema, Iterable<T> documents, Function<T, String> idMapper) {
-        index(schema, documents, idMapper, IndexingOptions.DEFAULT);
+    public void index(String mappings, Iterable<T> documents, Function<T, String> idMapper) {
+        index(mappings, documents, idMapper, IndexingOptions.DEFAULT);
+    }
+
+    /**
+     * Samme som {@link Indexer#index(String, String, Iterable, Function, IndexingOptions)} med standard-options.
+     */
+    public void index(String settings, String mappings, Iterable<T> documents, Function<T, String> idMapper) {
+        index(settings, mappings, documents, idMapper, IndexingOptions.DEFAULT);
     }
 
     /**
      * Tilsvarer å hente ut en iterator fra documents med {@link Iterable#iterator()} og så kalle
      * {@link Indexer#index(String, Iterator, Function, IndexingOptions)}.
      */
-    public void index(String schema, Iterable<T> documents, Function<T, String> idMapper, IndexingOptions options) {
-        index(schema, documents.iterator(), idMapper, options);
+    public void index(String mappings, Iterable<T> documents, Function<T, String> idMapper, IndexingOptions options) {
+        index(mappings, documents.iterator(), idMapper, options);
+    }
+
+    /**
+     * Samme som {@link Indexer#index(String, Iterable, Function, IndexingOptions)} med settings for å legge til
+     * analysere, tokenizers, etc. ved indeksering som gjøres ved å kalle
+     * {@link Indexer#index(String, String, Iterator, Function, IndexingOptions)}
+     */
+    public void index(String settings, String mappings, Iterable<T> documents, Function<T, String> idMapper, IndexingOptions options) {
+        index(settings, mappings, documents.iterator(), idMapper, options);
     }
 
     /**
      * Samme som {@link Indexer#index(String, Iterator, Function, IndexingOptions)} med standard-options.
      */
-    public void index(String schema, Iterator<T> documentsIterator, Function<T, String> idMapper) {
-        index(schema, documentsIterator, idMapper, IndexingOptions.DEFAULT);
+    public void index(String mappings, Iterator<T> documentsIterator, Function<T, String> idMapper) {
+        index(mappings, documentsIterator, idMapper, IndexingOptions.DEFAULT);
     }
 
     /**
@@ -57,19 +73,36 @@ public class Indexer<T> {
      * for å støtte lazy-loading av data, samt å gjøre bruken enkel og forutsigbar. Siste dokument i rekken av
      * dokumenter med duplikate ID-er vil være det dokumentet som vil ligge i indeksen etter endt indeksering.
      *
-     * @param schema            Beskriver dataene i dokumentene.
+     * @param mappings          Beskriver dataene i dokumentene.
      * @param documentsIterator Iterator over dokumenter som skal indekseres.
      * @param idMapper          Mapper dokument til dokument-ID.
      * @param options           Beskriver valg som kan gjøres i forhold til hvordan indekseringen vil oppføre seg.
      */
     public void index(
-            String schema,
+            String mappings,
             Iterator<T> documentsIterator,
             Function<T, String> idMapper,
             IndexingOptions options)
     {
         if (! isIndexingRunning()) {
-            prepareIndexing(schema);
+            prepareIndexing(mappings);
+            performIndexing(documentsIterator, idMapper, options);
+        }
+    }
+
+    /**
+     * Utvider {@link Indexer#index(String, Iterator, Function, IndexingOptions)} med mulighet for å legge til
+     * innstillinger som analyzere, tokenizere, etc. ved indeksering.
+     */
+    public void index(
+            String mappings,
+            String settings,
+            Iterator<T> documentsIterator,
+            Function<T, String> idMapper,
+            IndexingOptions options)
+    {
+        if (! isIndexingRunning()) {
+            prepareIndexing(mappings, settings);
             performIndexing(documentsIterator, idMapper, options);
         }
     }
@@ -89,26 +122,42 @@ public class Indexer<T> {
         return indexAddon.indexname;
     }
 
-    private void prepareIndexing(String schema) {
+    private void prepareIndexing(String mappings) {
         if (indexExists()) {
-            prepareUpdateIndex(schema);
+            prepareUpdateIndex(mappings);
         } else {
-            prepareCreateIndex(schema);
+            prepareCreateIndex(mappings);
         }
     }
 
-    private void prepareUpdateIndex(String schema) {
+    private void prepareIndexing(String mappings, String settings) {
+        if (indexExists()) {
+            prepareUpdateIndex(mappings);
+        } else {
+            prepareCreateIndex(mappings, settings);
+        }
+    }
+
+    private void prepareUpdateIndex(String mappings) {
         getIndicesAdminClient()
                 .preparePutMapping(indexAddon.indexname)
                 .setType(indexAddon.indexname)
-                .setSource(schema, XContentType.JSON)
+                .setSource(mappings, XContentType.JSON)
                 .get();
     }
 
-    private void prepareCreateIndex(String schema) {
+    private void prepareCreateIndex(String mappings) {
         getIndicesAdminClient()
                 .prepareCreate(indexAddon.indexname)
-                .addMapping(indexAddon.indexname, schema, XContentType.JSON)
+                .addMapping(indexAddon.indexname, mappings, XContentType.JSON)
+                .get();
+    }
+
+    private void prepareCreateIndex(String mappings, String settings) {
+        getIndicesAdminClient()
+                .prepareCreate(indexAddon.indexname)
+                .setSettings(indexAddon.indexname, settings, XContentType.JSON)
+                .addMapping(indexAddon.indexname, mappings, XContentType.JSON)
                 .get();
     }
 
