@@ -188,7 +188,15 @@ public class IndexerTest {
                     +         "}";
 
             String settings = "{"
-                    +               " \"settings\": \"eksisterer ikke\" "
+                    +               " \"analysis\": {                                       "
+                    +                   " \"analyzer\": {                                   "
+                    +                       " \"email_analyzer\": {                         "
+                    +                           " \"type\": \"custom\",                     "
+                    +                           " \"tokenizer\": \"uax_url_email\",         "
+                    +                           " \"filter\": [\"lowercase\", \"stop\"]     "
+                    +                       " },                                            "
+                    +                   " }                                                 "
+                    +               " }                                                     "
                     +         "}";
 
             indexer.index(
