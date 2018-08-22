@@ -69,9 +69,10 @@ public class IndexerTest {
         TestService.Payload p1 = new TestService.Payload("fieldname1", LocalDate.now().minusYears(1));
         TestService.Payload p2 = new TestService.Payload("fieldname2", LocalDate.now().plusYears(1));
         TestService.Payload p3 = new TestService.Payload("fieldname3", LocalDate.now());
+        TestService.Payload p4 = new TestService.Payload("fieldname4", LocalDate.now().plusDays(1));
 
         testServiceRunner.chain()
-                .call(Resource.class, it -> it.indexWithSettings(Lists.newArrayList(p1, p2, p3)))
+                .call(Resource.class, it -> it.index(Lists.newArrayList(p1, p2, p3, p4)))
                 .call(Resource.class, it -> {
                     Set<TestService.Payload> expected = ImmutableSet.of(p3);
                     List<TestService.Payload> actual = it.searchTerm("fieldname3");
@@ -79,7 +80,7 @@ public class IndexerTest {
                     assertEquals(expected, Sets.newHashSet(actual));
                 })
                 .call(Resource.class, it -> {
-                    Set<TestService.Payload> expected = ImmutableSet.of(p2, p3);
+                    Set<TestService.Payload> expected = ImmutableSet.of(p2, p3, p4);
                     List<TestService.Payload> actual = it.searchDates(LocalDate.now().toString(), LocalDate.now().plusYears(1).toString());
 
                     assertEquals(expected, Sets.newHashSet(actual));
