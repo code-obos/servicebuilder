@@ -64,30 +64,6 @@ public class IndexerTest {
                 .run();
     }
 
-    @Test
-    public void testIndexWithSettings() {
-        TestService.Payload p1 = new TestService.Payload("fieldname1", LocalDate.now().minusYears(1));
-        TestService.Payload p2 = new TestService.Payload("fieldname2", LocalDate.now().plusYears(1));
-        TestService.Payload p3 = new TestService.Payload("fieldname3", LocalDate.now());
-        TestService.Payload p4 = new TestService.Payload("fieldname4", LocalDate.now().plusDays(1));
-
-        testServiceRunner.chain()
-                .call(Resource.class, it -> it.index(Lists.newArrayList(p1, p2, p3, p4)))
-                .call(Resource.class, it -> {
-                    Set<TestService.Payload> expected = ImmutableSet.of(p3);
-                    List<TestService.Payload> actual = it.searchTerm("fieldname3");
-
-                    assertEquals(expected, Sets.newHashSet(actual));
-                })
-                .call(Resource.class, it -> {
-                    Set<TestService.Payload> expected = ImmutableSet.of(p2, p3, p4);
-                    List<TestService.Payload> actual = it.searchDates(LocalDate.now().toString(), LocalDate.now().plusYears(1).toString());
-
-                    assertEquals(expected, Sets.newHashSet(actual));
-                })
-                .run();
-    }
-
     @BeforeClass
     public static void setup() {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
@@ -128,11 +104,6 @@ public class IndexerTest {
         @POST
         @Consumes(MediaType.APPLICATION_JSON)
         void index(List<TestService.Payload> toIndex);
-
-        @POST
-        @Path("a")
-        @Consumes(MediaType.APPLICATION_JSON)
-        void indexWithSettings(List<TestService.Payload> toIndex);
     }
 
 
@@ -154,47 +125,27 @@ public class IndexerTest {
 
         @Override
         public void index(List<TestService.Payload> toIndex) {
-            String mappings = "{"
-                    +               " \"properties\": {              "
-                    +                   " \"date\": {                "
-                    +                       " \"type\": \"date\",    "
-                    +                       " \"index\": true        "
-                    +                   " },                         "
-                    +                   " \"string\": {              "
-                    +                       " \"type\": \"text\",    "
-                    +                       " \"index\": true        "
-                    +                   " }                          "
-                    +               " }                              "
-                    +         "}";
+            String schema;
+            try {
+                schema = jsonBuilder()
+                        .startObject()
+                        .startObject("properties")
+                        .startObject("date")
+                        .field("type", "date")
+                        .field("index", true)
+                        .endObject()
+                        .startObject("string")
+                        .field("type", "text")
+                        .field("index", true)
+                        .endObject()
+                        .endObject()
+                        .endObject().string();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             indexer.index(
-                    mappings,
-                    toIndex,
-                    TestService.Payload::getString);
-        }
-
-        @Override
-        public void indexWithSettings(List<TestService.Payload> toIndex) {
-            String mappings = "{"
-                    +               " \"properties\": {              "
-                    +                   " \"date\": {                "
-                    +                       " \"type\": \"date\",    "
-                    +                       " \"index\": true        "
-                    +                   " },                         "
-                    +                   " \"string\": {              "
-                    +                       " \"type\": \"text\",    "
-                    +                       " \"index\": true        "
-                    +                   " }                          "
-                    +               " }                              "
-                    +         "}";
-
-            String settings = "{"
-                    +               " \"settings\": \"eksisterer ikke\" "
-                    +         "}";
-
-            indexer.index(
-                    mappings,
-                    settings,
+                    schema,
                     toIndex,
                     TestService.Payload::getString);
         }
