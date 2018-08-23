@@ -194,7 +194,7 @@ public class IndexerTest {
                     +                           " \"type\": \"custom\",                     "
                     +                           " \"tokenizer\": \"uax_url_email\",         "
                     +                           " \"filter\": [\"lowercase\", \"stop\"]     "
-                    +                       " },                                            "
+                    +                       " }                                             "
                     +                   " }                                                 "
                     +               " }                                                     "
                     +         "}";
