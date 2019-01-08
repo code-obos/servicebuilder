@@ -33,3 +33,9 @@ The code is tailored specific for our needs, it is dependent on our libraries an
 ###### New features
 * Added support for overriding basepath with the header X-Forwarded-Path in SwaggerAddon.
 * Added support for iterators in ElasticsearchIndexAddon.
+
+## Version 9
+###### Breaking changes
+* Removed support for application ranges in AppTokenFilterAddon
+###### New features
+* Added support for custom configuration of new elasticsearch indexes
