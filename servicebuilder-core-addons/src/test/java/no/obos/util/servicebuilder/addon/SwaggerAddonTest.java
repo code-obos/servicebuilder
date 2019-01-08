@@ -22,9 +22,12 @@ public class SwaggerAddonTest extends AddonTestBase {
                         .request()
                         .get()
                 );
-        //language=JSON
-        String expected = "{\"swagger\":\"2.0\",\"info\":{\"version\":\"1.0\",\"title\":\"\"},\"basePath\":\"/test/v1.0/api/\",\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"schema\":{\"$ref\":\"#/definitions/Payload\"},\"headers\":{}}}}}},\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}}";
-        assertThat(call.readEntity(String.class)).isEqualToIgnoringWhitespace(expected);
+
+        assertThat(call.readEntity(String.class))
+                .contains("\"info\":{\"version\":\"1.0\",\"title\":\"\"}")
+                .contains("\"basePath\":\"/test/v1.0/api/\"")
+                .contains("\"definitions\":{\"Payload\":{\"type\":\"object\",\"properties\":{\"string\":{\"type\":\"string\"},\"date\":{\"type\":\"string\",\"format\":\"date\"}}}}")
+                .contains("\"paths\":{\"/path\":{\"get\":{\"operationId\":\"get\",\"produces\":[\"application/json\"],\"parameters\":[],\"responses\":{\"200\":{\"description\":\"successful operation\",\"headers\":{},\"schema\":{\"$ref\":\"#/definitions/Payload\"}}}}}}");
     }
 
 }

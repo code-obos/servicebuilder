@@ -81,7 +81,7 @@ public class WebAppAddon implements Addon {
         webAppContext.setResourceBase(warUrlString);
         webAppContext.setContextPath(jettyServer.configuration.contextPath + pathSpec);
         webAppContext.setParentLoaderPriority(true);
-        webAppContext.getSessionHandler().getSessionManager().setMaxInactiveInterval(sessionTimeoutSeconds);
+        webAppContext.getSessionHandler().setMaxInactiveInterval(sessionTimeoutSeconds);
 
         if (notFoundPath != null) {
             ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();

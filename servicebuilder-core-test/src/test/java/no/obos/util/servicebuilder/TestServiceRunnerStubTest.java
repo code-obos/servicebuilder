@@ -6,12 +6,12 @@ import no.obos.util.servicebuilder.TestServiceFull.ResourceFull;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 public class TestServiceRunnerStubTest {
-    Controller controller = Mockito.mock(Controller.class);
-    TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
+    private Controller controller = Mockito.mock(Controller.class);
+    private TestServiceRunner testServiceRunner = TestServiceRunner.defaults(
             TestServiceFull.config
                     .bind(controller, Controller.class)
     );
