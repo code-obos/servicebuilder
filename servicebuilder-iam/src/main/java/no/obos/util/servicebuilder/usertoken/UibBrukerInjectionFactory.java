@@ -31,7 +31,7 @@ public class UibBrukerInjectionFactory implements Factory<UibBruker> {
             return null;
         }
         if (userPrincipal != null && ! (userPrincipal instanceof UibBrukerPrincipal)) {
-            throw new IllegalArgumentException("Userprincipal not of type UibBruker, was of type ");
+            return null;
         }
 
         return userPrincipal == null ? null : ((UibBrukerPrincipal) userPrincipal).uibBruker;
