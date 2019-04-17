@@ -3,6 +3,7 @@ package no.obos.util.servicebuilder.mq;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnection;
+import org.apache.activemq.ActiveMQPrefetchPolicy;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
@@ -34,15 +35,17 @@ public class ActiveMqListener implements MessageQueueListener {
     private final String password;
     private final String queueInput;
     private final String queueError;
+    private final int prefetchAmount;
 
     private boolean listenerStarted;
 
-    public ActiveMqListener(String url, String user, String password, String queueInput, String queueError) {
+    public ActiveMqListener(String url, String user, String password, String queueInput, String queueError, int prefetchAmount) {
         this.url = url;
         this.user = user;
         this.password = password;
         this.queueInput = queueInput;
         this.queueError = queueError;
+        this.prefetchAmount = prefetchAmount;
     }
 
     @Override
@@ -59,6 +62,9 @@ public class ActiveMqListener implements MessageQueueListener {
         log.debug("Starting listener...");
         try {
             ActiveMQConnection connection = ActiveMqUtils.openConnection(user, password, url);
+            ActiveMQPrefetchPolicy prefetchPolicy = new ActiveMQPrefetchPolicy();
+            prefetchPolicy.setAll(prefetchAmount);
+            connection.setPrefetchPolicy(prefetchPolicy);
             Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
             Queue queue = session.createQueue(queueInput);
             MessageConsumer consumer = session.createConsumer(queue);

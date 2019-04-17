@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 /**
  * Initializes a MessageQueueListener and routes the messages to a specified handler class.
  * The name is used as a prefix in the AppConfig and to bind the MessageQueueListener.
@@ -45,6 +47,7 @@ public class ActiveMqListenerAddon implements Addon {
     public static final String CONFIG_KEY_QUEUE_ERROR = "queue.name.error";
     public static final String CONFIG_KEY_ENTRIES_MAX = "queue.entries.max";
     public static final String CONFIG_KEY_ENTRIES_GRACE = "queue.entries.grace";
+    public static final String CONFIG_KEY_PREFETCH_AMOUNT = "queue.prefetch";
 
     @Wither(AccessLevel.PRIVATE)
     public final MessageQueueListener mqListener;
@@ -66,9 +69,23 @@ public class ActiveMqListenerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final int queueEntriesGrace;
     @Wither(AccessLevel.PRIVATE)
+    public final int prefetchAmount;
+    @Wither(AccessLevel.PRIVATE)
     public final Class<? extends MessageHandler> handler;
 
-    private static final ActiveMqListenerAddon defaults = new ActiveMqListenerAddon(null, null, null, null, null, null, null, 1, 60, null);
+    private static final ActiveMqListenerAddon defaults = new ActiveMqListenerAddon(
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            1,
+            60,
+            10,
+            null
+    );
 
     public static ActiveMqListenerAddon defaults(Class<? extends MessageHandler> messageHandler) {
         return defaults.handler(messageHandler);
@@ -97,7 +114,7 @@ public class ActiveMqListenerAddon implements Addon {
 
     @Override
     public ActiveMqListenerAddon initialize(ServiceConfig serviceConfig) {
-        return this.withMqListener(new ActiveMqListener(url, user, password, queueInput, queueError));
+        return this.withMqListener(new ActiveMqListener(url, user, password, queueInput, queueError, prefetchAmount));
     }
 
     @Override
@@ -109,22 +126,27 @@ public class ActiveMqListenerAddon implements Addon {
                 prefix + CONFIG_KEY_USER,
                 prefix + CONFIG_KEY_PASSWORD,
                 prefix + CONFIG_KEY_QUEUE_INPUT,
-                prefix + CONFIG_KEY_QUEUE_ERROR,
-                prefix + CONFIG_KEY_ENTRIES_MAX,
-                prefix + CONFIG_KEY_ENTRIES_GRACE
+                prefix + CONFIG_KEY_QUEUE_ERROR
         );
 
-        return this
+        ActiveMqListenerAddon addon = this
                 .url(properties.get(prefix + CONFIG_KEY_URL))
                 .user(properties.get(prefix + CONFIG_KEY_USER))
                 .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
                 .queueInput(properties.get(prefix + CONFIG_KEY_QUEUE_INPUT))
-                .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR))
-                .queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
-                ;
-    }
+                .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR));
 
+        if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_ENTRIES_MAX))) {
+            addon = addon.queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)));
+        }
+        if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_ENTRIES_GRACE))) {
+            addon = addon.queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)));
+        }
+        if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_PREFETCH_AMOUNT))) {
+            addon = addon.prefetchAmount(Integer.parseInt(properties.get(prefix + CONFIG_KEY_PREFETCH_AMOUNT)));
+        }
+        return addon;
+    }
 
     private static class StartListenersFeature implements Feature {
         @Inject
@@ -177,6 +199,10 @@ public class ActiveMqListenerAddon implements Addon {
 
     public ActiveMqListenerAddon queueEntriesGrace(int queueEntriesGrace) {
         return withQueueEntriesGrace(queueEntriesGrace);
+    }
+
+    public ActiveMqListenerAddon prefetchAmount(int prefetchAmount) {
+        return withPrefetchAmount(prefetchAmount);
     }
 
     public ActiveMqListenerAddon handler(Class<? extends MessageHandler> handler) {
