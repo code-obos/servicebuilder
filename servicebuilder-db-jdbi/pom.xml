@@ -5,7 +5,7 @@
     <parent>
         <groupId>no.obos.util</groupId>
         <artifactId>servicebuilder</artifactId>
-        <version>9.0.2</version>
+        <version>10.0.0</version>
     </parent>
 
     <dependencies>
@@ -21,7 +21,11 @@
         </dependency>
         <dependency>
             <groupId>org.jdbi</groupId>
-            <artifactId>jdbi</artifactId>
+            <artifactId>jdbi3-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-sqlobject</artifactId>
         </dependency>
 
 

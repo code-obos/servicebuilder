@@ -12,7 +12,8 @@ import no.obos.util.servicebuilder.exception.DependenceException;
 import no.obos.util.servicebuilder.model.Addon;
 import no.obos.util.servicebuilder.util.GuavaHelper;
 import org.glassfish.hk2.api.Factory;
-import org.skife.jdbi.v2.DBI;
+import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 
 import javax.sql.DataSource;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class JdbiAddon implements NamedAddon {
     @Wither(AccessLevel.PRIVATE)
     public final String name;
     @Wither(AccessLevel.PRIVATE)
-    public final DBI dbi;
+    public final Jdbi jdbi;
     @Wither(AccessLevel.PRIVATE)
     public final ImmutableList<Class<?>> daos;
 
@@ -42,23 +43,25 @@ public class JdbiAddon implements NamedAddon {
             }
         }
         DataSource dataSource = dataSourceAddon.getDataSource();
-        DBI dbi = new DBI(dataSource);
-        return this.dbi(dbi);
+        Jdbi jdbi = Jdbi.create(dataSource);
+        SqlObjectPlugin sqlObjectPlugin = new SqlObjectPlugin();
+        sqlObjectPlugin.customizeJdbi(jdbi);
+        return this.jdbi(jdbi);
     }
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {
         jerseyConfig.addBinder(binder -> {
             if (name != null) {
-                binder.bind(dbi).to(DBI.class).named(name);
+                binder.bind(jdbi).to(Jdbi.class).named(name);
                 binder.bind(this).to(JdbiAddon.class).named(name);
             } else {
-                binder.bind(dbi).to(DBI.class);
+                binder.bind(jdbi).to(Jdbi.class);
                 binder.bind(this).to(JdbiAddon.class);
             }
 
             daos.forEach(clazz ->
-                    binder.bindFactory(new DaoFactory(dbi, clazz)).to(clazz)
+                    binder.bindFactory(new DaoFactory(jdbi, clazz)).to(clazz)
             );
 
         });
@@ -67,11 +70,11 @@ public class JdbiAddon implements NamedAddon {
     @AllArgsConstructor
     public static class DaoFactory implements Factory<Object> {
 
-        final DBI dbi;
+        final Jdbi jdbi;
         final Class<?> clazz;
 
         public Object provide() {
-            return dbi.onDemand(clazz);
+            return jdbi.onDemand(clazz);
         }
 
         @Override
@@ -81,7 +84,7 @@ public class JdbiAddon implements NamedAddon {
     }
 
     public <T> T createDao(Class<T> requiredType) {
-        return dbi.onDemand(requiredType);
+        return jdbi.onDemand(requiredType);
     }
 
 
@@ -98,7 +101,7 @@ public class JdbiAddon implements NamedAddon {
         return withName(name);
     }
 
-    public JdbiAddon dbi(DBI dbi) {
-        return withDbi(dbi);
+    public JdbiAddon jdbi(Jdbi jdbi) {
+        return withJdbi(jdbi);
     }
 }

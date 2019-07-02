@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.junit.Test;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class JdbiAddonTwoDatabasesTest {
 
 
-    ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
+    private ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
             .addon(ExceptionMapperAddon.defaults)
             .addon(H2InMemoryDatasourceAddon.defaults.name(addon_name)
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
@@ -88,7 +88,7 @@ public class JdbiAddonTwoDatabasesTest {
     }
 
 
-    static final String addon_name2 = "Eple";
+    private static final String addon_name2 = "Eple";
 
 
     public interface JdbiDto2 {
@@ -119,5 +119,5 @@ public class JdbiAddonTwoDatabasesTest {
     }
 
 
-    static final String addon_name = "Banan";
+    private static final String addon_name = "Banan";
 }
