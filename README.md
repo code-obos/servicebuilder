@@ -39,3 +39,9 @@ The code is tailored specific for our needs, it is dependent on our libraries an
 * Removed support for application ranges in AppTokenFilterAddon
 ###### New features
 * Added support for custom configuration of new elasticsearch indexes
+
+## Version 10
+###### Breaking changes
+* Removed support for JDBI2
+###### New features
+* Added support for JDBI3
