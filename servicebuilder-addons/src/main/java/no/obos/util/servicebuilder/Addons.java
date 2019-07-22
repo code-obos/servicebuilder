@@ -66,7 +66,16 @@ public class Addons {
         </dependency>
      */
     public static JdbiAddon jdbi() {
-        return JdbiAddon.defaults;
+        return jdbi3();
+    }
+
+    @Deprecated
+    public static JdbiAddon jdbi2() {
+        return Jdbi2Addon.defaults;
+    }
+
+    public static JdbiAddon jdbi3() {
+        return Jdbi3Addon.defaults;
     }
 
     /*

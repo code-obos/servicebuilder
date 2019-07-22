@@ -42,6 +42,6 @@ The code is tailored specific for our needs, it is dependent on our libraries an
 
 ## Version 10
 ###### Breaking changes
-* Removed support for JDBI2
+* ~~Removed~~ Deprecated JDBI2 (it was removed in 10.0.0, but reintroduced in 10.1)
 ###### New features
 * Added support for JDBI3

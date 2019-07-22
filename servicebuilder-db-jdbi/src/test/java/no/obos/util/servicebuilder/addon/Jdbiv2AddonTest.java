@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.junit.Test;
+import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.SqlQuery;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,9 +17,10 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JdbiAddonTest {
+public class Jdbiv2AddonTest {
 
 
+    private static final String addon_name = "Banan";
     private ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
             .addon(ExceptionMapperAddon.defaults)
             .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
@@ -28,9 +29,8 @@ public class JdbiAddonTest {
                     .insert("testable", 303, "'Espen'")
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
-            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name("Banan"))
+            .addon(Jdbi2Addon.defaults.dao(JdbiDto.class).name("Banan"))
             .bind(ApiImpl.class, Api.class);
-
 
     @Test
     public void runsWithJdbi() {
@@ -52,6 +52,7 @@ public class JdbiAddonTest {
                 })
                 .run();
     }
+
 
     public interface JdbiDto {
 
@@ -79,7 +80,4 @@ public class JdbiAddonTest {
             return jdbiDto.doGet("Per");
         }
     }
-
-
-    private static final String addon_name = "Banan";
 }
