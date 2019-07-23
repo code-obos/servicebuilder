@@ -19,13 +19,15 @@ import java.util.Set;
 @Deprecated
 public class Jdbi2Addon implements JdbiAddon {
 
-    public static final JdbiAddon defaults =
-            new Jdbi2Addon(null, null, ImmutableList.of());
+    public static final JdbiAddon defaults = new Jdbi2Addon(null, null, ImmutableList.of());
+
     @Getter
     @Wither
     final String name;
+
     @Wither
     final DBI dbi;
+
     @Wither
     final ImmutableList<Class<?>> daos;
 
@@ -35,14 +37,11 @@ public class Jdbi2Addon implements JdbiAddon {
         this.daos = daos;
     }
 
-
-    public Addon initialize(ServiceConfig serviceConfig)
-    {
+    public Addon initialize(ServiceConfig serviceConfig) {
         DataSource dataSource = JdbiAddonUtil.getDataSource(this, serviceConfig, name);
         DBI dbi = new DBI(dataSource);
         return this.dbi(dbi);
     }
-
 
     @Override
     public void addToJerseyConfig(JerseyConfig jerseyConfig) {

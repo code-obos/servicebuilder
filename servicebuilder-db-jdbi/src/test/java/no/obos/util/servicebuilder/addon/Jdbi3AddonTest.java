@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
+import org.jdbi.v3.sqlobject.customizer.Bind;
+import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.junit.Test;
-import org.skife.jdbi.v2.sqlobject.Bind;
-import org.skife.jdbi.v2.sqlobject.SqlQuery;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,10 +17,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Jdbiv2AddonTest {
+public class Jdbi3AddonTest {
 
-
-    private static final String addon_name = "Banan";
+    private static final String ADDON_NAME = "Banan";
     private ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
             .addon(ExceptionMapperAddon.defaults)
             .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
@@ -29,7 +28,7 @@ public class Jdbiv2AddonTest {
                     .insert("testable", 303, "'Espen'")
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
-            .addon(Jdbi2Addon.defaults.dao(JdbiDto.class).name("Banan"))
+            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name(ADDON_NAME))
             .bind(ApiImpl.class, Api.class);
 
     @Test
@@ -46,16 +45,14 @@ public class Jdbiv2AddonTest {
         TestServiceRunner.defaults(serviceConfig)
                 .chain()
                 .call(Api.class, Api::get)
-                .addonNamed(addon_name, JdbiAddon.class, it -> {
+                .addonNamed(ADDON_NAME, JdbiAddon.class, it -> {
                     List<Integer> actual = it.createDao(JdbiDto.class).doGet("Per");
                     assertThat(actual).isEqualTo(expected);
                 })
                 .run();
     }
 
-
     public interface JdbiDto {
-
         @SqlQuery("SELECT\n"
                 + "  id\n"
                 + "FROM testable \n"
@@ -80,4 +77,5 @@ public class Jdbiv2AddonTest {
             return jdbiDto.doGet("Per");
         }
     }
+
 }

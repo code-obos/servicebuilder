@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import no.obos.util.servicebuilder.ServiceConfig;
 import no.obos.util.servicebuilder.ServiceDefinitionUtil;
 import no.obos.util.servicebuilder.TestServiceRunner;
-import org.jdbi.v3.sqlobject.customizer.Bind;
-import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.junit.Test;
+import org.skife.jdbi.v2.sqlobject.Bind;
+import org.skife.jdbi.v2.sqlobject.SqlQuery;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -17,19 +17,19 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Jdbiv3AddonTest {
+public class Jdbi2AddonTest {
 
+    private static final String ADDON_NAME = "Banan";
 
-    private static final String addon_name = "Banan";
     private ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
             .addon(ExceptionMapperAddon.defaults)
-            .addon(H2InMemoryDatasourceAddon.defaults.name("Banan")
+            .addon(H2InMemoryDatasourceAddon.defaults.name(ADDON_NAME)
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
                     .insert("testable", 101, "'Per'")
                     .insert("testable", 303, "'Espen'")
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
-            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name("Banan"))
+            .addon(Jdbi2Addon.defaults.dao(JdbiDto.class).name(ADDON_NAME))
             .bind(ApiImpl.class, Api.class);
 
     @Test
@@ -46,7 +46,7 @@ public class Jdbiv3AddonTest {
         TestServiceRunner.defaults(serviceConfig)
                 .chain()
                 .call(Api.class, Api::get)
-                .addonNamed(addon_name, JdbiAddon.class, it -> {
+                .addonNamed(ADDON_NAME, JdbiAddon.class, it -> {
                     List<Integer> actual = it.createDao(JdbiDto.class).doGet("Per");
                     assertThat(actual).isEqualTo(expected);
                 })
@@ -54,7 +54,6 @@ public class Jdbiv3AddonTest {
     }
 
     public interface JdbiDto {
-
         @SqlQuery("SELECT\n"
                 + "  id\n"
                 + "FROM testable \n"
@@ -62,14 +61,12 @@ public class Jdbiv3AddonTest {
         List<Integer> doGet(@Bind("param") String param);
     }
 
-
     public @Path("")
     interface Api {
         @GET
         @Produces(MediaType.APPLICATION_JSON)
         List<Integer> get();
     }
-
 
     public static class ApiImpl implements Api {
         @Inject
@@ -79,4 +76,5 @@ public class Jdbiv3AddonTest {
             return jdbiDto.doGet("Per");
         }
     }
+
 }

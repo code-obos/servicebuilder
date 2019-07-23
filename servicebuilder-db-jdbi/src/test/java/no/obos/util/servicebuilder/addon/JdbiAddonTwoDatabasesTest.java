@@ -19,26 +19,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JdbiAddonTwoDatabasesTest {
 
-
-    private static final String addon_name = "Banan";
-    private static final String addon_name2 = "Eple";
+    private static final String ADDON_NAME = "Banan";
+    private static final String ADDON_NAME2 = "Eple";
 
     private ServiceConfig serviceConfig = ServiceConfig.defaults(ServiceDefinitionUtil.simple(Api.class))
             .addon(ExceptionMapperAddon.defaults)
-            .addon(H2InMemoryDatasourceAddon.defaults.name(addon_name)
+            .addon(H2InMemoryDatasourceAddon.defaults.name(ADDON_NAME)
                     .script("CREATE TABLE testable (id INTEGER, name VARCHAR);")
                     .insert("testable", 101, "'Per'")
                     .insert("testable", 303, "'Espen'")
                     .script("INSERT INTO testable VALUES (202, 'Per');")
             )
-            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name(addon_name))
-            .addon(H2InMemoryDatasourceAddon.defaults.name(addon_name2)
+            .addon(JdbiAddon.defaults.dao(JdbiDto.class).name(ADDON_NAME))
+            .addon(H2InMemoryDatasourceAddon.defaults.name(ADDON_NAME2)
                     .script("CREATE TABLE mongoable (id VARCHAR, name VARCHAR);")
                     .insert("mongoable", "'eple'", "'Per'")
                     .insert("mongoable", "'kake'", "'Espen'")
                     .insert("mongoable", "'bil'", "'Per'")
             )
-            .addon(JdbiAddon.defaults.dao(JdbiDto2.class).name(addon_name2))
+            .addon(JdbiAddon.defaults.dao(JdbiDto2.class).name(ADDON_NAME2))
             .bind(ApiImpl.class, Api.class)
             .bind(ApiImpl2.class, Api2.class);
 
@@ -62,16 +61,13 @@ public class JdbiAddonTwoDatabasesTest {
                 .run();
     }
 
-
     public interface JdbiDto {
-
         @SqlQuery("SELECT\n"
                 + "  id\n"
                 + "FROM testable \n"
                 + "WHERE name = :param\n")
         List<Integer> doGet(@Bind("param") String param);
     }
-
 
     public @Path("")
     interface Api {
@@ -80,9 +76,7 @@ public class JdbiAddonTwoDatabasesTest {
         List<Integer> get();
     }
 
-
     public interface JdbiDto2 {
-
         @SqlQuery("SELECT\n"
                 + "  id\n"
                 + "FROM mongoable \n"
@@ -90,14 +84,12 @@ public class JdbiAddonTwoDatabasesTest {
         List<String> doGet2(@Bind("param") String param);
     }
 
-
     public @Path("")
     interface Api2 {
         @GET
         @Produces(MediaType.APPLICATION_JSON)
         List<String> get2();
     }
-
 
     public static class ApiImpl implements Api {
         @Inject
@@ -117,4 +109,5 @@ public class JdbiAddonTwoDatabasesTest {
             return jdbiDto.doGet2("Per");
         }
     }
+
 }
