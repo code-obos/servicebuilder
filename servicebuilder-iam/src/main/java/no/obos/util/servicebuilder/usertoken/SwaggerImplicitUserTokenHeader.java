@@ -29,7 +29,6 @@ public class SwaggerImplicitUserTokenHeader extends AbstractSwaggerExtension {
             HeaderParameter headerParameter = new HeaderParameter();
             headerParameter.setName(Constants.USERTOKENID_HEADER);
             headerParameter.setType("string");
-            headerParameter.setAllowEmptyValue(false);
             headerParameter.required(true);
             headerParameter.setDescription("User token id");
             operation.addParameter(headerParameter);

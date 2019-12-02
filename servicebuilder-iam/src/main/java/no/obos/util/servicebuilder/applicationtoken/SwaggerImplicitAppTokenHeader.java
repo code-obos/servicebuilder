@@ -29,7 +29,6 @@ public class SwaggerImplicitAppTokenHeader extends AbstractSwaggerExtension {
             HeaderParameter headerParameter = new HeaderParameter();
             headerParameter.setName(Constants.APPTOKENID_HEADER);
             headerParameter.setType("string");
-            headerParameter.setAllowEmptyValue(false);
             headerParameter.required(true);
             headerParameter.setDescription("Application token id");
             operation.addParameter(headerParameter);
