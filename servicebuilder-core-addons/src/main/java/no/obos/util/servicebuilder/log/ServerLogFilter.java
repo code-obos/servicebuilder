@@ -49,18 +49,16 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
 
     static String extractRequestEntity(ContainerRequestContext request) {
         if (request.hasEntity()) {
-            InputStream inputStreamOriginal = request.getEntityStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStreamOriginal, MAX_ENTITY_READ);
-            bufferedInputStream.mark(MAX_ENTITY_READ);
             byte[] bytes = new byte[MAX_ENTITY_READ];
-            int read;
-            try {
-                read = bufferedInputStream.read(bytes, 0, MAX_ENTITY_READ);
+            try (InputStream inputStreamOriginal = request.getEntityStream()) {
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStreamOriginal, MAX_ENTITY_READ);
+                bufferedInputStream.mark(MAX_ENTITY_READ);
+                bufferedInputStream.read(bytes, 0, MAX_ENTITY_READ);
                 bufferedInputStream.reset();
+                request.setEntityStream(bufferedInputStream);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            request.setEntityStream(bufferedInputStream);
 
             return new String(bytes, Charsets.UTF_8);
         }
