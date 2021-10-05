@@ -65,7 +65,7 @@ public class JerseyClientAddonErrorHandlingTest {
                                     )
                                     .incidentReferenceId(incidentReferenceId)
                                     .status(500)
-                                    .header("Content-Length", "250")
+                                    .header("Content-Length", "258")
                                     .header("Content-Type", "application/problem+json")
                                     .build()
                             )

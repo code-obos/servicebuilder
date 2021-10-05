@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 import lombok.ToString;
+import lombok.Value;
 import no.obos.util.servicebuilder.model.ProblemResponse;
 
 import javax.ws.rs.WebApplicationException;

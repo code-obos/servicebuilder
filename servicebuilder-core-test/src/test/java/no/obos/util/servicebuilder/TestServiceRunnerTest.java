@@ -31,7 +31,7 @@ public class TestServiceRunnerTest {
 
                 )
         );
-        assertThat(payload).isEqualTo("{\n"
+        assertThat(payload).isEqualToIgnoringNewLines("{\n"
                 + "  \"string\" : \"string\",\n"
                 + "  \"date\" : \"" + LocalDate.now().toString() + "\"\n"
                 + "}");
@@ -50,7 +50,7 @@ public class TestServiceRunnerTest {
 
                 )
         );
-        assertThat(payload).isEqualTo("{\n"
+        assertThat(payload).isEqualToIgnoringNewLines("{\n"
                 + "  \"string\" : \"string\",\n"
                 + "  \"date\" : \"" + LocalDate.now().toString() + "\"\n"
                 + "}");

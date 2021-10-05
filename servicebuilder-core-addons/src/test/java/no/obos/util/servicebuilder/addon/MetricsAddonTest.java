@@ -22,7 +22,7 @@ public class MetricsAddonTest extends AddonTestBase {
                         .request()
                         .get()
                 );
-        assertThat(call.readEntity(String.class)).isEqualTo("pong\n");
+        assertThat(call.readEntity(String.class)).isEqualToIgnoringNewLines("pong\n");
     }
 
     @Test
