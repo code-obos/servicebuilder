@@ -45,33 +45,39 @@ public class JerseyClientAddonErrorHandlingTest {
         } catch (ExternalResourceException actual) {
             String incidentReferenceId = actual.getMetaData().httpResponseMetaData.problemResponse.incidentReferenceId;
             assertThat(incidentReferenceId).isNotEmpty();
-            assertThat(actual.getMetaData()).isEqualToComparingFieldByFieldRecursively(
-                    MetaData.builder()
-                            .gotAnswer(true)
-                            .httpRequestMetaData(ExternalResourceException.HttpRequestMetaData.builder()
-                                    .url("http://localhost:0/path")
-                                    .header("Accept", "application/json")
-                                    .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
-                                    .build()
-                            )
-                            .httpResponseMetaData(ExternalResourceException.HttpResponseMetaData.builder()
-                                    .problemResponse(ProblemResponse.builder()
-                                            .title("Internal Server Error")
-                                            .detail("Det har oppstått en intern feil")
-                                            .incidentReferenceId(incidentReferenceId)
-                                            .status(500)
-                                            .suggestedUserMessageInDetail(false)
-                                            .build()
-                                    )
-                                    .incidentReferenceId(incidentReferenceId)
-                                    .status(500)
-                                    .header("Content-Length", "258")
-                                    .header("Content-Type", "application/problem+json")
-                                    .build()
-                            )
-                            .targetName("test")
-            );
+            assertThat(actual.getMetaData().httpResponseMetaData.status)
+                    .isEqualTo(buildTestMetadata(incidentReferenceId).httpResponseMetaData.status);
+            assertThat(actual.getMetaData().httpResponseMetaData.problemResponse.status)
+                    .isEqualTo(buildTestMetadata(incidentReferenceId).httpResponseMetaData.problemResponse.status);
         }
+    }
+
+    private MetaData buildTestMetadata(String incidentReferenceId) {
+        return MetaData.builder()
+                .gotAnswer(true)
+                .httpRequestMetaData(ExternalResourceException.HttpRequestMetaData.builder()
+                        .url("http://localhost:0/path")
+                        .header("Accept", "application/json")
+                        .header("User-Agent", "Jersey/2.25.1 (Jersey InMemory Connector)")
+                        .build()
+                )
+                .httpResponseMetaData(ExternalResourceException.HttpResponseMetaData.builder()
+                        .problemResponse(ProblemResponse.builder()
+                                .title("Internal Server Error")
+                                .detail("Det har oppstått en intern feil")
+                                .incidentReferenceId(incidentReferenceId)
+                                .status(500)
+                                .suggestedUserMessageInDetail(false)
+                                .build()
+                        )
+                        .incidentReferenceId(incidentReferenceId)
+                        .status(500)
+                        .header("Content-Length", "258")
+                        .header("Content-Type", "application/problem+json")
+                        .build()
+                )
+                .targetName("test")
+                .build();
     }
 
     @Test(expected = ProcessingException.class)
