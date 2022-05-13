@@ -12,13 +12,11 @@ import no.obos.util.servicebuilder.mq.MessageQueueSender;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveMqSenderAddon implements Addon {
-    public static final int MAX_QUEUE_ENTRIES = 1000;
 
     public static final String CONFIG_KEY_URL = "queue.url";
     public static final String CONFIG_KEY_USER = "queue.user";
     public static final String CONFIG_KEY_PASSWORD = "queue.password";
     public static final String CONFIG_KEY_QUEUE = "queue.name";
-    public static final String CONFIG_KEY_ENTRIES_GRACE = "queue.entries.grace";
 
     @Wither(AccessLevel.PRIVATE)
     public final MessageQueueSender mqSender;
@@ -35,11 +33,9 @@ public class ActiveMqSenderAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final String queue;
     @Wither(AccessLevel.PRIVATE)
-    public final int queueEntriesGrace;
-    @Wither(AccessLevel.PRIVATE)
     public final boolean registerHealthcheck;
 
-    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null, null, 60, true);
+    public static ActiveMqSenderAddon defaults = new ActiveMqSenderAddon(null, null, null, null, null, null, true);
 
 
     @Override
@@ -61,9 +57,7 @@ public class ActiveMqSenderAddon implements Addon {
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
         if (registerHealthcheck) {
-            ObosHealthCheckRegistry.registerActiveMqCheck("Sender queue: " + queue + " on " + url,
-                    url, queue, MAX_QUEUE_ENTRIES, queueEntriesGrace,
-                    user, password);
+            ObosHealthCheckRegistry.registerActiveMqCheck("Sender queue: " + queue + " on " + url, url);
         }
     }
 
@@ -75,17 +69,14 @@ public class ActiveMqSenderAddon implements Addon {
                 prefix + CONFIG_KEY_URL,
                 prefix + CONFIG_KEY_USER,
                 prefix + CONFIG_KEY_PASSWORD,
-                prefix + CONFIG_KEY_QUEUE,
-                prefix + CONFIG_KEY_ENTRIES_GRACE
+                prefix + CONFIG_KEY_QUEUE
         );
 
         return this
                 .url(properties.get(prefix + CONFIG_KEY_URL))
                 .user(properties.get(prefix + CONFIG_KEY_USER))
                 .password(properties.get(prefix + CONFIG_KEY_PASSWORD))
-                .queue(properties.get(prefix + CONFIG_KEY_QUEUE))
-                .queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)))
-                ;
+                .queue(properties.get(prefix + CONFIG_KEY_QUEUE));
     }
 
     public ActiveMqSenderAddon mqSender(MessageQueueSender mqSender) {
@@ -110,10 +101,6 @@ public class ActiveMqSenderAddon implements Addon {
 
     public ActiveMqSenderAddon queue(String queue) {
         return withQueue(queue);
-    }
-
-    public ActiveMqSenderAddon queueEntriesGrace(int queueEntriesGrace) {
-        return withQueueEntriesGrace(queueEntriesGrace);
     }
 
     public ActiveMqSenderAddon registerHealthcheck(boolean registerHealthcheck) {

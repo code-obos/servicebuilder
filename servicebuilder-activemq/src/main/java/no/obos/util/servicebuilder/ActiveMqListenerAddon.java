@@ -45,8 +45,6 @@ public class ActiveMqListenerAddon implements Addon {
     public static final String CONFIG_KEY_PASSWORD = "queue.password";
     public static final String CONFIG_KEY_QUEUE_INPUT = "queue.name.input";
     public static final String CONFIG_KEY_QUEUE_ERROR = "queue.name.error";
-    public static final String CONFIG_KEY_ENTRIES_MAX = "queue.entries.max";
-    public static final String CONFIG_KEY_ENTRIES_GRACE = "queue.entries.grace";
     public static final String CONFIG_KEY_PREFETCH_AMOUNT = "queue.prefetch";
 
     @Wither(AccessLevel.PRIVATE)
@@ -65,10 +63,6 @@ public class ActiveMqListenerAddon implements Addon {
     @Wither(AccessLevel.PRIVATE)
     public final String queueError;
     @Wither(AccessLevel.PRIVATE)
-    public final int queueEntriesMax;
-    @Wither(AccessLevel.PRIVATE)
-    public final int queueEntriesGrace;
-    @Wither(AccessLevel.PRIVATE)
     public final int prefetchAmount;
     @Wither(AccessLevel.PRIVATE)
     public final Class<? extends MessageHandler> handler;
@@ -81,8 +75,6 @@ public class ActiveMqListenerAddon implements Addon {
             null,
             null,
             null,
-            1,
-            60,
             10,
             null
     );
@@ -108,8 +100,8 @@ public class ActiveMqListenerAddon implements Addon {
 
     @Override
     public void addToJettyServer(JettyServer jettyServer) {
-        ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url, queueInput, queueEntriesMax, queueEntriesGrace, user, password);
-        ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url, queueError, user, password);
+        ObosHealthCheckRegistry.registerActiveMqCheck("Input queue: " + queueInput + " on " + url, url);
+        ObosHealthCheckRegistry.registerActiveMqCheck("Error queue: " + queueError + " on " + url, url);
     }
 
     @Override
@@ -136,12 +128,6 @@ public class ActiveMqListenerAddon implements Addon {
                 .queueInput(properties.get(prefix + CONFIG_KEY_QUEUE_INPUT))
                 .queueError(properties.get(prefix + CONFIG_KEY_QUEUE_ERROR));
 
-        if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_ENTRIES_MAX))) {
-            addon = addon.queueEntriesMax(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_MAX)));
-        }
-        if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_ENTRIES_GRACE))) {
-            addon = addon.queueEntriesGrace(Integer.parseInt(properties.get(prefix + CONFIG_KEY_ENTRIES_GRACE)));
-        }
         if (isNotBlank(properties.getOrNull(prefix + CONFIG_KEY_PREFETCH_AMOUNT))) {
             addon = addon.prefetchAmount(Integer.parseInt(properties.get(prefix + CONFIG_KEY_PREFETCH_AMOUNT)));
         }
@@ -191,14 +177,6 @@ public class ActiveMqListenerAddon implements Addon {
 
     public ActiveMqListenerAddon queueError(String queueError) {
         return withQueueError(queueError);
-    }
-
-    public ActiveMqListenerAddon queueEntriesMax(int queueEntriesMax) {
-        return withQueueEntriesMax(queueEntriesMax);
-    }
-
-    public ActiveMqListenerAddon queueEntriesGrace(int queueEntriesGrace) {
-        return withQueueEntriesGrace(queueEntriesGrace);
     }
 
     public ActiveMqListenerAddon prefetchAmount(int prefetchAmount) {
