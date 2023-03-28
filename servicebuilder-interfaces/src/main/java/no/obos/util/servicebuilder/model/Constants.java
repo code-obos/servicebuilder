@@ -5,6 +5,7 @@ public final class Constants {
     public static final String CLIENT_APPNAME_HEADER = "X-OBOS-CLIENT-APPNAME";
     public static final String USERTOKENID_HEADER = "X-OBOS-USERTOKENID";
     public static final String X_OBOS_REQUEST_ID = "X-OBOS-REQUEST-ID";
+    public static final String CORRELATION_ID = "correlationId";
     public static final String APPCONFIG_KEY = "SERVICE_CONFIG";
     public static final String CONFIG_KEY_SERVICE_VERSION = "service.version";
     public static final String CONFIG_KEY_SERVICE_VERSION_MAJOR = "service.version.major";
