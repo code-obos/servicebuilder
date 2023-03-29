@@ -3,14 +3,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.obos.util</groupId>
     <artifactId>servicebuilder</artifactId>
-    <version>10.2.0-SNAPSHOT</version>
+    <version>11.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <!-- https://github.com/code-obos/obos-common-pom -->
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>10.2.0-SNAPSHOT</version>
+        <version>10.1.13</version>
     </parent>
 
     <prerequisites>
