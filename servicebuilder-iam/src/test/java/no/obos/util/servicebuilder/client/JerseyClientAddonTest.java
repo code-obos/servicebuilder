@@ -158,6 +158,7 @@ public class JerseyClientAddonTest {
         TestServiceFull.Call expected = getCall()
                 .toBuilder()
                 .header(Constants.X_OBOS_REQUEST_ID, "Banana")
+                .header(Constants.CORRELATION_ID, "Banana")
                 .build();
         TestServiceRunner.Runtime nestedRuntime = nestedService.start().runtime;
 
