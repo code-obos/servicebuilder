@@ -16,6 +16,7 @@ public class RequestIdClientFilter implements ClientRequestFilter {
         String requestId = MDC.get(Constants.X_OBOS_REQUEST_ID);
         if (requestId != null) {
             requestContext.getHeaders().putSingle(Constants.X_OBOS_REQUEST_ID, requestId);
+            requestContext.getHeaders().putSingle(Constants.CORRELATION_ID, requestId);
         }
     }
 }
