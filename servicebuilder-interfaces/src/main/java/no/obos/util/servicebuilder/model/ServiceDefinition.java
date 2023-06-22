@@ -12,5 +12,8 @@ public interface ServiceDefinition {
         return JsonConfig.standard;
     }
 
+    default Boolean isSpringboot() {
+        return false;
+    }
 
 }

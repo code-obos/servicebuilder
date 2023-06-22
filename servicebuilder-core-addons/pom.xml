@@ -25,6 +25,7 @@
         <dependency>
             <groupId>no.obos.metrics</groupId>
             <artifactId>obos-metrics-servlet</artifactId>
+            <version>10.1.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
