@@ -24,7 +24,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ValidationExce
     public Response toResponse(ValidationException exception) {
         return exceptionUtil.handle(exception, cfg -> cfg
                 .status(BAD_REQUEST.getStatusCode())
-                .logLevel(LogLevel.ERROR)
+                .logLevel(LogLevel.WARN)
                 .detail("Valideringsfeil: " + exception.getLocalizedMessage())
                 .logger(log)
         );
