@@ -90,7 +90,7 @@ public class ActiveMqListener implements MessageQueueListener {
 
             MDC.put(X_OBOS_REQUEST_ID, requestId);
 
-            log.info("Received message with request id '{}'", requestId);
+            log.info("Received message '{}'", text);
 
             handler.handle(new ObjectMapper().readTree(text));
         } catch (Exception e) {
