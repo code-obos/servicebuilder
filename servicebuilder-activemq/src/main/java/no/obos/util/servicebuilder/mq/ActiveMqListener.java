@@ -29,6 +29,7 @@ import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 public class ActiveMqListener implements MessageQueueListener {
 
     private static final long REQUEUE_TIMEOUT = 1000;
+    static final int MAX_LENGTH_PER_MESSAGE = 1024;
 
     private final String url;
     private final String user;
@@ -90,7 +91,7 @@ public class ActiveMqListener implements MessageQueueListener {
 
             MDC.put(X_OBOS_REQUEST_ID, requestId);
 
-            log.info("Received message '{}'", text);
+            log.info("Received message '{}'", truncateMessageForLogging(text));
 
             handler.handle(new ObjectMapper().readTree(text));
         } catch (Exception e) {
@@ -107,6 +108,24 @@ public class ActiveMqListener implements MessageQueueListener {
             }
         } finally {
             MDC.remove(X_OBOS_REQUEST_ID);
+        }
+    }
+
+    static String truncateMessageForLogging(String text) {
+        if (StringUtils.isEmpty(text) || text.length() <= MAX_LOGGED_PER_MESSAGE) {
+            return text;
+        }
+        try {
+            log.info("Truncating message for logging...");
+            String truncatedText = text.substring(0, MAX_LOGGED_PER_MESSAGE);
+            String dataKey = "\"data\":";
+            if (truncatedText.contains(dataKey)) {
+                return truncatedText.substring(0, truncatedText.indexOf(dataKey)) + dataKey + "\"...\"}";
+            }
+            return truncatedText;
+        } catch (Exception e) {
+            log.warn("Failed to truncate message for logging");
+            return text;
         }
     }
 
