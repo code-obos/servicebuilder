@@ -29,7 +29,7 @@ import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 public class ActiveMqListener implements MessageQueueListener {
 
     private static final long REQUEUE_TIMEOUT = 1000;
-    static final int MAX_LOGGED_PER_MESSAGE = 1024;
+    static final int MAX_LENGTH_PER_MESSAGE = 1024;
 
     private final String url;
     private final String user;
