@@ -112,12 +112,12 @@ public class ActiveMqListener implements MessageQueueListener {
     }
 
     static String truncateMessageForLogging(String text) {
-        if (StringUtils.isEmpty(text) || text.length() <= MAX_LOGGED_PER_MESSAGE) {
+        if (StringUtils.isEmpty(text) || text.length() <= MAX_LENGTH_PER_MESSAGE) {
             return text;
         }
         try {
             log.info("Truncating message for logging...");
-            String truncatedText = text.substring(0, MAX_LOGGED_PER_MESSAGE);
+            String truncatedText = text.substring(0, MAX_LENGTH_PER_MESSAGE);
             String dataKey = "\"data\":";
             if (truncatedText.contains(dataKey)) {
                 return truncatedText.substring(0, truncatedText.indexOf(dataKey)) + dataKey + "\"...\"}";
