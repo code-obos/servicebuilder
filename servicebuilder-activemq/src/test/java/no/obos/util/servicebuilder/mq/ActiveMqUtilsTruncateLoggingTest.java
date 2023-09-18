@@ -4,11 +4,11 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ActiveMqListenerLoggingTest {
+public class ActiveMqUtilsTruncateLoggingTest {
 
     @Test
     public void handleNull() {
-        assertThat(ActiveMqListener.truncateMessageForLogging(null)).isEqualTo(null);
+        assertThat(ActiveMqUtils.truncateMessageForLogging(null)).isEqualTo(null);
     }
 
     @Test
@@ -16,7 +16,7 @@ public class ActiveMqListenerLoggingTest {
         String msg = "{\"mottakerId\":13136040,\"message\":\"Hei Adam! Eva ber om å bli lagt til som beboer"
                 + " i Lade Alle Hjem Boligsameie. Gå til Min bolig på https://vibbo.no/xxxx for å godta forespørselen.\",\"from\":\"Vibbo\",\"to\":\"99999999\"}";
 
-        assertThat(ActiveMqListener.truncateMessageForLogging(msg)).isEqualTo(msg);
+        assertThat(ActiveMqUtils.truncateMessageForLogging(msg)).isEqualTo(msg);
     }
     @Test
     public void logLongMessageWithDataObject() {
@@ -62,7 +62,7 @@ public class ActiveMqListenerLoggingTest {
                 + "\"owner\":\"OBOS konsernet\",\"classification\":\"Beskyttet\",\"storageRoutine\":\"LS32\",\"template\":null,\"comment\":null,"
                 + "\"files\":[{\"name\":\"Kontoutskrift Santander høyrentekonto 280575114.pdf\",\"data\":\"...\"}";
 
-        assertThat(ActiveMqListener.truncateMessageForLogging(msg)).isEqualTo(expectedLoggedMessage);
+        assertThat(ActiveMqUtils.truncateMessageForLogging(msg)).isEqualTo(expectedLoggedMessage);
     }
 
     @Test
@@ -101,6 +101,6 @@ public class ActiveMqListenerLoggingTest {
                 + "PiK557ML1cUqzG7m6VvvhJtfe3s9woZnP7z/2Xv9q9FR1P+za7ttUDNsW8rtrPfD5baF49+Xvp9jnhd8vX7zkwTRvZnga135Pn/7tz1p9umn7G3U633yi2n27/034d7Z3JrNyk508X0s"
                 + "6t+7Dbe55bzf9h/t2u04vqxA1njzf6+3q18ilMOtM7zCp6hcJGls6vJmn76s7N5hb4HJw1nZoqnAyk+/HRrnG0DaVpYs0qmlTF/rM7+cxPneXz8LjW8sNZ2eym8b/FMw59vJuVe4zW"
                 + "0vOrgxz+ONt+rmmVN4+TvOurNU1LmPa3h3jyrNs1Hv84foTz3vaZ4UqnOzqf5SnEfjuiQ33H01nRjgAAAI5luh";
-        assertThat(ActiveMqListener.truncateMessageForLogging(msg).length()).isEqualTo(ActiveMqListener.MAX_LENGTH_PER_MESSAGE);
+        assertThat(ActiveMqUtils.truncateMessageForLogging(msg).length()).isEqualTo(ActiveMqListener.MAX_LENGTH_PER_MESSAGE);
     }
 }
