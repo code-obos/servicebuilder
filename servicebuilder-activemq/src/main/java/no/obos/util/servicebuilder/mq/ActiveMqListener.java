@@ -91,7 +91,7 @@ public class ActiveMqListener implements MessageQueueListener {
 
             MDC.put(X_OBOS_REQUEST_ID, requestId);
 
-            log.info("Received message '{}'", truncateMessageForLogging(text));
+            log.info("Received message '{}'", ActiveMqUtils.truncateMessageForLogging(text));
 
             handler.handle(new ObjectMapper().readTree(text));
         } catch (Exception e) {
@@ -108,24 +108,6 @@ public class ActiveMqListener implements MessageQueueListener {
             }
         } finally {
             MDC.remove(X_OBOS_REQUEST_ID);
-        }
-    }
-
-    static String truncateMessageForLogging(String text) {
-        if (StringUtils.isEmpty(text) || text.length() <= MAX_LENGTH_PER_MESSAGE) {
-            return text;
-        }
-        try {
-            log.info("Truncating message for logging...");
-            String truncatedText = text.substring(0, MAX_LENGTH_PER_MESSAGE);
-            String dataKey = "\"data\":";
-            if (truncatedText.contains(dataKey)) {
-                return truncatedText.substring(0, truncatedText.indexOf(dataKey)) + dataKey + "\"...\"}";
-            }
-            return truncatedText;
-        } catch (Exception e) {
-            log.warn("Failed to truncate message for logging");
-            return text;
         }
     }
 

@@ -1,6 +1,8 @@
 package no.obos.util.servicebuilder.mq;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnection;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
 import javax.jms.JMSException;
@@ -12,6 +14,7 @@ import java.net.URISyntaxException;
 
 import static no.obos.util.servicebuilder.model.Constants.X_OBOS_REQUEST_ID;
 
+@Slf4j
 class ActiveMqUtils {
 
     private static final String BROKER_URL_JUNIT = "vm://localhost";
@@ -67,4 +70,21 @@ class ActiveMqUtils {
         }
     }
 
+    static String truncateMessageForLogging(String text) {
+        if (StringUtils.isEmpty(text) || text.length() <= ActiveMqListener.MAX_LENGTH_PER_MESSAGE) {
+            return text;
+        }
+        try {
+            log.info("Truncating message for logging...");
+            String truncatedText = text.substring(0, ActiveMqListener.MAX_LENGTH_PER_MESSAGE);
+            String dataKey = "\"data\":";
+            if (truncatedText.contains(dataKey)) {
+                return truncatedText.substring(0, truncatedText.indexOf(dataKey)) + dataKey + "\"...\"}";
+            }
+            return truncatedText;
+        } catch (Exception e) {
+            log.warn("Failed to truncate message for logging");
+            return text;
+        }
+    }
 }

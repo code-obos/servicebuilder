@@ -31,7 +31,7 @@ public class ActiveMqSender implements MessageQueueSender {
         Session session = ActiveMqUtils.startSession(connection);
 
         try {
-            log.info("Sending message '{}' to {}", message, queue);
+            log.info("Sending message '{}' to {}", ActiveMqUtils.truncateMessageForLogging(message), queue);
             ActiveMqUtils.queueMessage(session, message, queue);
         } finally {
             ActiveMqUtils.closeConnection(session, connection);
