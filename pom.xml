@@ -10,7 +10,7 @@
         <!-- https://github.com/code-obos/obos-common-pom -->
         <groupId>no.obos.common</groupId>
         <artifactId>obos-common-pom</artifactId>
-        <version>10.1.19</version>
+        <version>10.1.20</version>
     </parent>
 
     <prerequisites>
