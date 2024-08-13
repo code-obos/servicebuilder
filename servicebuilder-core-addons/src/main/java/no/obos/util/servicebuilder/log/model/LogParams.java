@@ -50,7 +50,14 @@ public class LogParams {
     @Wither(AccessLevel.PRIVATE)
     public final boolean logRequestPayload;
 
-    public final static LogParams defaults = new LogParams(true, LogLevel.INFO, false, ImmutableSet.of(), true, true);
+    /**
+     * default er false, og om det er false logges request og response.
+     * Om det er true, logges kun response
+     */
+    @Wither(AccessLevel.PRIVATE)
+    public final boolean logOnlyResponse;
+
+    public static final LogParams defaults = new LogParams(true, LogLevel.INFO, false, ImmutableSet.of(), true, true, false);
 
     public LogParams enableLogging(boolean enableLogging) {
         return withEnableLogging(enableLogging);
@@ -65,7 +72,7 @@ public class LogParams {
     }
 
     public LogParams skipHeaders(ImmutableSet<String> skipHeaders) {
-        return this.skipHeaders == skipHeaders ? this : new LogParams(this.enableLogging, this.logLevel, this.logHeaders, skipHeaders, this.logResponseEntity, this.logRequestPayload);
+        return this.skipHeaders == skipHeaders ? this : new LogParams(this.enableLogging, this.logLevel, this.logHeaders, skipHeaders, this.logResponseEntity, this.logRequestPayload, this.logOnlyResponse);
     }
 
     public LogParams clearSkipHeaders() {
@@ -83,4 +90,9 @@ public class LogParams {
     public LogParams logRequestPayload(boolean logRequestPayload) {
         return withLogRequestPayload(logRequestPayload);
     }
+
+    public LogParams logOnlyResponse(boolean logOnlyResponse) {
+        return withLogOnlyResponse(logOnlyResponse);
+    }
+
 }
