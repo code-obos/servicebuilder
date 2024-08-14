@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.obos.util.servicebuilder.annotations.Log;
+import no.obos.util.servicebuilder.annotations.LogOnlyResponse;
 import no.obos.util.servicebuilder.annotations.LogRequestEntity;
 import no.obos.util.servicebuilder.annotations.LogResponseEntity;
 import no.obos.util.servicebuilder.log.model.LogParams;
@@ -44,6 +45,11 @@ public class ServerLogger {
             ret = ret.enableLogging(enableLogging.value());
         }
 
+        LogOnlyResponse logOnlyResponse = AnnotationUtil.getAnnotation(LogOnlyResponse.class, method);
+        if (logOnlyResponse != null) {
+            ret = ret.logOnlyResponse(logOnlyResponse.value());
+        }
+
         LogRequestEntity logRequestEntity = AnnotationUtil.getAnnotation(LogRequestEntity.class, method);
         if (logRequestEntity != null) {
             ret = ret.logRequestPayload(logRequestEntity.value());
@@ -54,7 +60,6 @@ public class ServerLogger {
             ret = ret.logResponseEntity(logResponseEntity.value());
         }
         return ret;
-
     }
 
     public void handleRequest(LogRequest logRequest, LogParams logParams) {

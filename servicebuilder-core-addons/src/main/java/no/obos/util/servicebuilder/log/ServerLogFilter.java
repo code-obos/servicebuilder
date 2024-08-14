@@ -79,7 +79,7 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
 
         LogParams logParams = serverLogger.LogParamsForCall(handlingClass, handlingMethod);
 
-        if (! logParams.enableLogging) {
+        if (! logParams.enableLogging || logParams.logOnlyResponse) {
             return;
         }
 
@@ -112,8 +112,6 @@ public class ServerLogFilter implements ContainerRequestFilter, ContainerRespons
             Map<String, String> headers = FormatUtil.MultiMapAsStringMap(request.getHeaders());
             logRequest.headers((ImmutableMap.copyOf(headers)));
         }
-
-
 
         if (logParams.logRequestPayload) {
             logRequest.entity(extractRequestEntity(request));
