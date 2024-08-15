@@ -47,9 +47,6 @@ public class TargetGenerator {
         }
         target.register(RequestIdClientFilter.class);
         target.register(ClientNameFilter.class);
-        if (logging) {
-            target.register(ClientLogFilter.class);
-        }
 
         return target;
     }
