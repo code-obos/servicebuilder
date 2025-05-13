@@ -133,7 +133,7 @@ public class ExceptionUtil {
         if (! Strings.isNullOrEmpty(problem.internalMessage)) {
             sb.append(String.format("Additional info: %s\n", problem.internalMessage));
         }
-        sb.append("Incoming server headers:\n");
+        sb.append("Context:\n");
         sb.append(getContextDescription());
         if (problem.logStackTrace) {
             LogUtil.doLog(sb.toString(), problem.exception, problem.logLevel, problem.logger);
@@ -159,17 +159,7 @@ public class ExceptionUtil {
         } else {
             log.warn("Request context null in exceptionUtil");
         }
-
-        if (headers != null) {
-            Joiner joiner = Joiner.on(", ").skipNulls();
-            headers.getRequestHeaders().entrySet().forEach(entry -> {
-                String headerName = entry.getKey();
-                String headerValue = joiner.join(entry.getValue());
-                sb.append(String.format("  Header: %s = %s\n", headerName, headerValue));
-            });
-        }
         return sb.toString();
-
     }
 
 
