@@ -54,6 +54,9 @@ public class StubGenerator {
         }
         webTarget.register(RequestIdClientFilter.class);
         webTarget.register(ClientNameFilter.class);
+        if (logging) {
+            webTarget.register(ClientLogFilter.class);
+        }
 
         return WebResourceFactory.newResource(resource, webTarget, false, headerArg, cookies, new Form());
     }
